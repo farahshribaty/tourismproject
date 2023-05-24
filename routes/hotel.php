@@ -22,9 +22,3 @@ Route::group( ['prefix' => 'hotel','middleware' => ['auth:doctor-api'] ],functio
     Route::post('dashboard',[HotelController::class, 'dashboard'])->name('doctor.dashboard');
 });
 
-
-//sldkfjsldkfj
-//lksdjflksdj
-
-
-
