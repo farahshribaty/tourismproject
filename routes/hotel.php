@@ -15,10 +15,11 @@ use App\Http\Controllers\DoctorLoginController;
 |
 */
 
-Route::post('hotel/register',[HotelController::class, 'register'])->name('doctor.login');
+Route::post('hotel/register',[HotelController::class, 'Hotelregister']);
+Route::post('hotel/login',[HotelController::class, 'HoltelLogin']);
 
-Route::group( ['prefix' => 'hotel','middleware' => ['auth:doctor-api'] ],function(){
+Route::group( ['prefix' => 'hotel','middleware' => ['auth:hotel-api'] ],function(){
 
-    Route::post('dashboard',[HotelController::class, 'dashboard'])->name('doctor.dashboard');
+    Route::post('dashboard',[HotelController::class, 'dashboard'])->name('hotel.dashboard');
 });
 
