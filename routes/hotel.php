@@ -26,3 +26,4 @@ Route::group( ['prefix' => 'hotel','middleware' => ['auth:doctor-api'] ],functio
 //sldkfjsldkfj
 //lksdjflksdj
 //sldkfjsf
+//sdlkfjsdf
