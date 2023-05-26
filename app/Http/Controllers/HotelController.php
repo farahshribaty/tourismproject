@@ -22,6 +22,7 @@ class HotelController extends Controller
              ]
             ]);     
         
+            
             $hotel = new Hotel();
             $hotel->name = $request->name;
             $hotel->email = $request->email;
