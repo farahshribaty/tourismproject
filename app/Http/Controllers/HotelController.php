@@ -1,63 +1,64 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use App\Models\Airline;
-use App\Models\Doctor;
 use App\Models\Hotel;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\Http\Request;
 
 class HotelController extends Controller
 {
-    //
-    public function register(Request $request)
+    public function Hotelregister(Request $request)
     {
+        $request->validate([
+            'name'=>['required','max:55'],
+            'email'=>['email','required','unique:hotels'],
+            'password'=>[
+                'required',
+               'confirmed',
+               password::min(8)
+                ->letters()
+                ->numbers()
+                ->symbols()
+             ]
+            ]);     
+        
+            $hotel = new Hotel();
+            $hotel->name = $request->name;
+            $hotel->email = $request->email;
+            $hotel->password = bcrypt($request->password);
+            
+            $hotel->save();
 
-        Hotel::create([
-            'name'=>$request->name,
-            'email'=>$request->email,
-            'password'=>$request->password,
-            'phone_number'=>$request->phone_number,
-            'location'=>$request->location,
-            'city_id'=>$request->city_id,
-
-        ]);
-        $hotel = Hotel::where('email','=',$request->email)->first();
-
-        $hotel['token'] = $hotel->createToken('MyApp')->accessToken;
-        //$token = $hotel->createToken('MyApp')->accessToken;
-        return response()->json($hotel);
-//        $doctor = Doctor::where('id','=',1)->first();
-//        $doctor['token'] = $doctor->createToken('MyApp')->accessToken;
-//        return $doctor;
+          $accessToken=$hotel->createtoken('MyApp',['hotel'])->accessToken;
+    
+          return response()->json([
+                   'hotel'=> $hotel,
+                   'access_token'=>$accessToken
+            ]);
     }
 
-    public function airRegister(Request $request)
+    public function HoltelLogin(Request $request)
     {
+        $request->validate([
 
-        Airline::create([
-            'name'=>$request->name,
-            'email'=>$request->email,
-            'password'=>$request->password,
-            'phone_number'=>$request->phone_number,
-            'city_id'=>$request->city_id,
+            'email'=>'required|email',
+            'password'=>'required',
         ]);
-        $airline = Airline::where('email','=',$request->email)->first();
+        $credentials = request(['email','password']);
 
-        $airline['token'] = $airline->createToken('MyApp')->accessToken;
-        //$token = $hotel->createToken('MyApp')->accessToken;
-        return response()->json($airline);
-//        $doctor = Doctor::where('id','=',1)->first();
-//        $doctor['token'] = $doctor->createToken('MyApp')->accessToken;
-//        return $doctor;
+        if(auth()->guard('hotel')->attempt($request->only('email','password'))){
+            config(['auth.guards.api.provider'=>'hotel']);
+
+            $user = Hotel::query()->select('hotels.*')->find(auth()->guard('hotel')->user()['id']);
+            $success=$user;
+            $success['token']=$user->createtoken('MyApp',['user'])->accessToken;
+            return response()->json($success);
+    
+        }
+        else{
+            return response()->json(['error'=>['unauthorized']],401);
+        }
     }
 
-
-
-    public function dashboard(Request $request)
-    {
-        return response()->json([
-            $request->user()
-        ]);
-    }
+    
 }
