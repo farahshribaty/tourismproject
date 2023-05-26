@@ -12,7 +12,7 @@ class Hotel extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    public $timestamp = false;
+    //public $timestamp = false;
     
 
     protected $fillable = [
