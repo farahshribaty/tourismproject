@@ -35,6 +35,11 @@ class AdminLoginController extends Controller
         }
     }
 
+    public function CreateHotel()
+    {
+        
+    }
+
     public function adminDashboard()
     {
         return response()->json(Auth::guard('admin')->user());
