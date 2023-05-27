@@ -21,9 +21,11 @@ return new class extends Migration
             $table->string('location');
             $table->string('phone_number');
             $table->integer('rate')->nullable();
+            $table->integer('num_of_ratings')->nullable();
             $table->integer('open_at');
             $table->integer('close_at');
             $table->integer('available_days');
+            $table->text('details');
             $table->string('website_url')->nullable();
             $table->integer('adult_price')->nullable();  //in USD
             $table->integer('child_price')->nullable();

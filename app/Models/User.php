@@ -44,4 +44,9 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function attractionReviews()
+    {
+        return $this->belongsToMany(Attraction::class,AttractionReview::class,'user_id','attraction_id');
+    }
 }
