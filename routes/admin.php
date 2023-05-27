@@ -12,7 +12,6 @@ Route::post('adminLogin',[AdminController::class, 'AdminLogin']);
 Route::group( ['prefix' => 'admin','middleware' => ['auth:admin-api'] ],function(){
 
     Route::post('createhotel',[AdminController::class, 'CreateHotel']);
-    
     Route::post('country',[AdminController::class, 'AddCountry']);
     Route::post('city',[AdminController::class, 'AddCity']);
     

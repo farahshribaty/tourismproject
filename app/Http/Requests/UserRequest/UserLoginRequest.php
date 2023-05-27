@@ -3,6 +3,7 @@
 namespace App\Http\Requests\UserRequest;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 
 class UserLoginRequest extends FormRequest
 {
@@ -26,5 +27,5 @@ class UserLoginRequest extends FormRequest
             'email'=>'required|email',
             'password'=>'required',
         ];
-    }
+    } 
 }

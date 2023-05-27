@@ -9,6 +9,7 @@ use App\Models\Hotel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Http\Request;
+use App\Http\Requests\LoginRequest;
 
 class AdminController extends Controller
 {
@@ -28,13 +29,13 @@ class AdminController extends Controller
             ],
              'phone_number'=>['required']
             ]); 
+            
         $admin = new Admin();
         $admin->first_name = $request->first_name;
         $admin->last_name = $request->last_name;
         $admin->email = $request->email;
         $admin->password = $request->password;
         $admin->phone_number = $request->phone_number;
-
 
         $admin->save();
 
@@ -52,6 +53,7 @@ class AdminController extends Controller
             'email'=>'required|email',
             'password'=>'required'
         ]);
+        //$credentials=request(['email','password']);
         if(auth()->guard('admin')->attempt($request->only('email','password')))
         {
             config(['auth.guards.api.provider'=>'admin']);
@@ -59,13 +61,15 @@ class AdminController extends Controller
             $success=$admin;
             $success['token']=$admin->createtoken('MyApp',['admin'])->accessToken;
             return response()->json($success);
+
+
         }
-        else
-         {
-            return response()->json(['error' => ['Email and Password are Wrong.']], 200);
-         }
+        else{
+            return response()->json(['error'=>['unauthorized']],401);
+            }
+
     }
-  
+
     public function CreateHotel(Request $request) //done
     {
         $request->validate([
