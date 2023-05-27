@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Attraction;
+use App\Models\AttractionPhoto;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -37,8 +38,18 @@ class AttractionSeeder extends Seeder
                 'child_price'=>random_int(0,1000),
                 'open_at'=>7,
                 'close_at'=>23,
+                //'photo'=>'http://127.0.0.1:8000/images/attraction/'.'1685138340.jpg',
                 'available_days'=>0111110,
                 'website_url'=>'https://attraction.com',
+            ]);
+        }
+
+        $attrs = Attraction::get();
+
+        foreach($attrs as $attr){
+            AttractionPhoto::create([
+                'attraction_id'=>$attr['id'],
+                'path'=>'http://127.0.0.1:8000/images/attraction/'.'1685138340.jpg',
             ]);
         }
     }
