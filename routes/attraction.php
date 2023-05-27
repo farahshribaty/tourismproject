@@ -27,6 +27,8 @@ Route::post('attraction/rateAttraction',[UserAttractionController::class,'addRev
 
 Route::post('attraction/search',[UserAttractionController::class,'searchForAttractions']);
 
+Route::post('attraction/sendReview',[UserAttractionController::class,'addReview'])->middleware('auth:user-api');
+
 Route::group( ['prefix' => 'attraction','middleware' => ['auth:attraction-api'] ],function(){
 
     Route::post('dashboard',[AttractionAdminController::class, 'dashboard'])->name('attraction.dashboard');
