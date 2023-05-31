@@ -4,23 +4,21 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
+use Illuminate\Notifications\Notifiable;
 
-class Country extends Model
+class Types extends Model
 {
-
     use HasFactory,HasApiTokens,Notifiable;
-
-    protected $table='countries';
+    
+    protected $table='types';
     protected $primaryKey='id';
 
     protected $fillable=[
         'name'
     ];
 
-    public function city()
-    {
-        return $this->hasMany(City::class,'country_id','id');
-    } 
+    public function Hotel(){
+        return $this->hasMany(Hotel::class, 'type_id','id');
+    }
 }

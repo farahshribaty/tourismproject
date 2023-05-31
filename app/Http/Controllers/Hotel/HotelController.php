@@ -1,35 +1,80 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Hotel;
+
+use App\Http\Controllers\Controller;
 use App\Models\Hotel;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\Http\Request;
 
 class HotelController extends Controller
 {
-    
-    public function HoltelLogin(Request $request)
+    public function ShowALLHotel(Request $request)
     {
-        $request->validate([
+        $hotel = Hotel::all();
 
-            'email'=>'required|email',
-            'password'=>'required',
-        ]);
-        $credentials = request(['email','password']);
+       return response()->json([
+        'message'=>"done",
+        'Hotels'=> $hotel,
+       ]);
+    }
 
-        if(auth()->guard('hotel')->attempt($request->only('email','password'))){
-            config(['auth.guards.api.provider'=>'hotel']);
+    public function ShowHotelTypes(Request $request)
+    {
+        $hotel = ;
 
-            $user = Hotel::query()->select('hotels.*')->find(auth()->guard('hotel')->user()['id']);
-            $success=$user;
-            $success['token']=$user->createtoken('MyApp',['user'])->accessToken;
-            return response()->json($success);
+       return response()->json([
+        'message'=>"done",
+        'Hotels'=> $hotel,
+       ]);
+    }
     
-        }
-        else{
-            return response()->json(['error'=>['unauthorized']],401);
-        }
+
+    public function HotelRating()
+    {
+        //
+    }
+
+    public function TopRated()
+    {
+        //
+    }
+
+    public function index()
+    {
+        //
+    }
+
+    public function create()
+    {
+        //
+    }
+
+   
+    public function store(Request $request)
+    {
+        //
     }
 
     
+    public function show(Hotel $hotel)
+    {
+        //
+    }
+
+    
+    public function edit(Hotel $hotel)
+    {
+        //
+    }
+
+   
+    public function update(Request $request, Hotel $hotel)
+    {
+        //
+    }
+
+    public function destroy(Hotel $hotel)
+    {
+        //
+    }
 }

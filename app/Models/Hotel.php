@@ -13,15 +13,21 @@ class Hotel extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     //public $timestamp = false;
-    
+    protected $table='hotels';
+    protected $primaryKey='id';
 
     protected $fillable = [
         'name',
         'email',
         'password',
+        'type_id'
     ];
 
     protected $hidden = [
         'password',
     ];
+
+    public function Type(){
+        return $this->belongsTo(Types::class, 'type_id','id');
+    }
 }

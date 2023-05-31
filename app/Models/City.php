@@ -13,11 +13,11 @@ class City extends Model
     use HasFactory,HasApiTokens,Notifiable;
 
     protected $fillable=[
-        'name'
+        'name','country_id'
     ];
 
-    public function Addcities()
+    public function country()
     {
-        return $this->belongsTo(Country::class,'countries');
+        return $this->belongsTo(Country::class,'country_id','id');
     } 
 }
