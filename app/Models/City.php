@@ -16,8 +16,18 @@ class City extends Model
         'name','country_id'
     ];
 
-    public function country()
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+
+    public function Addcities()
     {
-        return $this->belongsTo(Country::class,'country_id','id');
-    } 
+        return $this->belongsTo(Country::class,'countries');
+    }
+
+    public function Attractions()
+    {
+        return $this->hasMany(Attraction::class,'city_id');
+    }
 }

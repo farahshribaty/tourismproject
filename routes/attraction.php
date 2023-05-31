@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Controllers\AttractionController;
+use App\Http\Controllers\Attractions\AttractionAdminController;
+use App\Http\Controllers\Attractions\UserAttractionController;
 use App\Http\Controllers\HotelController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -16,9 +17,19 @@ use App\Http\Controllers\DoctorLoginController;
 |
 */
 
-Route::post('attraction/register',[AttractionController::class, 'register'])->name('attraction.login');
+Route::post('attraction/register',[AttractionAdminController::class, 'register'])->name('attraction.login');
+
+Route::post('attraction/addPhoto',[AttractionAdminController::class,'addPhotos'])->middleware('auth:attraction-api');
+
+Route::get('attraction/index',[UserAttractionController::class,'index']);
+
+Route::post('attraction/rateAttraction',[UserAttractionController::class,'addReview'])->middleware('auth:user-api');
+
+Route::post('attraction/search',[UserAttractionController::class,'searchForAttractions']);
+
+Route::post('attraction/sendReview',[UserAttractionController::class,'addReview'])->middleware('auth:user-api');
 
 Route::group( ['prefix' => 'attraction','middleware' => ['auth:attraction-api'] ],function(){
 
-    Route::post('dashboard',[AttractionController::class, 'dashboard'])->name('attraction.dashboard');
+    Route::post('dashboard',[AttractionAdminController::class, 'dashboard'])->name('attraction.dashboard');
 });

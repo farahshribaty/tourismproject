@@ -19,8 +19,13 @@ class Country extends Model
         'name'
     ];
 
-    public function city()
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+
+    public function Addcities()
     {
-        return $this->hasMany(City::class,'country_id','id');
-    } 
+        return $this->hasMany(City::class,'cities');
+    }
 }
