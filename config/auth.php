@@ -45,6 +45,7 @@ return [
         'user'=>[
             'driver'=>'session',
             'provider'=>'users',
+            //'hash'=>false,
         ],
         'user-api'=>[
             'driver'=>'passport',
@@ -62,53 +63,53 @@ return [
         ],
 
         //for doctor
-        'doctor' => [
-            'driver' => 'session',
-            'provider' => 'doctors',
-        ],
-        'doctor-api' => [
-            'driver' => 'passport',
-            'provider' => 'doctors',
-        ],
+//        'doctor' => [
+//            'driver' => 'session',
+//            'provider' => 'doctors',
+//        ],
+//        'doctor-api' => [
+//            'driver' => 'passport',
+//            'provider' => 'doctors',
+//        ],
 
         //for hotel
-        'hotel'=>[
+        'hotel_admin'=>[
             'driver'=>'session',
-            'provider'=>'hotels',
+            'provider'=>'hotel_admins',
         ],
-        'hotel-api'=>[
+        'hotel_admin-api'=>[
             'driver'=>'passport',
-            'provider'=>'hotels',
+            'provider'=>'hotel_admins',
         ],
 
         //for airline
-        'airline'=>[
+        'airline_admin'=>[
             'driver'=>'session',
-            'provider'=>'airlines',
+            'provider'=>'airline_admins',
         ],
-        'airline-api'=>[
+        'airline_admin-api'=>[
             'driver'=>'passport',
-            'provider'=>'airlines',
+            'provider'=>'airline_admins',
         ],
 
         //for trip_company
-        'trip_company'=>[
+        'trip_admin'=>[
             'driver'=>'session',
-            'provider'=>'trip_companies',
+            'provider'=>'trip_admins',
         ],
-        'trip_company-api'=>[
+        'trip_admin-api'=>[
             'driver'=>'passport',
-            'provider'=>'trip_companies',
+            'provider'=>'trip_admins',
         ],
 
         //for attraction
-        'attraction'=>[
+        'attraction_admin'=>[
             'driver'=>'session',
-            'provider'=>'attractions',
+            'provider'=>'attraction_admins',
         ],
-        'attraction-api'=>[
+        'attraction_admin-api'=>[
             'driver'=>'passport',
-            'provider'=>'attractions',
+            'provider'=>'attraction_admins',
         ],
 
     ],
@@ -152,33 +153,33 @@ return [
         ],
 
         //for doctor
-        'doctors' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\Doctor::class,
-        ],
+//        'doctors' => [
+//            'driver' => 'eloquent',
+//            'model' => App\Models\Doctor::class,
+//        ],
 
         //for hotel
-        'hotels'=>[
+        'hotel_admins'=>[
             'driver'=>'eloquent',
-            'model'=>App\Models\Hotel::class,
+            'model'=>App\Models\HotelAdmin::class,
         ],
 
         //for airline
-        'airlines'=>[
+        'airline_admins'=>[
             'driver'=>'eloquent',
-            'model'=>App\Models\Airline::class,
+            'model'=>App\Models\AirlineAdmin::class,
         ],
 
         //for trip_company
-        'trip_companies'=>[
+        'trip_admins'=>[
             'driver'=>'eloquent',
-            'model'=>App\Models\TripCompany::class,
+            'model'=>App\Models\TripAdmin::class,
         ],
 
         //for attraction
-        'attractions'=>[
+        'attraction_admins'=>[
             'driver'=>'eloquent',
-            'model'=>App\Models\Attraction::class,
+            'model'=>App\Models\AttractionAdmin::class,
         ],
 
         // ____the end____

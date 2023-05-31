@@ -14,13 +14,16 @@ class CitySeeder extends Seeder
     public function run(): void
     {
         City::create([
-            'name'=>'damascus'
+            'name'=>'damascus',
+            'country_id'=>1,
         ]);
         City::create([
-            'name'=>'cairo'
+            'name'=>'cairo',
+            'country_id'=>2,
         ]);
         City::create([
-            'name'=>'istanbul'
+            'name'=>'istanbul',
+            'country_id'=>3,
         ]);
     }
 }

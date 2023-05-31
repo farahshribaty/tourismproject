@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignId('country_id');
             $table->string('name');
             $table->string('email')->unique();
-            $table->string('password');
             $table->string('phone_number');
             $table->integer('rate')->nullable();
             $table->timestamps();

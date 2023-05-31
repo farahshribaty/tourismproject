@@ -29,11 +29,11 @@ class AuthServiceProvider extends ServiceProvider
         Passport::tokensCan([
             'user'=>'User',
             'admin'=>'Admin',
-            'doctor' => 'Doctor',
-            'hotel'=>'Hotel',
-            'airline'=>'Airline',
-            'trip_company'=>'TripCompany',
-            'attraction'=>'Attraction',
+            //'doctor' => 'Doctor',
+            'hotel_admin'=>'HotelAdmin',
+            'airline_admin'=>'AirlineAdmin',
+            'trip_admin'=>'TripAdmin',
+            'attraction_admin'=>'AttractionAdmin',
         ]);
     }
 }
