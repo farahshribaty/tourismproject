@@ -40,6 +40,7 @@ class Attraction extends Model
         'updated_at',
     ];
 
+
     public function type()
     {
         return $this->belongsTo(AttractionType::class,'attraction_type_id');

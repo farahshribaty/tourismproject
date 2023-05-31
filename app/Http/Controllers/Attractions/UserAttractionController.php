@@ -11,6 +11,7 @@ use App\Models\AttractionReservation;
 use App\Models\AttractionReview;
 use App\Models\City;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Nette\Utils\DateTime;
 
@@ -20,9 +21,9 @@ class UserAttractionController extends UserController
     /**
      * Main Page For Attractions
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function index()
+    public function index(): JsonResponse             //wrong!
     {
         $topRated = Attraction::orderBy('rate','desc')
             ->with(['photo','city'])
@@ -56,9 +57,9 @@ class UserAttractionController extends UserController
      * Search For Attractions With Specific Criteria
      *
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function searchForAttractions(Request $request)
+    public function searchForAttractions(Request $request): JsonResponse
     {
 
         $attraction = Attraction::whereHas('city',function($query) use($request){
@@ -85,8 +86,13 @@ class UserAttractionController extends UserController
         ],200);
     }
 
-
-    public function viewAttractionDetails(Request $request)
+    /**
+     * View Attraction Details
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function viewAttractionDetails(Request $request): JsonResponse
     {
         $request->validate([
             'attraction_id'=>'required',
@@ -110,7 +116,13 @@ class UserAttractionController extends UserController
         ]);
     }
 
-    public function bookingTicket(AttractionReserveRequest $request)
+    /**
+     * Booking Ticket Function
+     *
+     * @param AttractionReserveRequest $request
+     * @return JsonResponse
+     */
+    public function bookingTicket(AttractionReserveRequest $request): JsonResponse
     {
         $info = $request->validated();
 
@@ -204,9 +216,9 @@ class UserAttractionController extends UserController
      * Sending Reviews For Some Attraction
      *
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function addReview(Request $request)
+    public function addReview(Request $request): JsonResponse
     {
         $request->validate([
             'stars'=>'required',
