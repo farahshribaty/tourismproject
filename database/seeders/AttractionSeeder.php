@@ -15,8 +15,8 @@ class AttractionSeeder extends Seeder
     public function run(): void
     {
         $names = [
-            'Uskudar', 'Restaurant', 'attraction','ahmad','mohamad','firas','hameh','beach','blueTour','helloWorld',
-            'dubaiMetro','phobiaDubai','swissotelSpa','naturLifeSpa','dubaiMall','timeLessSpa','helloDubai',
+            'Uskudar', 'Restaurant', 'UmayyadMosque','UpTown','Bloudan','KhalifaTower','Bukain','BlueBeach','blueTour','HelloWorld',
+            'DubaiMetro','PhobiaDubai','SwissotelSpa','NaturLifeSpa','DubaiMall','TimeLessSpa','GelloDubai',
         ];
         $locations = [
             'main Street', 'behind tour','city center'
@@ -39,8 +39,11 @@ class AttractionSeeder extends Seeder
                 'open_at'=>7,
                 'close_at'=>23,
                 //'photo'=>'http://127.0.0.1:8000/images/attraction/'.'1685138340.jpg',
-                'available_days'=>0111110,
+                'available_days'=>62,
                 'website_url'=>'https://attraction.com',
+                'child_ability_per_day'=>5,
+                'adult_ability_per_day'=>5,
+                'points_added_when_booking'=>3,
             ]);
         }
 

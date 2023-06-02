@@ -38,5 +38,5 @@ Route::group( ['prefix' => 'hotel','middleware' => ['auth:hotel-api'] ],function
 Route::group( ['prefix' => 'hotel','middleware' => ['auth:hotel-api'] ],function(){
 
 
-    
+
 });

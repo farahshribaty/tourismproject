@@ -8,20 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 
-class TripCompany extends Model
+class TripAdmin extends Authenticatable
 {
-    use HasFactory;
-
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'phone_number',
-        'rate',
-        'country_id',
-    ];
-
-    protected $hidden = [
-        'password',
-    ];
+    use HasApiTokens, HasFactory, Notifiable;
 }

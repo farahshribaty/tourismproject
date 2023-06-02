@@ -25,10 +25,13 @@ return new class extends Migration
             $table->integer('open_at');
             $table->integer('close_at');
             $table->integer('available_days');
+            $table->integer('child_ability_per_day');
+            $table->integer('adult_ability_per_day');
             $table->text('details');
             $table->string('website_url')->nullable();
             $table->integer('adult_price')->nullable();  //in USD
             $table->integer('child_price')->nullable();
+            $table->integer('points_added_when_booking');
             $table->timestamps();
         });
     }

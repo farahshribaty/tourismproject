@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 
-class Attraction extends Authenticatable
+class Attraction extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory;
 
     protected $fillable = [
         'city_id',
@@ -29,6 +29,9 @@ class Attraction extends Authenticatable
         'website_url',
         'adult_price',
         'child_price',
+        'child_ability_per_day',
+        'adult_ability_per_day',
+        'points_added_when_booking',
     ];
 
     protected $hidden = [
@@ -36,6 +39,7 @@ class Attraction extends Authenticatable
         'created_at',
         'updated_at',
     ];
+
 
     public function type()
     {

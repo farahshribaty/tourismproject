@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Users;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest\UserLoginRequest;
 use App\Http\Requests\UserRequest\UserRegistrationRequest;
 use App\Models\Hotel;
@@ -22,6 +23,8 @@ class UserController extends Controller
     public function register(UserRegistrationRequest $request)
     {
         $info = $request->validated();
+        $info['points']=0;
+        $info['wallet']=100000;
         User::create($info);
 
         $user = User::where('email','=',$info['email'])->first();
@@ -67,5 +70,21 @@ class UserController extends Controller
             'success'=>true,
             'message'=>'logged out successfully',
         ]);
+    }
+
+    public function checkWallet($money_needed,$user_id): bool
+    {
+        $user = User::where('id','=',$user_id)->first();
+
+        if(!$user){
+            return false;
+        }
+        $wallet = $user['wallet'];
+        if($money_needed>$wallet){
+            return false;
+        }
+        else{
+            return true;
+        }
     }
 }

@@ -8,10 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 
-class Hotel extends Authenticatable
+class Hotel extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable;
-
+    use HasFactory;
     //public $timestamp = false;
     // protected $table='hotels';
     // protected $primaryKey='id';

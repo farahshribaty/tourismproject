@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('trip_companies', function (Blueprint $table) {
+        Schema::create('attraction_admins', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('country_id');
-            $table->string('name');
+            $table->foreignId('attraction_id');
             $table->string('email')->unique();
-            $table->string('phone_number');
-            $table->integer('rate')->nullable();
+            $table->string('password');
             $table->timestamps();
         });
     }
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('trip_companies');
+        Schema::dropIfExists('attraction_admins');
     }
 };

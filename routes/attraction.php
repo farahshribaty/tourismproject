@@ -17,7 +17,8 @@ use App\Http\Controllers\DoctorLoginController;
 |
 */
 
-Route::post('attraction/register',[AttractionAdminController::class, 'register'])->name('attraction.login');
+//Route::post('attraction/register',[AttractionAdminController::class, 'register'])->name('attraction.login');
+Route::post('attraction/register',[AttractionAdminController::class,'register']);
 
 Route::post('attraction/addPhoto',[AttractionAdminController::class,'addPhotos'])->middleware('auth:attraction-api');
 
@@ -28,6 +29,10 @@ Route::post('attraction/rateAttraction',[UserAttractionController::class,'addRev
 Route::post('attraction/search',[UserAttractionController::class,'searchForAttractions']);
 
 Route::post('attraction/sendReview',[UserAttractionController::class,'addReview'])->middleware('auth:user-api');
+
+Route::post('attraction/viewAttractionDetails',[UserAttractionController::class,'viewAttractionDetails']);
+
+Route::post('attraction/bookingTicket',[UserAttractionController::class,'bookingTicket'])->middleware('auth:user-api');
 
 Route::group( ['prefix' => 'attraction','middleware' => ['auth:attraction-api'] ],function(){
 

@@ -21,5 +21,14 @@ class AttractionReview extends Model
         'updated_at',
     ];
 
+    public function attraction()
+    {
+        return $this->belongsTo(Attraction::class,'attraction_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class,'user_id');
+    }
 
 }

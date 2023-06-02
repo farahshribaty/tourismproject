@@ -31,8 +31,8 @@ class AdminController extends Controller
                 ->symbols()
             ],
              'phone_number'=>['required']
-            ]); 
-            
+            ]);
+
         $admin = new Admin();
         $admin->first_name = $request->first_name;
         $admin->last_name = $request->last_name;
@@ -43,7 +43,7 @@ class AdminController extends Controller
         $admin->save();
 
         $accessToken=$admin->createtoken('MyApp',['admin'])->accessToken;
-    
+
           return response()->json([
                    'admin'=> $admin,
                    'access_token'=>$accessToken
@@ -54,9 +54,16 @@ class AdminController extends Controller
     {
         $request->validate([
             'email'=>'required|email',
-            'password'=>'required'
+            'password'=>'required',
         ]);
+        $auth = Auth::guard('admin');
+        return response()->json([
+            'status'=>$auth->setUser(['email'=>$request->email,'password'=>$request->password])
+        ]);
+
+
         //$credentials=request(['email','password']);
+<<<<<<< HEAD
         if(auth()->guard('admin')->attempt($request->only('email','password')))
         {
             config(['auth.guards.api.provider'=>'admin']);
@@ -76,6 +83,60 @@ class AdminController extends Controller
 
 
     public function AddCountry(Request $request) //done
+=======
+//        if(auth()->guard('admin')->Attempt($request->only('email','password')))
+//        {
+//            config(['auth.guards.api.provider'=>'admin']);
+//            $admin=Admin::query()->select('admins.*')->find(auth()->guard('admin')->user()['id']);
+//            $success=$admin;
+//            $success['token']=$admin->createtoken('MyApp',['admin'])->accessToken;
+//            return response()->json($success);
+//
+//
+//        }
+//        else{
+//            $admin=Admin::query()->select('admins.*');
+//            return response()->json([
+//                $admin,
+//                ]);
+//
+//            }
+
+    }
+
+    public function CreateHotel(Request $request) //done
+    {
+        $request->validate([
+            'name'=>['required','max:55'],
+            'email'=>['email','required','unique:hotels'],
+            'password'=>[
+                'required',
+               'confirmed',
+               password::min(8)
+                ->letters()
+                ->numbers()
+                ->symbols()
+             ]
+            ]);
+
+
+            $hotel = new Hotel();
+            $hotel->name = $request->name;
+            $hotel->email = $request->email;
+            $hotel->password = bcrypt($request->password);
+
+            $hotel->save();
+
+          $accessToken=$hotel->createtoken('MyApp',['hotel'])->accessToken;
+
+          return response()->json([
+                   'hotel'=> $hotel,
+                   'access_token'=>$accessToken
+            ]);
+    }
+
+    public function AddCountry(Request $request)
+>>>>>>> 80aaa3479e4043986dfcb58089c498bd9810c82b
     {
         $request->validate([
             'name'=>'required',
@@ -84,7 +145,7 @@ class AdminController extends Controller
         $country =new Country();
         $country->name = $request->name;
         $country->save();
-        
+
         return response()->json([
             'country'=> $country,
             'message'=>"country added successfuly"
@@ -107,7 +168,7 @@ class AdminController extends Controller
         $city->name = $request->name;
         $city->country_id =$id[0]->id;
         $city->save();
-        
+
         return response()->json([
             'city'=> $city,
             'message'=>"city added successfuly"
