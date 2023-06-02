@@ -23,8 +23,9 @@ Route::post('user/addReview',[UserController::class, 'addReview']);
 Route::get('TopRated',[HotelController::class, 'TopRated']);
 Route::get('ShowHotelTypes',[HotelController::class, 'ShowHotelTypes']);
 Route::get('ShowRoomsTypes',[HotelController::class, 'ShowRoomsTypes']);
-Route::get('ShowHotelRooms',[HotelController::class, 'ShowHotelRooms']);
 Route::get('ShowAllHotel',[HotelController::class, 'ShowALLHotel']);
+Route::post('ShowHotelRooms',[HotelController::class, 'ShowHotelRooms']);
+
 
 
 
