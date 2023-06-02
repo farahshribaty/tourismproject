@@ -39,8 +39,6 @@ class AttractionAdminController extends Controller
         ]);
     }
 
-
-
     public function dashboard(Request $request)
     {
         return $request->user();

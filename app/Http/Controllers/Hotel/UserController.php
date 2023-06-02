@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Hotel;
 use App\Http\Controllers\Controller;
 use App\Models\Hotel;
 use App\Models\City;
+use App\Models\HotelReview;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Password;
@@ -17,7 +18,7 @@ class UserController extends Controller
         $request->validate([
             'first_name'=>['required','max:55'],
             'last_name'=>['required','max:55'],
-        'email'=>['email','required'/*,'unique:users'*/],
+            'email'=>['email','required'/*,'unique:users'*/],
             'password'=>[
                 'required',
                'confirmed',
@@ -66,20 +67,94 @@ class UserController extends Controller
         }
     }
     
-    public function ShowCities(Request $request,$id) //done..select a certain country
+    public function ShowCities(Request $request) //done
     {
-        $cities=City::where('cities.country_id','=',$id)
+        $cities=City::where('cities.country_id','=',$request->id)
         ->get();
 
          return response()->json([
         'message' => $cities,
         ]);
     }
-    public function rating(Request $request,$id)
+
+    public function searchForHotel(Request $request)
     {
-        
+        $hotel = Hotel::whereHas('city',function($query) use($request){
+                $query->where('name',$request->word);
+            })
+            ->orWhere('name','like','%'.$request->word.'%')
+            ->when($request->price,function($query) use($request){
+                $query->where('adult_price','<=',$request->price);
+            })
+            ->when($request->hotel_type_id,function($query) use($request){
+                $query->where('hotel_type_id','=',$request->hotel_type_id);
+            })
+            ->with(['photo','city'])
+            ->paginate(10);
+
+        return response()->json([
+            'success'=>true,
+            'data'=>$hotel,
+        ],200);
     }
 
+    public function addReview(Request $request) //done
+    {
+        $request->validate([
+            'stars'=>'required',
+            'hotel_id'=>'required',
+        ]);
+
+        $lastRate = HotelReview::where([
+            'user_id'=>$request->user_id,
+            'hotel_id'=>$request->hotel_id,
+        ])->first();
+
+        if($lastRate){
+            return response()->json([
+                'success'=>false,
+                'message'=>'you can not rate this hotel more than one time',
+            ]);
+        }
+
+        $comment = null;
+        if(isset($request->comment)){
+            $comment = $request->comment;
+        }
+
+        HotelReview::create([
+            'stars'=>$request->stars,
+            'comment'=>$comment,
+            'user_id'=>$request->user_id,
+            'hotel_id'=>$request->hotel_id,
+        ]);
+
+        //recalculating the rate of the hotel
+
+        $hotel = Hotel::where('id',$request->hotel_id)->first();
+        if(!$hotel){
+            return response()->json([
+                'success'=>false,
+                'message'=>'hotel not found',
+            ]);
+        }
+
+        $num_of_ratings = $hotel['num_of_ratings'];
+        $rate = $hotel->rate;
+
+        $new_rate = (($num_of_ratings*$rate)+$request->stars)/($num_of_ratings+1);
+
+        Hotel::where('id',$request->hotel_id)
+            ->update([
+            'rate'=> $new_rate,
+            'num_of_ratings'=> $num_of_ratings+1,
+        ]);
+
+        return response()->json([
+            'status'=>true,
+            'message'=>'review has sent successfully',
+        ]);
+    }
     /**
      * Show the form for creating a new resource.
      */
