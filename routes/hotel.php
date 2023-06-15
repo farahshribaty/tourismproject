@@ -17,7 +17,7 @@ Route::post('admin/addPhoto',[AdminController::class, 'addPhotos']);
 Route::post('admin/addRoomPhoto',[AdminController::class, 'addRoomPhotos']);
 
 //Hotel user Routes:
-Route::post('user/register',[UserController::class, 'Register']);
+//Route::post('user/register',[UserController::class, 'Register']);
 Route::post('user/login',[UserController::class, 'Login']);
 Route::post('user/addReview',[UserController::class, 'addReview']);
 

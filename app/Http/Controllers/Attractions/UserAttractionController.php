@@ -270,7 +270,7 @@ class UserAttractionController extends UserController
 
         return response()->json([
             'status'=>true,
-            'message'=>'review has sent successfully',
+            'message'=>'review has been sent successfully',
         ]);
     }
 }
