@@ -13,8 +13,7 @@ class City extends Model
     use HasFactory,HasApiTokens,Notifiable;
 
     protected $fillable=[
-        'name',
-        'country_id',
+        'name','country_id'
     ];
 
     protected $hidden = [
@@ -34,6 +33,11 @@ class City extends Model
 
     public function country()
     {
-        return $this->belongsTo(Country::class,'country_id');
+        return $this->belongsTo(Country::class, 'country_id');
+    }
+
+    public function Hotel()
+    {
+        return $this->hasMany(Hotel::class,'hotel_id');
     }
 }

@@ -24,6 +24,7 @@ class CitySeeder extends Seeder
         City::create([
             'name'=>'istanbul',
             'country_id'=>3,
+
         ]);
     }
 }

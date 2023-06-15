@@ -161,7 +161,6 @@ class UserAttractionController extends UserController
     }
 
 
-
     private function checkMoneyAvailability($info,$user_id): int
     {
         $attraction = Attraction::where('id','=',$info['attraction_id'])->first();
@@ -172,7 +171,6 @@ class UserAttractionController extends UserController
         }
         else return -1;
     }
-
     private function checkTimeAvailability($info): bool
     {
         $date = $info['book_date'];
@@ -190,7 +188,6 @@ class UserAttractionController extends UserController
         if($mask & $openDays) return true;
         else return false;
     }
-
     private function checkTicketAvailability($info): bool
     {
         $inSameDays = AttractionReservation::where('book_date','=',$info['book_date'])->get();
@@ -211,6 +208,7 @@ class UserAttractionController extends UserController
 
         return true;
     }
+
 
     /**
      * Sending Reviews For Some Attraction
