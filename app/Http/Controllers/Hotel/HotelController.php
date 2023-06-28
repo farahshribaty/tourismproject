@@ -7,12 +7,15 @@ use App\Models\Hotel;
 use App\Models\HotelReview;
 use App\Models\Room;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class HotelController extends Controller
 {
     public function ShowALLHotel() //done
     {
-        $hotel = Hotel::all();
+        $hotel = Hotel::orderBy('type_id','asc')
+        ->with(['photos','city'])
+        ->get();
 
        return response()->json([
         'message'=>"done",
@@ -22,10 +25,12 @@ class HotelController extends Controller
 
     public function ShowHotelTypes() //done
     {
+        
         $hotel = Hotel::orderBy('type_id','asc')
         ->take(15)
+        ->with(['photo','city'])
         ->get();
-        $hotel = $hotel->makeHidden(['email','location','phone_number','details','website_url']);
+        $hotel = $hotel->makeHidden(['email','phone_number','details','website_url']);
 
        return response()->json([
         'message'=>"done",
@@ -37,28 +42,33 @@ class HotelController extends Controller
     {
         $topRated = Room::orderBy('rate','desc')
         ->take(6)
+        ->with(['photo'])
         ->get();
         $topRated = $topRated->makeHidden(['details','created_at','updated_at']);
 
         $NonSmokingroom = Room::where('room_type','=',9)
         ->take(5)
+        ->with(['photo'])
         ->get();
         $NonSmokingroom = $NonSmokingroom->makeHidden(['details','created_at','updated_at']);
 
         $Accessibleroom = Room::where('room_type','=',6)
         ->take(5)
+        ->with(['photo'])
         ->get();
         
         $Accessibleroom = $Accessibleroom->makeHidden(['details','created_at','updated_at']);
     
         $Singlerooms = Room::where('room_type','=',4)
         ->take(5)
+        ->with(['photo'])
         ->get();
         
         $Singlerooms = $Singlerooms->makeHidden(['details','created_at','updated_at']);
 
         $suiet = Room::where('room_type','=',4)
         ->take(5)
+        ->with(['photo'])
         ->get();
         
         $suiet = $suiet->makeHidden(['details','created_at','updated_at']);
@@ -76,7 +86,7 @@ class HotelController extends Controller
     public function TopRated() //hotels /done
     {
         $topRated = Hotel::orderBy('rate','desc')
-        ->with(['city'])
+        ->with(['photo','city'])
         ->take(6)
         ->get();
 
@@ -90,25 +100,24 @@ class HotelController extends Controller
 
     }
 
-    public function ShowHotelRooms(Request $request) //params not body
+    public function ShowHotelRooms(Request $request) //done
     {
         $hotel_id = $request->hotel_id;
-        $room = Room::where('hotel_id','=',$hotel_id)
+
+        $rooms = Room::select('rooms.*', 'hotels.location')
+        ->join('hotels', 'rooms.hotel_id', '=', 'hotels.id')
+        ->where('rooms.hotel_id', '=', $hotel_id)
+        ->with(['photo'])
         ->get();
-        $room = $room->makeHidden(['details','created_at','updated_at']);
 
-
+        $rooms = $rooms->makeHidden(['details','created_at','updated_at']);
+    
         return response()->json([
         'message'=>"done",
-        'Rooms'=> $room,
+        'Room:'=>$rooms
         ]);
     }
-
-    public function index()
-    {
-        //
-    }
-
+    
     public function create()
     {
         //

@@ -54,8 +54,8 @@ class AdminController extends Controller
             'location'=>$request->location,
             'phone_number'=>$request->phone_number,
             'details'=>$request->details,
-            'rate'=> 0,
-            'num_of_ratings'=> 0,
+            'rate'=>$request->rate ,
+            'num_of_ratings'=> $request->num_of_ratings,
             'website_url'=>$request->website_url,
             'city_id'=>$request->city_id,
             'type_id'=>$request->type_id
@@ -63,6 +63,7 @@ class AdminController extends Controller
 
         $hotel = Hotel::where('email','=',$request->email)->first();
         $hotel['token'] = $hotel->createToken('MyApp')->accessToken;
+        
         return response()->json([
             'data'=>$hotel,
         ]);

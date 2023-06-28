@@ -38,7 +38,7 @@ class AttractionSeeder extends Seeder
                 'child_price'=>random_int(0,1000),
                 'open_at'=>7,
                 'close_at'=>23,
-                //'photo'=>'http://127.0.0.1:8000/images/attraction/'.'1685138340.jpg',
+                // 'photo'=>'http://127.0.0.1:8000/images/attraction/'.'1685138340.jpg',
                 'available_days'=>62,
                 'website_url'=>'https://attraction.com',
                 'child_ability_per_day'=>5,

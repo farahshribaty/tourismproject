@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 
 
 //Hotel Admin Routes:
-Route::post('admin/login',[AdminController::class, 'AdminLogin']);
+Route::post('hotel/adminlogin',[AdminController::class, 'AdminLogin']);
 Route::post('admin/createhotel',[AdminController::class, 'CreateHotel']); 
 Route::post('admin/addRoom',[AdminController::class, 'addRooms']);
 Route::post('admin/addPhoto',[AdminController::class, 'addPhotos']);
