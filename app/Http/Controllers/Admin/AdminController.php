@@ -90,8 +90,7 @@ class AdminController extends Controller
         return response()->json([
             'country'=> $country,
             'message'=>"country added successfuly"
-     ]);
-
+        ]);
     }
     public function AddCity(Request $request) //done
     {

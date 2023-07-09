@@ -22,7 +22,7 @@ class Hotel extends Authenticatable
         'phone_number',
         'details',
         'rate',
-        'num_of_ratings', 
+        'num_of_ratings',
         'website_url',
         'city_id',
         'type_id'
@@ -55,5 +55,5 @@ class Hotel extends Authenticatable
     {
         return $this->belongsToMany(User::class,HotelReview::class,'hotel_id','user_id');
     }
-    
+
 }

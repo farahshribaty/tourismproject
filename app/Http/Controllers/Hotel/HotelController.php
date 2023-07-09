@@ -56,21 +56,21 @@ class HotelController extends Controller
         ->take(5)
         ->with(['photo'])
         ->get();
-        
+
         $Accessibleroom = $Accessibleroom->makeHidden(['details','created_at','updated_at']);
-    
+
         $Singlerooms = Room::where('room_type','=',4)
         ->take(5)
         ->with(['photo'])
         ->get();
-        
+
         $Singlerooms = $Singlerooms->makeHidden(['details','created_at','updated_at']);
 
         $suiet = Room::where('room_type','=',4)
         ->take(5)
         ->with(['photo'])
         ->get();
-        
+
         $suiet = $suiet->makeHidden(['details','created_at','updated_at']);
 
         return response()->json([
@@ -92,7 +92,7 @@ class HotelController extends Controller
 
        $topRated = $topRated->makeHidden(['email','location','phone_number',
        'details','website_url','created_at','updated_at']);
-       
+
        return response()->json([
             'message'=>"done",
             'Hotels'=> $topRated,
@@ -123,25 +123,25 @@ class HotelController extends Controller
         //
     }
 
-   
+
     public function store(Request $request)
     {
         //
     }
 
-    
+
     public function show(Hotel $hotel)
     {
         //
     }
 
-    
+
     public function edit(Hotel $hotel)
     {
         //
     }
 
-   
+
     public function update(Request $request, Hotel $hotel)
     {
         //

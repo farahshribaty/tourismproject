@@ -30,6 +30,12 @@ class City extends Model
     {
         return $this->hasMany(Attraction::class,'city_id');
     }
+<<<<<<<<< Temporary merge branch 1
+
+    public function country()
+    {
+        return $this->belongsTo(Country::class,'country_id');
+=========
     public function Hotel()
     {
         return $this->hasMany(Hotel::class,'hotel_id');
