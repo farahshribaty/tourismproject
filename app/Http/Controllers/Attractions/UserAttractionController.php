@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Nette\Utils\DateTime;
+use Stevebauman\Location\Facades\Location;
 
 class UserAttractionController extends UserController
 {
@@ -25,24 +26,26 @@ class UserAttractionController extends UserController
      */
     public function index(): JsonResponse             //wrong!
     {
-        $topRated = Attraction::orderBy('rate','desc')
+        $topRated = Attraction::select(['id','city_id','name','rate','num_of_ratings','adult_price','child_price'])
+            ->orderBy('rate','desc')
             ->with(['photo','city'])
             ->take(6)
             ->get();
-        $topRated = $topRated->makeHidden(['email','location','attraction_type_id','phone_number','open_at','close_at','available_days','details','website_url']);
 
-        $paid = Attraction::orderBy('adult_price','desc')
+
+        $paid = Attraction::select(['id','city_id','name','rate','num_of_ratings','adult_price','child_price'])
+            ->orderBy('adult_price','desc')
             ->where('adult_price','>',0)
             ->with(['photo','city'])
             ->take(6)
             ->get();
-        $paid = $paid->makeHidden(['email','location','attraction_type_id','phone_number','open_at','close_at','available_days','details','website_url']);
 
-        $free = Attraction::where('adult_price','=',0)
+
+        $free = Attraction::select(['id','city_id','name','rate','num_of_ratings','adult_price','child_price'])
+            ->where('adult_price','=',0)
             ->with(['photo','city'])
             ->take(6)
             ->get();
-        $free = $free->makeHidden(['email','location','attraction_type_id','phone_number','open_at','close_at','available_days','details','website_url']);
 
 
         return response()->json([
@@ -61,7 +64,6 @@ class UserAttractionController extends UserController
      */
     public function searchForAttractions(Request $request): JsonResponse
     {
-
         $attraction = Attraction::whereHas('city',function($query) use($request){
                 $query->where('name',$request->word);
             })
@@ -94,6 +96,7 @@ class UserAttractionController extends UserController
      */
     public function viewAttractionDetails(Request $request): JsonResponse
     {
+
         $request->validate([
             'attraction_id'=>'required',
         ]);
@@ -127,10 +130,10 @@ class UserAttractionController extends UserController
         $info = $request->validated();
 
         $attraction = Attraction::where('id','=',$info['attraction_id'])->first();
+
         if(!$attraction){
             return $this->error('Attraction not found',400);
         }
-
         if(!$this->checkTicketAvailability($info)){
             return $this->error('We have run out of tickets for this day, please select another one.');
         }
@@ -152,6 +155,8 @@ class UserAttractionController extends UserController
             'points_added'=>$attraction['points_added_when_booking']
         ]);
 
+        // todo: add points to the user and subtract money of him
+
         $final_info = AttractionReservation::where([
             'user_id'=>$request->user()->id,
             'attraction_id'=>$info['attraction_id'],
@@ -159,56 +164,6 @@ class UserAttractionController extends UserController
 
         return $this->success($final_info,'Ticket reserved successfully with the following info:',200);
     }
-
-
-    private function checkMoneyAvailability($info,$user_id): int
-    {
-        $attraction = Attraction::where('id','=',$info['attraction_id'])->first();
-        $moneyNeeded = $info['adults']*$attraction['adult_price'] + $info['children']*$attraction['child_price'];
-
-        if($this->checkWallet($moneyNeeded,$user_id)){
-            return $moneyNeeded;
-        }
-        else return -1;
-    }
-    private function checkTimeAvailability($info): bool
-    {
-        $date = $info['book_date'];
-
-        $new_date = DateTime::createfromformat('Y-m-d',$date);
-        $day = $new_date->format('l');
-        //echo $day;
-
-        $numOfDay = $this->dayNumber($day);
-
-        $attraction = Attraction::where('id','=',$info['attraction_id'])->first();
-        $openDays = $attraction['available_days'];
-
-        $mask = 1<<$numOfDay;
-        if($mask & $openDays) return true;
-        else return false;
-    }
-    private function checkTicketAvailability($info): bool
-    {
-        $inSameDays = AttractionReservation::where('book_date','=',$info['book_date'])->get();
-
-        $child = 0;
-        $adult = 0;
-
-        foreach($inSameDays as $inSameDay) {
-            $child += $inSameDay['children'];
-            $adult += $inSameDay['adults'];
-        }
-        $attraction = Attraction::where('id','=',$info['attraction_id'])->first();
-        $childCapacity = $attraction['child_ability_per_day'];
-
-        if($child+$info['children']>$attraction['child_ability_per_day']) return false;
-
-        if($adult+$info['adults']>$attraction['adult_ability_per_day']) return false;
-
-        return true;
-    }
-
 
     /**
      * Sending Reviews For Some Attraction
@@ -272,5 +227,62 @@ class UserAttractionController extends UserController
             'status'=>true,
             'message'=>'review has been sent successfully',
         ]);
+    }
+
+
+    private function checkMoneyAvailability($info,$user_id): int
+    {
+        $attraction = Attraction::where('id','=',$info['attraction_id'])->first();
+        $moneyNeeded = $info['adults']*$attraction['adult_price'] + $info['children']*$attraction['child_price'];
+
+        if($this->checkWallet($moneyNeeded,$user_id)){
+            return $moneyNeeded;
+        }
+        else return -1;
+    }
+    private function checkTimeAvailability($info): bool
+    {
+        $date = $info['book_date'];
+
+        $new_date = DateTime::createfromformat('Y-m-d',$date);
+        $day = $new_date->format('l');
+        //echo $day;
+
+        $numOfDay = $this->dayNumber($day);
+
+        $attraction = Attraction::where('id','=',$info['attraction_id'])->first();
+        $openDays = $attraction['available_days'];
+
+        $mask = 1<<$numOfDay;
+        if($mask & $openDays) return true;
+        else return false;
+    }
+    private function checkTicketAvailability($info): bool
+    {
+        $inSameDays = AttractionReservation::where('book_date','=',$info['book_date'])->get();
+
+        $child = 0;
+        $adult = 0;
+
+        foreach($inSameDays as $inSameDay) {
+            $child += $inSameDay['children'];
+            $adult += $inSameDay['adults'];
+        }
+        $attraction = Attraction::where('id','=',$info['attraction_id'])->first();
+        $childCapacity = $attraction['child_ability_per_day'];
+
+        if($child+$info['children']>$attraction['child_ability_per_day']) return false;
+
+        if($adult+$info['adults']>$attraction['adult_ability_per_day']) return false;
+
+        return true;
+    }
+
+
+    public function city(Request $request)
+    {
+        $ip = $request->ip();
+        $data = Location::get('178.52.233.205')->countryName;
+        return $data;
     }
 }

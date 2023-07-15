@@ -18,7 +18,7 @@ Route::post('admin/addRoomPhoto',[AdminController::class, 'addRoomPhotos']);
 
 //Hotel user Routes:
 //Route::post('user/register',[UserController::class, 'Register']);
-Route::post('user/login',[UserController::class, 'Login']);
+//Route::post('user/login',[UserController::class, 'Login']);
 Route::post('user/addReview',[UserController::class, 'addReview']);
 
 Route::get('TopRated',[HotelController::class, 'TopRated']);
@@ -26,6 +26,9 @@ Route::get('ShowHotelTypes',[HotelController::class, 'ShowHotelTypes']);
 Route::get('ShowRoomsTypes',[HotelController::class, 'ShowRoomsTypes']);
 Route::get('ShowHotelRooms',[HotelController::class, 'ShowHotelRooms']);
 Route::get('ShowAllHotel',[HotelController::class, 'ShowALLHotel']);
+
+// this is mohamad code:
+//Route::post('get')
 
 
 

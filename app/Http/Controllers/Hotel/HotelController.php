@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Hotel;
 use App\Models\HotelReview;
 use App\Models\Room;
+use App\Models\RoomType;
 use Illuminate\Http\Request;
 
 class HotelController extends Controller
@@ -37,33 +38,35 @@ class HotelController extends Controller
 
     public function ShowRoomsTypes() //done
     {
-        $topRated = Room::orderBy('rate','desc')
-        ->take(6)
-        ->get();
-        $topRated = $topRated->makeHidden(['details','created_at','updated_at']);
 
-        $NonSmokingroom = Room::where('room_type','=',9)
-        ->take(5)
-        ->get();
-        $NonSmokingroom = $NonSmokingroom->makeHidden(['details','created_at','updated_at']);
+        $topRated = Room::withAllInformation()
+            ->orderBy('hotels.rate','desc')
+            ->take(6)
+            ->get();
 
-        $Accessibleroom = Room::where('room_type','=',6)
-        ->take(5)
-        ->get();
 
-        $Accessibleroom = $Accessibleroom->makeHidden(['details','created_at','updated_at']);
+        $NonSmokingroom = Room::withAllInformation()
+            ->where('room_types.name','=','Non-Smoking room')
+            ->take(6)
+            ->get();
 
-        $Singlerooms = Room::where('room_type','=',4)
-        ->take(5)
-        ->get();
 
-        $Singlerooms = $Singlerooms->makeHidden(['details','created_at','updated_at']);
+        $Accessibleroom = Room::withAllInformation()
+            ->where('room_types.name','=','Accessible room')
+            ->take(6)
+            ->get();
 
-        $suiet = Room::where('room_type','=',4)
-        ->take(5)
-        ->get();
 
-        $suiet = $suiet->makeHidden(['details','created_at','updated_at']);
+        $Singlerooms = Room::withAllInformation()
+            ->where('room_types.name','=','Single rooms')
+            ->take(6)
+            ->get();
+
+
+        $suiet = Room::withAllInformation()
+            ->where('room_types.name','=','Suiet')
+            ->take(6)
+            ->get();
 
         return response()->json([
             'status'=>true,

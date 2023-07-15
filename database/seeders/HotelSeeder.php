@@ -40,9 +40,9 @@ class HotelSeeder extends Seeder
             ]);
         }
 
-        $hotel = Hotel::get();
+        $hotels = Hotel::get();
 
-        foreach($hotel as $hotel){
+        foreach($hotels as $hotel){
             HotelPhoto::create([
                 'hotel_id'=>$hotel['id'],
                 'path'=>'http://127.0.0.1:8000/images/hotel/'.'1685730895.jpg',
@@ -50,7 +50,7 @@ class HotelSeeder extends Seeder
         }
         for($i = 0 ; $i<17 ; $i++){
             HotelReview::create([
-                'user_id'=>random_int(1,3),
+                'user_id'=>random_int(1,2),
                 'hotel_id'=>random_int(1,17),
                 'stars'=>random_int(1,5),
                 'comment'=>'this is my comment'

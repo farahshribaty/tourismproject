@@ -46,21 +46,45 @@ class UserController extends Controller
     {
         $data = $request->validated();
 
-        if(Auth::guard('user')->attempt(['email' => $data['email'], 'password' => $data['password']])){
+        $user = User::where('email','=',$request->email)->first();
 
-            $user = User::where('email','=',$request->email)->first();
-            $user['token'] = $user->createToken('MyApp')->accessToken;
-            return response()->json([
-                'success'=>true,
-                'data'=>$user,
-            ],200);
+        if($user){
+//            return $user['password'];
+            if(Hash::check($request->password,$user['password'])){
+                $user['token'] = $user->createToken('MyApp')->accessToken;
+                return response()->json([
+                    'success'=>true,
+                    'data'=>$user,
+                ]);
+            }
+            else{
+                return response()->json([
+                    'success'=>false,
+                    'message'=>'incorrect password',
+                ]);
+            }
         }
         else{
             return response()->json([
                 'success'=>false,
-                'message'=>'incorrect credentials',
-            ],400);
+                'message'=>'email is not valid',
+            ]);
         }
+//        if(Auth::guard('user')->attempt(['email' => $data['email'], 'password' => $data['password']])){
+//
+//            $user = User::where('email','=',$request->email)->first();
+//            $user['token'] = $user->createToken('MyApp')->accessToken;
+//            return response()->json([
+//                'success'=>true,
+//                'data'=>$user,
+//            ],200);
+//        }
+//        else{
+//            return response()->json([
+//                'success'=>false,
+//                'message'=>'incorrect credentials',
+//            ],400);
+//        }
     }
 
     public function logout(Request $request)

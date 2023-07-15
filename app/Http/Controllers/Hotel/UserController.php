@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Hotel;
 
 use App\Http\Controllers\Controller;
+use App\Models\Country;
 use App\Models\Hotel;
 use App\Models\City;
 use App\Models\HotelReview;
@@ -28,18 +29,18 @@ class UserController extends Controller
                 ->symbols()
             ],
              'phone_number'
-            ]);     
-        
+            ]);
+
             $user = new User();
             $user->first_name = $request->first_name;
             $user->last_name = $request->last_name;
             $user->email = $request->email;
             $user->password = bcrypt($request->password);
-            $user->phone_number = $request->phone_number;   
+            $user->phone_number = $request->phone_number;
             $user->save();
 
           $accessToken=$user->createtoken('MyApp',['user'])->accessToken;
-    
+
           return response()->json([
                    'user'=> $user,
                    'access_token'=>$accessToken
@@ -60,13 +61,12 @@ class UserController extends Controller
             $success=$user;
             $success['token']=$user->createtoken('MyApp',['user'])->accessToken;
             return response()->json($success);
-    
         }
         else{
             return response()->json(['error'=>['unauthorized']],401);
         }
     }
-    
+
     public function ShowCities(Request $request) //done
     {
         $cities=City::where('cities.country_id','=',$request->id)
@@ -76,6 +76,24 @@ class UserController extends Controller
         'message' => $cities,
         ]);
     }
+
+    public function ShowCities1(Request $request)
+    {
+        // Find a country by its ID
+        $country = Country::find($request->country_id);
+
+        if (!$country) {
+            // Handle the case where the country ID does not exist
+            return response()->json(['error' => 'Country not found'], 404);
+        }
+
+        // Retrieve all cities in the country
+        $cities = City::where('country_id', $country->id)->get();
+
+        // Return the list of cities as a JSON response
+        return response()->json(['cities' => $cities], 200);
+    }
+
 
     public function searchForHotel(Request $request)
     {

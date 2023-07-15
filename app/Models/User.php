@@ -35,6 +35,9 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'created_at',
+        'updated_at',
+        'email_verified_at',
     ];
 
     /**
@@ -54,5 +57,13 @@ class User extends Authenticatable
     public function HotelReviews()
     {
         return $this->belongsToMany(Hotel::class,HotelReview::class,'user_id','hotel_id');
+    }
+    public function TripReviews()
+    {
+        return $this->belongsToMany(Trip::class,TripReview::class,'user_id','trip_id');
+    }
+
+    public function tripReservations(){
+        return $this->belongsToMany(TripDate::class,TripsReservation::class,'user_id','date_id');
     }
 }
