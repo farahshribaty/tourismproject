@@ -40,35 +40,46 @@ class HotelController extends Controller
 
     public function ShowRoomsTypes() //done
     {
-        $topRated = Room::orderBy('rate','desc')
+        $topRated = Room::orderBy('rate', 'desc')
         ->take(6)
-        ->with(['photo'])
+        ->with(['photo', 'Hotel' => function ($query) {
+            $query->select('id','name', 'location');
+        }])
         ->get();
+
         $topRated = $topRated->makeHidden(['details','created_at','updated_at']);
 
         $NonSmokingroom = Room::where('room_type','=',9)
         ->take(5)
-        ->with(['photo'])
+        ->with(['photo', 'Hotel' => function ($query) {
+            $query->select('id','name', 'location');
+        }])
         ->get();
         $NonSmokingroom = $NonSmokingroom->makeHidden(['details','created_at','updated_at']);
 
         $Accessibleroom = Room::where('room_type','=',6)
         ->take(5)
-        ->with(['photo'])
+        ->with(['photo', 'Hotel' => function ($query) {
+            $query->select('id','name', 'location');
+        }])
         ->get();
 
         $Accessibleroom = $Accessibleroom->makeHidden(['details','created_at','updated_at']);
 
         $Singlerooms = Room::where('room_type','=',4)
         ->take(5)
-        ->with(['photo'])
+        ->with(['photo', 'Hotel' => function ($query) {
+            $query->select('id','name', 'location');
+        }])
         ->get();
 
         $Singlerooms = $Singlerooms->makeHidden(['details','created_at','updated_at']);
 
         $suiet = Room::where('room_type','=',4)
         ->take(5)
-        ->with(['photo'])
+        ->with(['photo', 'Hotel' => function ($query) {
+            $query->select('id','name', 'location');
+        }])
         ->get();
 
         $suiet = $suiet->makeHidden(['details','created_at','updated_at']);

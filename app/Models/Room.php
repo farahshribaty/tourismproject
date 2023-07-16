@@ -10,6 +10,8 @@ use Illuminate\Notifications\Notifiable;
 class Room extends Model
 {
     use HasApiTokens, HasFactory, Notifiable;
+    protected $table='rooms';
+    protected $primaryKey='id';
 
     protected $fillable = [
      'room_type',

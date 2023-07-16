@@ -11,7 +11,6 @@ use Laravel\Passport\HasApiTokens;
 class Hotel extends Authenticatable
 {
     use HasFactory,HasApiTokens,Notifiable;
-    //public $timestamp = false;
     protected $table='hotels';
     protected $primaryKey='id';
 
@@ -49,7 +48,7 @@ class Hotel extends Authenticatable
     }
     public function Room()
     {
-        return $this->hasMany(Room::class,'room_id');
+        return $this->hasMany(Room::class,'hotel_id');
     }
     public function reviews()
     {

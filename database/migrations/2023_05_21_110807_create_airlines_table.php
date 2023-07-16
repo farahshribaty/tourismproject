@@ -13,12 +13,14 @@ return new class extends Migration
     {
         Schema::create('airlines', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('country_id');
             $table->string('name');
             $table->string('email')->unique();
-            $table->string('password');
+            $table->string('location');
             $table->string('phone_number');
+            $table->string('details');
             $table->integer('rate')->nullable();
+            $table->integer('num_of_ratings')->nullable();
+            $table->foreignId('country_id')->constrained('countries');
             $table->timestamps();
         });
     }
