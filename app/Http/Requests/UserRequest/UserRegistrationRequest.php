@@ -27,6 +27,7 @@ class UserRegistrationRequest extends FormRequest
             'last_name'=>'required',
             'email'=>'required|unique:users|email',
             'password'=>'required|confirmed',
+            'phone_number'=>'required',
         ];
     }
 }

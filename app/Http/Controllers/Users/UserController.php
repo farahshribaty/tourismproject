@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Auth\Events\Registered;
 
 class UserController extends Controller
 {
@@ -28,6 +29,25 @@ class UserController extends Controller
         User::create($info);
 
         $user = User::where('email','=',$info['email'])->first();
+        $user['token'] = $user->createToken('MyApp')->accessToken;
+
+        return response()->json([
+            'success'=>'true',
+            'data'=>$user,
+        ],200);
+    }
+
+    public function register1(UserRegistrationRequest $request)
+    {
+        $info = $request->validated();
+        $info['points']=0;
+        $info['wallet']=100000;
+        User::create($info);
+
+        $user = User::where('email','=',$info['email'])->first();
+        // send verification email
+        event(new Registered($user));
+
         $user['token'] = $user->createToken('MyApp')->accessToken;
 
         return response()->json([
