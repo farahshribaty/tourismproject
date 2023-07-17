@@ -20,6 +20,8 @@ class UserSeeder extends Seeder
                 'email'=>fake()->name().'@gmail.com',
                 'password'=>fake()->name(),
                 'phone_number'=>fake()->phoneNumber(),
+                'wallet'=> 2000,
+                'points'=>20,
             ]);
         }
     }

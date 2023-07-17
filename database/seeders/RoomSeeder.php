@@ -27,18 +27,18 @@ class RoomSeeder extends Seeder
         'num_of_ratings'=> random_int(10,3000),
         ]);
         }
-        
+
         for($i = 0 ; $i<30 ; $i++)
         {
             RoomFeatures::create([
-                'room_id'=>random_int(1,18),
+                'room_id'=>random_int(2,18),
                 'features_id'=>random_int(1,5)
                 ]);
         }
 
-        $room = Room::get();
+        $rooms = Room::get();
 
-        foreach($room as $room){
+        foreach($rooms as $room){
             RoomPhotos::create([
                 'room_id'=>$room['id'],
                 'path'=>'http://127.0.0.1:8000/images/room/'.'1685731783.jpg',

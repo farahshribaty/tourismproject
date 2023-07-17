@@ -7,7 +7,7 @@ use App\Models\AttractionReview;
 use App\Models\City;
 use App\Models\Country;
 use App\Models\Facilities;
-use App\Models\Hotels_Facilities;
+use App\Models\HotelsFacilities;
 use App\Models\Types;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
@@ -23,19 +23,27 @@ class DatabaseSeeder extends Seeder
         // \App\Models\City::factory(10)->create();
         // \App\Models\Country::factory(10)->create();
 
+        // country and city
         $this->call(CountrySeeder::class);
         $this->call(CitySeeder::class);
-        $this->call(TypeSeeder::class);
+
+        // user
         $this->call(UserSeeder::class);
-        $this->call(RoomsTypeSeeder::class);
-        $this->call(HotelSeeder::class);
-        $this->call(AttractionSeeder::class);
-        $this->call(AttractionTypeSeeder::class);
+
+        // hotels
+        $this->call(TypeSeeder::class);
         $this->call(FacilitiesSeeder::class);
+        $this->call(HotelSeeder::class);
         $this->call(HotelFacilitiesSeeder::class);
+        $this->call(RoomsTypeSeeder::class);
         $this->call(RoomSeeder::class);
-        $this->call(AirLineSeeder::class);
-        $this->call(FlightsSeeder::class);
+
+        // attractions
+        $this->call(AttractionSeeder::class);
+
+        // trips
+        $this->call(TripSeeder::class);
+
 
     }
 }

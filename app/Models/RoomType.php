@@ -17,9 +17,14 @@ class RoomType extends Model
     protected $fillable = [
         'name',
     ];
-   
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+
     public function Room(){
         return $this->hasMany(Room::class, 'room_id');
     }
-   
+
 }

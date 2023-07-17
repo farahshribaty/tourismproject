@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Hotel;
 use App\Models\HotelReview;
 use App\Models\Room;
+use App\Models\RoomType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -66,23 +67,22 @@ class HotelController extends Controller
 
         $Accessibleroom = $Accessibleroom->makeHidden(['details','created_at','updated_at']);
 
-        $Singlerooms = Room::where('room_type','=',4)
-        ->take(5)
-        ->with(['photo', 'Hotel' => function ($query) {
+        $Singlerooms = Room::withAllInformation()
+            ->where('room_types.name','=','Single rooms')
+            ->take(6)
+            ->with(['photo', 'Hotel' => function ($query) {
             $query->select('id','name', 'location');
         }])
         ->get();
 
-        $Singlerooms = $Singlerooms->makeHidden(['details','created_at','updated_at']);
 
-        $suiet = Room::where('room_type','=',4)
-        ->take(5)
-        ->with(['photo', 'Hotel' => function ($query) {
+        $suiet = Room::withAllInformation()
+            ->where('room_types.name','=','Suiet')
+            ->take(6)
+            ->with(['photo', 'Hotel' => function ($query) {
             $query->select('id','name', 'location');
         }])
         ->get();
-
-        $suiet = $suiet->makeHidden(['details','created_at','updated_at']);
 
         return response()->json([
             'status'=>true,
