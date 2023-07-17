@@ -35,7 +35,7 @@ use Illuminate\Support\Facades\Route;
 //    Route::post('dashboard',[UserLoginController::class, 'userDashboard'])->name('user.dashboard');
 //});
 
-Route::post('register',[UserController::class,'register']);
+Route::post('register',[UserController::class,'register1']);
 Route::post('login',[UserController::class,'login']);
 Route::post('logout',[UserController::class,'logout'])->middleware('auth:user-api');
 
@@ -43,12 +43,12 @@ Route::post('logout',[UserController::class,'logout'])->middleware('auth:user-ap
 Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, '__invoke'])
     ->middleware(['signed', 'throttle:6,1'])
     ->name('verification.verify');
-
-// Resend link to verify email
-Route::post('/email/verify/resend', function (Request $request) {
-    $request->user()->sendEmailVerificationNotification();
-    return back()->with('message', 'Verification link sent!');
-})->middleware(['auth:api', 'throttle:6,1'])->name('verification.send');
+//
+//// Resend link to verify email
+//Route::post('/email/verify/resend', function (Request $request) {
+//    $request->user()->sendEmailVerificationNotification();
+//    return back()->with('message', 'Verification link sent!');
+//})->middleware(['auth:api', 'throttle:6,1'])->name('verification.send');
 
 //Auth::routes([
 //    'verify'=>true,
