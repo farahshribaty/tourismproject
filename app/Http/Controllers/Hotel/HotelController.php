@@ -10,6 +10,8 @@ use App\Models\RoomType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+
+
 class HotelController extends Controller
 {
     public function ShowALLHotel() //done
