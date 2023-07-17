@@ -64,23 +64,46 @@ class UserAttractionController extends UserController
      */
     public function searchForAttractions(Request $request): JsonResponse
     {
-        $attraction = Attraction::whereHas('city',function($query) use($request){
-                $query->where('name',$request->word);
-            })
-            ->orWhereHas('city',function($query) use($request){
-                $query->whereHas('country',function($q) use($request){
-                    $q->where('name',$request->word);
-                });
-            })
-            ->orWhere('name','like','%'.$request->word.'%')
-            ->when($request->price,function($query) use($request){
-                $query->where('adult_price','<=',$request->price);
-            })
-            ->when($request->attraction_type_id,function($query) use($request){
-                $query->where('attraction_type_id','=',$request->attraction_type_id);
-            })
-            ->with(['photo','city'])
-            ->paginate(10);
+//        $attraction = Attraction::whereHas('city',function($query) use($request){
+//                $query->where('name',$request->word);
+//            })
+//            ->orWhereHas('city.country',function($query) use($request){
+//                $query->where('name',$request->word);
+//            })
+//            ->orWhere('name','like','%'.$request->word.'%')                      // this is just working
+//            ->when(isset($request->price),function($query) use($request){
+//                $query->where('adult_price','<=',$request->price);
+//            })
+//            ->when($request->attraction_type_id,function($query) use($request){
+//                $query->where('attraction_type_id','=',$request->attraction_type_id);
+//            });
+//
+//        $attraction = $attraction
+//            ->with(['photo','city'])
+//            ->paginate(10);
+
+
+        $attraction = Attraction::with(['photo', 'city'])
+            ->where(function ($query) use ($request) {
+                $query->where('name', 'like', '%' . $request->word . '%')
+                    ->orWhereHas('city', function ($query) use ($request) {
+                        $query->where('name', $request->word);
+                    })
+                    ->orWhereHas('city.country', function ($query) use ($request) {
+                        $query->where('name', $request->word);
+                    });
+            });
+
+        if (isset($request->price)) {
+            $attraction->where('adult_price', '<=', $request->price);
+        }
+
+        if (isset($request->attraction_type_id)) {
+            $attraction->where('attraction_type_id', $request->attraction_type_id);
+        }
+
+        $attraction = $attraction->paginate(10);
+
 
         return response()->json([
             'success'=>true,
@@ -279,10 +302,10 @@ class UserAttractionController extends UserController
     }
 
 
-    public function city(Request $request)
-    {
-        $ip = $request->ip();
-        $data = Location::get('178.52.233.205')->countryName;
-        return $data;
-    }
+//    public function city(Request $request)
+//    {
+//        $ip = $request->ip();
+//        $data = Location::get('178.52.233.205')->countryName;
+//        return $data;
+//    }
 }
