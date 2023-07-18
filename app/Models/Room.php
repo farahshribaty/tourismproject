@@ -40,9 +40,13 @@ class Room extends Model
     }
     public function HotelReservation()
     {
-        return $this->belongsTo(HotelResevation::class,'hotel_resevations_id');
+        return $this->belongsTo(HotelResevation::class,'hotel_resevations.id');
     }
 
+    public function Reservations()
+    {
+        return $this->hasMany(HotelResevation::class,'room_id');
+    }
 
     // public function scopeWithAllInformation($query){
     //     $query->join('hotels','rooms.hotel_id','=','hotels.id')

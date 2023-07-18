@@ -8,8 +8,8 @@ use App\Models\HotelReview;
 use App\Models\Room;
 use App\Models\RoomType;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
+use Illuminate\Support\Facades\Auth;
 
 
 class HotelController extends Controller
@@ -28,7 +28,7 @@ class HotelController extends Controller
 
     public function ShowHotelTypes() //done
     {
-        
+
         $hotel = Hotel::orderBy('type_id','asc')
         ->take(15)
         ->with(['photo','city'])
@@ -52,6 +52,7 @@ class HotelController extends Controller
             }]);
         }])
         ->get();
+
 
         $topRated = $topRated->makeHidden(['details','created_at','updated_at']);
 
@@ -101,7 +102,7 @@ class HotelController extends Controller
         ->get();
 
         $suiet = $suiet->makeHidden(['details','created_at','updated_at']);
-    
+
 
         return response()->json([
             'status'=>true,
@@ -141,13 +142,13 @@ class HotelController extends Controller
         ->get();
 
         $rooms = $rooms->makeHidden(['details','created_at','updated_at']);
-    
+
         return response()->json([
         'message'=>"done",
         'Room:'=>$rooms
         ]);
     }
-    
+
     public function create()
     {
         //
