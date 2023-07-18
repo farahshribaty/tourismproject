@@ -83,7 +83,7 @@ class UserAttractionController extends UserController
 //            ->paginate(10);
 
 
-        $attraction = Attraction::with(['photo', 'city'])
+        $attractions = Attraction::with(['photo', 'city'])
             ->where(function ($query) use ($request) {
                 $query->where('name', 'like', '%' . $request->word . '%')
                     ->orWhereHas('city', function ($query) use ($request) {
@@ -95,19 +95,31 @@ class UserAttractionController extends UserController
             });
 
         if (isset($request->price)) {
-            $attraction->where('adult_price', '<=', $request->price);
+            $attractions->where('adult_price', '<=', $request->price);
         }
 
         if (isset($request->attraction_type_id)) {
-            $attraction->where('attraction_type_id', $request->attraction_type_id);
+            $attractions->where('attraction_type_id', $request->attraction_type_id);
         }
+        $attractions = $attractions->paginate(10);
 
-        $attraction = $attraction->paginate(10);
+        // converting 'open_at' and 'close_at' to hours and minutes:
+
+        foreach($attractions as $attraction){
+            $date1 = $attraction['open_at'];
+            $date2 = $attraction['close_at'];
+
+            $new_date1 = DateTime::createfromformat('Y-m-d H:i:s',$date1);
+            $new_date2 = DateTime::createfromformat('Y-m-d H:i:s',$date2);
+
+            $attraction['open_at'] = $new_date1->format('H:i');
+            $attraction['close_at'] = $new_date2->format('H:i');
+        }
 
 
         return response()->json([
             'success'=>true,
-            'data'=>$attraction,
+            'data'=>$attractions,
         ],200);
     }
 

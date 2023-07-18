@@ -2,10 +2,8 @@
 
 use App\Http\Controllers\Attractions\AttractionAdminController;
 use App\Http\Controllers\Attractions\UserAttractionController;
-use App\Http\Controllers\HotelController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\DoctorLoginController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -38,3 +36,5 @@ Route::group( ['prefix' => 'attraction','middleware' => ['auth:attraction-api'] 
 
     Route::post('dashboard',[AttractionAdminController::class, 'dashboard'])->name('attraction.dashboard');
 });
+
+Route::post('attraction/addingAttraction',[\App\Http\Controllers\Attractions\AdminAttractionController::class,'addAttraction']);

@@ -22,8 +22,8 @@ return new class extends Migration
             $table->string('phone_number');
             $table->integer('rate')->nullable();
             $table->integer( 'num_of_ratings')->nullable();
-            $table->integer('open_at');
-            $table->integer('close_at');
+            $table->dateTime('open_at');
+            $table->dateTime('close_at');
             $table->integer('available_days');
             $table->integer('child_ability_per_day');
             $table->integer('adult_ability_per_day');

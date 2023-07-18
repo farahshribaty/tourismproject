@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\City;
+use App\Models\Country;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -13,17 +14,20 @@ class CitySeeder extends Seeder
      */
     public function run(): void
     {
-        City::create([
-            'name'=>'damascus',
-            'country_id'=>'1',
-        ]);
-        City::create([
-            'name'=>'cairo',
-            'country_id'=>'2',
-        ]);
-        City::create([
-            'name'=>'istanbul',
-            'country_id'=>'3',
-        ]);
+        // adding cities
+
+        $cities = [
+            'damascus', 'cairo', 'istanbul'
+        ];
+        $Countries = Country::get();
+
+        $idx=0;
+        foreach($Countries as $country){
+            City::create([
+                'name'=>$cities[$idx],
+                'country_id'=>$country['id'],
+            ]);
+            $idx++;
+        }
     }
 }
