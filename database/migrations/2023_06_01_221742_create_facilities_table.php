@@ -13,13 +13,14 @@ return new class extends Migration
     {
         Schema::create('facilities', function (Blueprint $table) {
             $table->id();
-            $table->boolean('Wifi');
-            $table->boolean('Parking');
-            $table->boolean('Transportation');
-            $table->boolean('Formalization');
-            $table->string('activities');
-            $table->string('meals');
+//            $table->boolean('Wifi');
+//            $table->boolean('Parking');
+//            $table->boolean('Transportation');
+//            $table->boolean('Formalization');
+//            $table->string('activities');
+//            $table->string('meals');
            // $table->enum('Meals',['Breakfast,Lunch,Dinner,Other']);
+            $table->string('name');
             $table->timestamps();
         });
     }

@@ -22,7 +22,7 @@ Route::get('ShowHotelTypes',[HotelController::class, 'ShowHotelTypes']);
 Route::get('ShowRoomsTypes',[HotelController::class, 'ShowRoomsTypes']);
 Route::get('ShowAllHotel',[HotelController::class, 'ShowALLHotel']);
 Route::post('ShowHotelRooms',[HotelController::class, 'ShowHotelRooms']);
-Route::post('Hotelsearch',[UserController::class, 'Hotelsearch']);
+Route::post('hotel/Hotelsearch',[UserController::class, 'Hotelsearch']);
 
 
 // trial root:
