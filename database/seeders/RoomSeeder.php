@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use App\Models\Room;
 use App\Models\RoomFeatures;
 use App\Models\RoomPhotos;
+use App\Models\HotelResevation;
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -42,6 +44,20 @@ class RoomSeeder extends Seeder
             RoomPhotos::create([
                 'room_id'=>$room['id'],
                 'path'=>'http://127.0.0.1:8000/images/room/'.'1685731783.jpg',
+            ]);
+        }
+        for($i = 0 ; $i<40; $i++){
+            HotelResevation::create([
+                'user_id'=>random_int(1,15),
+                'hotel_id'=>random_int(1,17),
+                'room_id'=>random_int(1,17),
+                'check_in'=>Carbon::now()->addDays(random_int(1, 30))->setTime(random_int(0, 23),
+                random_int(0, 59), random_int(0, 59)),
+                'check_out'=>Carbon::now()->addDays(random_int(1, 30))->setTime(random_int(0, 23),
+                random_int(0, 59), random_int(0, 59)),
+                'adults'=>random_int(1,20),
+                'children'=>random_int(1,10),
+                'price'=>random_int(1,10)
             ]);
         }
     }

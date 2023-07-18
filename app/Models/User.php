@@ -67,4 +67,8 @@ class User extends Authenticatable implements MustVerifyEmail
     public function tripReservations(){
         return $this->belongsToMany(TripDate::class,TripsReservation::class,'user_id','date_id');
     }
+    public function HotelReservation()
+    {
+        return $this->hasMany(HotelResevation::class,'user_id','hotel_id');
+    }
 }

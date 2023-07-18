@@ -95,6 +95,54 @@ class UserController extends Controller
     }
 
 
+    public function Hotelsearch(Request $request)
+    {
+        $query = Hotel::query();
+
+        if ($request->has('name')) {
+            $query->where('name', 'like', '%' . $request->input('name') . '%');
+        }
+
+        else if ($request->has('location')) {
+            $query->where('location', 'like', '%' . $request->input('location') . '%');
+        }
+
+        if ($request->has('num_of_rooms')) {
+            $query->where('num_of_rooms', '>=', $request->input('num_of_rooms'));
+        }
+
+        if ($request->has('check_in') && $request->has('check_out')) {
+            $checkIn = $request->input('check_in');
+            $checkOut = $request->input('check_out');
+
+            $query->whereDoesntHave('hotel_resevations', function ($query) use ($checkIn, $checkOut) {
+                $query->where(function ($query) use ($checkIn, $checkOut) {
+                    $query->where('hotel_resevations.check_in', '>=', $checkIn)
+                          ->where('hotel_resevations.check_in', '<=', $checkOut);
+                })->orWhere(function ($query) use ($checkIn, $checkOut) {
+                    $query->where('hotel_resevations.check_out', '>=', $checkIn)
+                          ->where('hotel_resevations.check_out', '<=', $checkOut);
+                })->orWhere(function ($query) use ($checkIn, $checkOut) {
+                    $query->where('hotel_resevations.check_in', '<=', $checkIn)
+                          ->where('hotel_resevations.check_out', '>=', $checkOut);
+                });
+            });
+        }
+        
+        if ($request->has('rate')) {                    //(filter:rate)
+            $query->where('rate', '=', $request->input('rate'));
+        }
+
+        $hotels = $query
+       ->with(['photo','city','city.country','type'])
+       ->paginate(10);
+
+        return response()->json([
+            'success'=>true,
+            'data'=>$hotels,
+        ],200);
+    }
+
     public function searchForHotel(Request $request)
     {
         $hotel = Hotel::whereHas('city',function($query) use($request){

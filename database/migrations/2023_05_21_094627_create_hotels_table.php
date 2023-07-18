@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('location');
             $table->string('phone_number');
             $table->text('details');
+            $table->integer('num_of_rooms');
             $table->integer('rate')->nullable();
             $table->integer('num_of_ratings')->nullable();
             $table->string('website_url')->nullable();

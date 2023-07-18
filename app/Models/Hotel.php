@@ -20,6 +20,7 @@ class Hotel extends Authenticatable
         'location',
         'phone_number',
         'details',
+        'num_of_rooms',
         'rate',
         'num_of_ratings',
         'website_url',
