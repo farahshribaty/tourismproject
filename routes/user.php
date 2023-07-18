@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserLoginController;
+use App\Http\Controllers\Users\ForgotPasswordController;
 use App\Http\Controllers\Users\UserController;
 use App\Http\Controllers\Users\VerifyEmailController;
 use Illuminate\Http\Request;
@@ -43,15 +44,17 @@ Route::post('logout',[UserController::class,'logout'])->middleware('auth:user-ap
 Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, '__invoke'])
     ->middleware(['signed', 'throttle:6,1'])
     ->name('verification.verify');
-//
-//// Resend link to verify email
-//Route::post('/email/verify/resend', function (Request $request) {
-//    $request->user()->sendEmailVerificationNotification();
-//    return back()->with('message', 'Verification link sent!');
-//})->middleware(['auth:api', 'throttle:6,1'])->name('verification.send');
 
-//Auth::routes([
-//    'verify'=>true,
-//]);
 
-//hello world
+// Reset password
+//Route::post('forget-password', [ForgotPasswordController::class, 'submitForgetPasswordForm'])->name('forget.password.post');
+//Route::get('reset-password/{token}', [ForgotPasswordController::class, 'showResetPasswordForm'])->name('reset.password.get');
+//Route::post('reset-password', [ForgotPasswordController::class, 'submitResetPasswordForm'])->name('reset.password.post');
+
+Route::group(['middleware' => ['web']], function () {
+    Route::get('forget-password', [ForgotPasswordController::class, 'showForgetPasswordForm'])->name('forget.password.get');
+    Route::post('forget-password', [ForgotPasswordController::class, 'submitForgetPasswordForm'])->name('forget.password.post');
+    Route::get('reset-password/{token}', [ForgotPasswordController::class, 'showResetPasswordForm'])->name('reset.password.get');
+    Route::post('reset-password', [ForgotPasswordController::class, 'submitResetPasswordForm'])->name('reset.password.post');
+
+});

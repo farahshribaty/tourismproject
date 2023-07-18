@@ -9,6 +9,7 @@ use App\Models\HotelReview;
 use App\Models\Room;
 use App\Models\RoomType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class HotelController extends Controller
 {
@@ -38,6 +39,22 @@ class HotelController extends Controller
 
     public function ShowRoomsTypes() //done
     {
+
+//        $data = Room::select(['cities.id as city_id',DB::raw('SUM(rooms.id) as room_id_sum')])
+//        ->join('hotels','rooms.hotel_id','=','hotels.id')
+//        ->join('room_types','room_types.id','=','rooms.room_type')
+//        ->join('cities','hotels.city_id','=','cities.id')
+//        ->join('countries','countries.id','=','cities.country_id')
+//        ->join('room_photos','room_photos.room_id','=','rooms.id')
+//            ->groupBy(['cities.id'])->get();
+//
+//
+//        $data = Order::select(['orders.order_data',DB::raw('SUM(order_products.quantity) as all_quantity')])
+//            ->join('order_lists','orders.OrderList_id','=','order_lists.id')
+//            ->join('order_products','order_lists.id','=','order_products.OrderList_id')
+//            ->groupBy('orders.order_date')->get();
+//
+//        return $data;
 
         $topRated = Room::withAllInformation()
             ->orderBy('hotels.rate','desc')
