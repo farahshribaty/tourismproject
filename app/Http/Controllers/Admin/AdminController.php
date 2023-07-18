@@ -8,7 +8,6 @@ use App\Models\City;
 use App\Models\Hotel;
 use Illuminate\Support\Facades\DB;
 use Dotenv\Validator;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Http\Request;
@@ -37,7 +36,7 @@ class AdminController extends Controller
         $admin->first_name = $request->first_name;
         $admin->last_name = $request->last_name;
         $admin->email = $request->email;
-        $admin->password =bcrypt($request->password);
+        $admin->password =$request->password;  //should add bcrypt() but it didn;t eork on the login bcuz of it
         $admin->phone_number = $request->phone_number;
 
         $admin->save();
@@ -49,87 +48,36 @@ class AdminController extends Controller
                    'access_token'=>$accessToken
             ]);
     }
-
-    public function AdminLogin(Request $request) //mo zapet
-    {
+    public function AdminLogin(Request $request) //MAin Admin Login
+    { 
         $request->validate([
+
             'email'=>'required|email',
             'password'=>'required',
         ]);
-        $auth = Auth::guard('admin');
-        return response()->json([
-            'status'=>$auth->setUser(['email'=>$request->email,'password'=>$request->password])
-        ]);
+        $admin=Admin::where('email',$request->email)->first();
 
-
-        //$credentials=request(['email','password']);
-//        if(auth()->guard('admin')->Attempt($request->only('email','password')))
-//        {
-//            config(['auth.guards.api.provider'=>'admin']);
-//            $admin=Admin::query()->select('admins.*')->find(auth()->guard('admin')->user()['id']);
-//            $success=$admin;
-//            $success['token']=$admin->createtoken('MyApp',['admin'])->accessToken;
-//            return response()->json($success);
-//
-//
-//        }
-//        else{
-//            $admin=Admin::query()->select('admins.*');
-//            return response()->json([
-//                $admin,
-//                ]);
-//
-//            }
-
-    }
-
-    public function CreateHotel(Request $request) //done
-    {
-        $request->validate([
-            'name'=>['required','max:55'],
-            'email'=>['email','required','unique:hotels'],
-            'password'=>[
-                'required',
-               'confirmed',
-               password::min(8)
-                ->letters()
-                ->numbers()
-                ->symbols()
-             ]
+        if(!$admin)
+        {
+            return 'user not found';
+        }
+        if($admin['password']==$request->password)
+        {
+            Auth::login($admin);
+            $hotel['token']=$admin->createtoken('MyApp')->accessToken;
+            return response([
+                'message'=>'admin loged in',
+                'admin'=>$admin
             ]);
 
-
-            $hotel = new Hotel();
-            $hotel->name = $request->name;
-            $hotel->email = $request->email;
-            $hotel->password = bcrypt($request->password);
-
-            $hotel->save();
-
-          $accessToken=$hotel->createtoken('MyApp',['hotel'])->accessToken;
-
-          return response()->json([
-                   'hotel'=> $hotel,
-                   'access_token'=>$accessToken
-            ]);
+        }
+        else
+        {
+            return 'password not found';
+        }
+        
     }
-
-//    public function AddCountry(Request $request){
-//        if(auth()->guard('admin')->attempt($request->only('email','password')))
-//        {
-//            config(['auth.guards.api.provider'=>'admin']);
-//            $admin=Admin::query()->select('admins.*')->find(auth()->guard('admin'));
-//            $success=$admin;
-//            $success['token']=$admin->createtoken('MyApp',['admin'])->accessToken;
-//            return response()->json($success);
-//        }
-//        else{
-//            return response()->json(['error'=>['unauthorized']],401);
-//        }
-//    }
-
-
-    public function AddCountry(Request $request) //done
+    public function AddCountry(Request $request)
     {
         $request->validate([
             'name'=>'required',
@@ -144,46 +92,47 @@ class AdminController extends Controller
             'message'=>"country added successfuly"
         ]);
     }
-
-    public function AddCity(Request $request,$id) //done
+    public function AddCity(Request $request) //done
     {
-       //$id=Country::where($id)->get();
-        $id=DB::table('countries')
-        ->where('countries.id','=',$id)
-        ->get();
-        //   $request->validate([
-        //   'name'=>'required',
-        //   'id'
-        //         ]);
+        // Find a country by its ID
+        // $country = Country::find($request->country_id);
 
-        $city =new City();
+        $country = Country::where('id', $request->country_id)->first();
+
+        if (!$country) {
+            // Handle the case where the country ID does not exist
+            return response()->json(['error' => 'Country not found'], 404);
+        }
+
+        // Add a new city to the country
+        $city = new City;
         $city->name = $request->name;
-        $city->country_id =$id[0]->id;
+        $city->country_id = $country->id;
         $city->save();
 
+        // Return a response indicating success
         return response()->json([
             'city'=> $city,
-            'message'=>"city added successfuly"
-     ]);
+            'message' => 'City added to country'], 200);
 
     }
-
-    public function store(Request $request)
-    {
-        //
-    }
-
     //this should work for users..:
-    public function ShowCities(Request $request,$id) //done..select a certain country
+    public function ShowCities(Request $request) 
     {
-        $cities=City::where('cities.country_id','=',$id)
-        ->get();
+        // Find a country by its ID
+        $country = Country::find($request->country_id);
 
-         return response()->json([
-        'message' => $cities,
-        ]);
+        if (!$country) {
+            // Handle the case where the country ID does not exist
+            return response()->json(['error' => 'Country not found'], 404);
+        }
+
+        // Retrieve all cities in the country
+        $cities = City::where('country_id', $country->id)->get();
+
+        // Return the list of cities as a JSON response
+        return response()->json(['cities' => $cities], 200);
     }
-
     public function edit(Admin $admin)
     {
         //

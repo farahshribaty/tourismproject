@@ -17,63 +17,62 @@ class UserController extends Controller
     public function Register(Request $request)
     {
         $request->validate([
-            'first_name'=>['required','max:55'],
-            'last_name'=>['required','max:55'],
-            'email'=>['email','required'/*,'unique:users'*/],
-            'password'=>[
+            'first_name' => ['required', 'max:55'],
+            'last_name' => ['required', 'max:55'],
+            'email' => ['email', 'required'/*,'unique:users'*/],
+            'password' => [
                 'required',
-               'confirmed',
-               password::min(8)
-                ->letters()
-                ->numbers()
-                ->symbols()
+                'confirmed',
+                password::min(8)
+                    ->letters()
+                    ->numbers()
+                    ->symbols()
             ],
-             'phone_number'
-            ]);
+            'phone_number'
+        ]);
 
-            $user = new User();
-            $user->first_name = $request->first_name;
-            $user->last_name = $request->last_name;
-            $user->email = $request->email;
-            $user->password = bcrypt($request->password);
-            $user->phone_number = $request->phone_number;
-            $user->save();
+        $user = new User();
+        $user->first_name = $request->first_name;
+        $user->last_name = $request->last_name;
+        $user->email = $request->email;
+        $user->password = bcrypt($request->password);
+        $user->phone_number = $request->phone_number;
+        $user->save();
 
-          $accessToken=$user->createtoken('MyApp',['user'])->accessToken;
+        $accessToken = $user->createtoken('MyApp', ['user'])->accessToken;
 
-          return response()->json([
-                   'user'=> $user,
-                   'access_token'=>$accessToken
-            ]);
+        return response()->json([
+            'user' => $user,
+            'access_token' => $accessToken
+        ]);
     }
 
     public function Login(Request $request)
     {
         $request->validate([
 
-            'email'=>'required|email',
-            'password'=>'required',
+            'email' => 'required|email',
+            'password' => 'required',
         ]);
 
-        if(auth()->guard('user')->attempt($request->only('email','password'))){
-            config(['auth.guards.api.provider'=>'user']);
-            $user=User::query()->select('users.*')->find(auth()->guard('user')->user()['id']);
-            $success=$user;
-            $success['token']=$user->createtoken('MyApp',['user'])->accessToken;
+        if (auth()->guard('user')->attempt($request->only('email', 'password'))) {
+            config(['auth.guards.api.provider' => 'user']);
+            $user = User::query()->select('users.*')->find(auth()->guard('user')->user()['id']);
+            $success = $user;
+            $success['token'] = $user->createtoken('MyApp', ['user'])->accessToken;
             return response()->json($success);
-        }
-        else{
-            return response()->json(['error'=>['unauthorized']],401);
+        } else {
+            return response()->json(['error' => ['unauthorized']], 401);
         }
     }
 
     public function ShowCities(Request $request) //done
     {
-        $cities=City::where('cities.country_id','=',$request->id)
-        ->get();
+        $cities = City::where('cities.country_id', '=', $request->id)
+            ->get();
 
-         return response()->json([
-        'message' => $cities,
+        return response()->json([
+            'message' => $cities,
         ]);
     }
 
@@ -94,6 +93,56 @@ class UserController extends Controller
         return response()->json(['cities' => $cities], 200);
     }
 
+
+    public function Hotelsearch(Request $request)
+    {
+        $query = Hotel::query();
+
+        if ($request->has('name')) {
+            $query->where('name', 'like', '%' . $request->input('name') . '%');
+        } else if ($request->has('location')) {
+            $query->where('location', 'like', '%' . $request->input('location') . '%');
+        }
+
+        if ($request->has('num_of_rooms')) {
+            $query->where('num_of_rooms', '>=', $request->input('num_of_rooms'));
+        }
+
+        if ($request->has('check_in') && $request->has('check_out')) {
+            $checkIn = $request->input('check_in');
+            $checkOut = $request->input('check_out');
+
+            $query->whereHas('Room', function ($que) use ($checkIn, $checkOut) {
+                $que->whereDoesntHave('Reservations', function ($q) use ($checkIn, $checkOut) {
+                    $q->where('hotel_resevations.check_in', '<=', $checkOut)
+                        ->Where('hotel_resevations.check_out', '>=', $checkIn);
+                });
+            });
+        }
+
+        if ($request->has('rate')) {                    //(filter:rate)
+            $query->where('rate', '=', $request->input('rate'));
+        }
+
+        $hotels = $query
+            ->with(['photo', 'city', 'city.country', 'type'])
+            ->paginate(10);
+
+        return response()->json([
+            'success' => true,
+            'data' => $hotels,
+        ], 200);
+    }
+
+    public function Reservations(Request $request)
+    {
+        $data = Hotel::where('id','=',$request->id)
+            ->with('Room',function($query){
+                $query->with('Reservations');
+            })->get();
+
+        return $data;
+    }
 
     public function searchForHotel(Request $request)
     {

@@ -2,21 +2,23 @@
 
 namespace App\Http\Controllers\Hotel;
 
-
 use App\Http\Controllers\Controller;
 use App\Models\Hotel;
 use App\Models\HotelReview;
 use App\Models\Room;
 use App\Models\RoomType;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+
+use Illuminate\Support\Facades\Auth;
+
 
 class HotelController extends Controller
 {
-
     public function ShowALLHotel() //done
     {
-        $hotel = Hotel::all();
+        $hotel = Hotel::orderBy('type_id','asc')
+        ->with(['photos','city'])
+        ->get();
 
        return response()->json([
         'message'=>"done",
@@ -26,10 +28,12 @@ class HotelController extends Controller
 
     public function ShowHotelTypes() //done
     {
+
         $hotel = Hotel::orderBy('type_id','asc')
         ->take(15)
+        ->with(['photo','city'])
         ->get();
-        $hotel = $hotel->makeHidden(['email','location','phone_number','details','website_url']);
+        $hotel = $hotel->makeHidden(['email','phone_number','details','website_url']);
 
        return response()->json([
         'message'=>"done",
@@ -39,51 +43,66 @@ class HotelController extends Controller
 
     public function ShowRoomsTypes() //done
     {
+        $topRated = Room::orderBy('rate', 'desc')
+        ->take(6)
+        ->with(['photo', 'Hotel' => function ($query) {
+            $query->select('id','name', 'location','city_id')
+            ->with(['City' => function ($q) {
+                $q->select('id','name');
+            }]);
+        }])
+        ->get();
 
-//        $data = Room::select(['cities.id as city_id',DB::raw('SUM(rooms.id) as room_id_sum')])
-//        ->join('hotels','rooms.hotel_id','=','hotels.id')
-//        ->join('room_types','room_types.id','=','rooms.room_type')
-//        ->join('cities','hotels.city_id','=','cities.id')
-//        ->join('countries','countries.id','=','cities.country_id')
-//        ->join('room_photos','room_photos.room_id','=','rooms.id')
-//            ->groupBy(['cities.id'])->get();
-//
-//
-//        $data = Order::select(['orders.order_data',DB::raw('SUM(order_products.quantity) as all_quantity')])
-//            ->join('order_lists','orders.OrderList_id','=','order_lists.id')
-//            ->join('order_products','order_lists.id','=','order_products.OrderList_id')
-//            ->groupBy('orders.order_date')->get();
-//
-//        return $data;
 
-        $topRated = Room::withAllInformation()
-            ->orderBy('hotels.rate','desc')
+        $topRated = $topRated->makeHidden(['details','created_at','updated_at']);
+
+        $NonSmokingroom = Room::where('room_type','=',9)
+        ->take(5)
+        ->with(['photo', 'Hotel' => function ($query) {
+            $query->select('id','name', 'location','city_id')
+            ->with(['City' => function ($q) {
+                $q->select('id','name');
+            }]);
+        }])
+        ->get();
+        $NonSmokingroom = $NonSmokingroom->makeHidden(['details','created_at','updated_at']);
+
+        $Accessibleroom = Room::where('room_type','=',6)
+        ->take(5)
+        ->with(['photo', 'Hotel' => function ($query) {
+            $query->select('id','name', 'location','city_id')
+            ->with(['City' => function ($q) {
+                $q->select('id','name');
+            }]);
+        }])
+        ->get();
+
+        $Accessibleroom = $Accessibleroom->makeHidden(['details','created_at','updated_at']);
+
+        $Singlerooms = Room::where('room_type','=',4)
             ->take(6)
-            ->get();
+            ->with(['photo', 'Hotel' => function ($query) {
+                $query->select('id','name', 'location','city_id')
+                ->with(['City' => function ($q) {
+                    $q->select('id','name');
+                }]);
+        }])
+        ->get();
 
+        $Singlerooms = $Singlerooms->makeHidden(['details','created_at','updated_at']);
 
-        $NonSmokingroom = Room::withAllInformation()
-            ->where('room_types.name','=','Non-Smoking room')
+        $suiet = Room::where('room_type','=',2)
             ->take(6)
-            ->get();
+            ->with(['photo', 'Hotel' => function ($query) {
+                $query->select('id','name', 'location','city_id')
+                ->with(['City' => function ($q) {
+                    $q->select('id','name');
+                }]);
+        }])
+        ->get();
 
+        $suiet = $suiet->makeHidden(['details','created_at','updated_at']);
 
-        $Accessibleroom = Room::withAllInformation()
-            ->where('room_types.name','=','Accessible room')
-            ->take(6)
-            ->get();
-
-
-        $Singlerooms = Room::withAllInformation()
-            ->where('room_types.name','=','Single rooms')
-            ->take(6)
-            ->get();
-
-
-        $suiet = Room::withAllInformation()
-            ->where('room_types.name','=','Suiet')
-            ->take(6)
-            ->get();
 
         return response()->json([
             'status'=>true,
@@ -98,7 +117,7 @@ class HotelController extends Controller
     public function TopRated() //hotels /done
     {
         $topRated = Hotel::orderBy('rate','desc')
-        ->with(['city'])
+        ->with(['photo','city'])
         ->take(6)
         ->get();
 
@@ -112,23 +131,22 @@ class HotelController extends Controller
 
     }
 
-    public function ShowHotelRooms(Request $request) //params not body
+    public function ShowHotelRooms(Request $request) //done
     {
         $hotel_id = $request->hotel_id;
-        $room = Room::where('hotel_id','=',$hotel_id)
-        ->get();
-        $room = $room->makeHidden(['details','created_at','updated_at']);
 
+        $rooms = Room::select('rooms.*', 'hotels.location','hotels.city_id')
+        ->join('hotels', 'rooms.hotel_id', '=', 'hotels.id')
+        ->where('rooms.hotel_id', '=', $hotel_id)
+        ->with(['photo'])
+        ->get();
+
+        $rooms = $rooms->makeHidden(['details','created_at','updated_at']);
 
         return response()->json([
         'message'=>"done",
-        'Rooms'=> $room,
+        'Room:'=>$rooms
         ]);
-    }
-
-    public function index()
-    {
-        //
     }
 
     public function create()

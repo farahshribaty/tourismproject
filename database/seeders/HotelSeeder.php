@@ -4,8 +4,10 @@ namespace Database\Seeders;
 
 use App\Models\Hotel;
 use App\Models\HotelPhoto;
+use App\Models\HotelResevation;
 use App\Models\HotelReview;
 use App\Models\Room;
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -31,9 +33,10 @@ class HotelSeeder extends Seeder
                 'location'=>$locations[$i%3],
                 'phone_number'=> random_int(11111,99999),
                 'details'=>$names[$i].' is a beautiful hotel to stay in, with its wonderful scenes and perfect service, you will get best experience!',
+                'num_of_rooms'=>random_int(1,20),
                 'rate'=> random_int(1,5),
                 'num_of_ratings'=> random_int(10,3000),
-               // 'photo'=>'http://127.0.0.1:8000/images/hotel/'.'1685138340.jpg',
+                // 'photo' =>'http://127.0.0.1:8000/images/hotel/'.'1685138340.jpg',
                 'website_url'=>'https://hotel.com',
                 'city_id'=>random_int(1,3),
                 'type_id'=>random_int(1,5),

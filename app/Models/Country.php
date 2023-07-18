@@ -28,4 +28,9 @@ class Country extends Model
     {
         return $this->hasMany(City::class,'cities');
     }
+
+    public function country()
+    {
+        return $this->hasMany(Flights::class,'flights');
+    }
 }

@@ -8,13 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 
-class Hotel extends Model
+class Hotel extends Authenticatable
 {
-    use HasFactory;
-    //public $timestamp = false;
-
-    // protected $table='hotels';
-    // protected $primaryKey='id';
+    use HasFactory,HasApiTokens,Notifiable;
+    protected $table='hotels';
+    protected $primaryKey='id';
 
     protected $fillable = [
         'name',
@@ -22,6 +20,7 @@ class Hotel extends Model
         'location',
         'phone_number',
         'details',
+        'num_of_rooms',
         'rate',
         'num_of_ratings',
         'website_url',
@@ -40,7 +39,7 @@ class Hotel extends Model
     public function City(){
         return $this->belongsTo(City::class, 'city_id');
     }
-    public function photos()
+    public function photo()
     {
         return $this->hasMany(HotelPhoto::class,'hotel_id');
     }
@@ -50,7 +49,7 @@ class Hotel extends Model
     }
     public function Room()
     {
-        return $this->hasMany(Room::class,'room_id');
+        return $this->hasMany(Room::class,'hotel_id');
     }
     public function reviews()
     {

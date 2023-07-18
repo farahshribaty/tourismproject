@@ -4,24 +4,26 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 
-class Airline extends Model
+class Airline extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory,HasApiTokens,Notifiable;
+    protected $table='airlines';
+    protected $primaryKey='id';
 
     protected $fillable = [
         'name',
         'email',
-        'password',
+        'location',
         'phone_number',
         'rate',
-        'city_id',
+        'country_id',
     ];
 
-    protected $hidden = [
-        'password',
-    ];
+    public function flights()
+    {
+        return $this->hasMany(Flight::class);
+    }
 }

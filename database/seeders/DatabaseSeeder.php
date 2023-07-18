@@ -44,6 +44,12 @@ class DatabaseSeeder extends Seeder
         // trips
         $this->call(TripSeeder::class);
 
+        //airline 
+        $this->call(AirLineSeeder::class);
+        
+        //flights
+        $this->call(FlightsSeeder::class);
+
 
     }
 }

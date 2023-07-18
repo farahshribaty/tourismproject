@@ -11,6 +11,8 @@ use Laravel\Passport\HasApiTokens;
 class City extends Model
 {
     use HasFactory,HasApiTokens,Notifiable;
+    protected $table='cities';
+    protected $primaryKey='id';
 
     protected $fillable=[
         'name','country_id'
@@ -30,10 +32,9 @@ class City extends Model
     {
         return $this->hasMany(Attraction::class,'city_id');
     }
-
     public function country()
     {
-        return $this->belongsTo(Country::class, 'country_id');
+        return $this->belongsTo(Country::class,'country_id');
     }
     public function Hotel()
     {
