@@ -7,10 +7,12 @@ use App\Models\Country;
 use App\Models\Hotel;
 use App\Models\City;
 use App\Models\HotelReview;
+use App\Models\Types;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Password;
 
+use function PHPSTORM_META\type;
 
 class UserController extends Controller
 {
