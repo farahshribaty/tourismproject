@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Hotel;
 
 use App\Http\Controllers\Controller;
 use App\Models\Country;
+use App\Models\Facilities;
 use App\Models\Hotel;
 use App\Models\City;
 use App\Models\HotelReview;
@@ -124,6 +125,38 @@ class UserController extends Controller
 
         if ($request->has('rate')) {                    //(filter:rate)
             $query->where('rate', '=', $request->input('rate'));
+        }
+
+        if($request->has('max_price')){
+            $query->whereHas('Room',function($que)use($request){
+                $que->where('price_for_night','<=',$request->max_price);
+            });
+        }
+
+        if($request->has('min_price')){
+            $query->whereHas('Room',function($que)use($request){
+                $que->where('price_for_night','>=',$request->min_price);
+            });
+        }
+
+        // Facilities' Filters
+
+        $facilities = Facilities::get();
+
+        foreach($facilities as $facility){
+            if($request->has($facility['name'])){
+                $query->whereHas('Facilities',function($q)use($facility){
+                    $q->where('name','=',$facility['name']);
+                });
+            }
+        }
+
+        // Types' Filters
+
+        if($request->has('hotel_type')){
+            $query->whereHas('Type',function($que)use($request){
+                $que->where('name','=',$request->hotel_type);
+            });
         }
 
         $hotels = $query

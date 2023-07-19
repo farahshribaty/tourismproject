@@ -22,27 +22,41 @@ class FacilitiesSeeder extends Seeder
         ];
         $meals = ['Breakfast','Lunch','Dinner','Other','snack','child meal'];
 
-       for($i = 0 ; $i<6 ; $i++)
-       {
-         Facilities::create([
-         'Wifi'=>random_int(0,1),
-         'Parking'=>random_int(0,1),
-         'Transportation'=>random_int(0,1),
-         'Formalization'=>random_int(0,1),
-         'activities'=>$activities[$i],
-         'meals'=>$meals[$i]
-         ]);
-         
-         Features::create([
-        'Housekeeping'=>random_int(0,1),
-        'Telephone'=>random_int(0,1),
-        'Wake-up service'=>random_int(0,1),
-        'Private bathrooms'=>random_int(0,1),
-        'Hair dryer'=>random_int(0,1),
-       ]);
-       }
+        $facilities = [
+            'Wifi','Parking','Transportation','Formalization','Meals','Activities'
+        ];
 
-       
-        
+        $features = [
+            'HouseKeeping','Telephone','Television','Wake-up Service','Private Bathrooms','HairDrier',
+        ];
+
+        for($i=0 ; $i<6 ; $i++){
+            Facilities::create([
+                'name'=>$facilities[$i],
+            ]);
+            Features::create([
+                'name'=>$features[$i],
+            ]);
+        }
+
+//       for($i = 0 ; $i<6 ; $i++)
+//       {
+//         Facilities::create([
+//         'Wifi'=>random_int(0,1),
+//         'Parking'=>random_int(0,1),
+//         'Transportation'=>random_int(0,1),
+//         'Formalization'=>random_int(0,1),
+//         'activities'=>$activities[$i],
+//         'meals'=>$meals[$i]
+//         ]);
+//
+//         Features::create([
+//        'Housekeeping'=>random_int(0,1),
+//        'Telephone'=>random_int(0,1),
+//        'Wake-up service'=>random_int(0,1),
+//        'Private bathrooms'=>random_int(0,1),
+//        'Hair dryer'=>random_int(0,1),
+//       ]);
+//       }
     }
 }
