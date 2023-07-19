@@ -1,6 +1,6 @@
 <?php
 
-//use App\Http\Controllers\AdminController;
+//use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AdminController;
 //use App\Http\Controllers\Hotel\AdminController;
 use Illuminate\Http\Request;
@@ -12,7 +12,8 @@ Route::post('adminLogin',[AdminController::class, 'AdminLogin']);
 Route::post('country',[AdminController::class, 'AddCountry']);
 Route::post('city',[AdminController::class, 'AddCity']);
 Route::get('showcity',[AdminController::class, 'ShowCities']);
+Route::get('getAllUsers',[AdminController::class,'getAllUsers']);
 
 Route::group( ['prefix' => 'admin','middleware' => ['auth:admin-api'] ],function(){
-    
+
 });
