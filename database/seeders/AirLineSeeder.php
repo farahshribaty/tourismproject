@@ -24,17 +24,18 @@ class AirLineSeeder extends Seeder
             Fort Worth','Montreal, Quebec','Calgary'
         ];
 
-        for($i = 0 ; $i<17 ; $i++)
+        for($i = 0 ; $i<30 ; $i++)
         {
             Airline::create([
-                'name'=>$names[$i],
-                'email'=>$names[$i].'@email.com',
-                'location'=>$locations[$i%3],
+                'name'=>$names[$i%2],
+                'email'=>$names[$i/2].$i.'@email.com',
+                'location'=>$locations[$i%2],
                 'phone_number'=> random_int(11111,99999),
-                'details'=>$names[$i].': Hope enjoy your flight with us',
+                'details'=>$names[$i%2].': Hope enjoy your flight with us',
                 'rate'=> random_int(1,5),
                 'num_of_ratings'=> random_int(10,3000),
-                'country_id'=>random_int(1,3)
+                'path'=>'http://127.0.0.1:8000/images/airline/'.'0000.jpg',
+                'country_id'=>random_int(1,9)
             ]);
         }
 

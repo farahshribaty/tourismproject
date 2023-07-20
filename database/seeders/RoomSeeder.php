@@ -55,8 +55,8 @@ class RoomSeeder extends Seeder
                 random_int(0, 59), random_int(0, 59)),
                 'check_out'=>Carbon::now()->addDays(random_int(15, 30))->setTime(random_int(0, 23),
                 random_int(0, 59), random_int(0, 59)),
-                'adults'=>random_int(1,20),
-                'children'=>random_int(1,10),
+                'num_of_adults'=>random_int(1,20),
+                'num_of_children'=>random_int(1,10),
                 'price'=>random_int(1,10)
             ]);
         }

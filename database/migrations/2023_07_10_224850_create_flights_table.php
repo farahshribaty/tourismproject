@@ -18,13 +18,8 @@ return new class extends Migration
             $table->foreignId('airline_id')->constrained('airlines');
             $table->foreignId('from')->constrained('countries');
             $table->foreignId('distination')->constrained('countries');
-            $table->integer('carry_on_bag');
-            $table->integer('checked_bag');
-            $table->time('duration');
-            $table->dateTime('departure_time');
-            $table->dateTime('arrival_time');
+            $table->integer('available_weight');
             $table->integer('available_seats');
-            $table->string('flight_class');
             $table->timestamps();
         });
     }

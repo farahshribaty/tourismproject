@@ -19,22 +19,22 @@ class Flights extends Authenticatable
         'airline_id',
         'from',
         'distination',
-        'carry_on_bag',
-        'checked_bag',
-        'duration',
-        'departure_time',
-        'arrival_time',
+        'available_weight',
         'available_seats',
         'flight_class',
     ];
 
     public function airline()
     {
-        return $this->belongsTo(Airline::class);
+        return $this->belongsTo(Airline::class,'airlines_id');
     }
     public function country()
     {
-        return $this->belongsTo(Country::class,'flight_id');
+        return $this->belongsTo(Country::class,'country_id');
+    }
+    public function Flights()
+    {
+        return $this->belongsTo(FlightsTime::class,'flights_id');
     }
 
 }

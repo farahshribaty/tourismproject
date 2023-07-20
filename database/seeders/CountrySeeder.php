@@ -16,7 +16,7 @@ class CountrySeeder extends Seeder
         // adding countries
 
         $countries = [
-            'Syria','Egypt','Turkey'
+            'Syria','Egypt','Turkey','Emirates','Jordan','Eraq','Moscuo','China','Saudi Arabia'
         ];
         foreach($countries as $country){
             Country::create([

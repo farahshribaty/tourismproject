@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\Flights;
+use App\Models\FlightsReservation;
+use App\Models\FlightsTime;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 
@@ -30,17 +32,42 @@ class FlightsSeeder extends Seeder
                 'flight_name'=>$names[$i],
                 'flight_number'=>random_int(1000,20000),
                 'airline_id'=>random_int(1,17),
-                'from'=> random_int(1,3),
-                'distination'=>random_int(1,3),
-                'carry_on_bag'=> random_int(1,5),
-                'checked_bag'=> random_int(1,5),
-                'duration'=>Carbon::now()->addHours(random_int(1, 12))->format('H:i:s'),
-                'departure_time'=>Carbon::now()->addDays(random_int(1, 30))->setTime(random_int(0, 23),
-                 random_int(0, 59), random_int(0, 59)),
-                'arrival_time'=>Carbon::now()->addDays(random_int(1, 30))->setTime(random_int(0, 23),
-                 random_int(0, 59), random_int(0, 59)),
-                'available_seats'=>random_int(50,100),
-                'flight_class'=>$class[$i%3]
+                'from'=> random_int(1,9),
+                'distination'=>random_int(1,9),
+                'available_weight'=> random_int(50,70),
+                'available_seats'=>random_int(50,100)
+            ]);
+        }
+
+        for($i = 0 ; $i<17 ; $i++){
+
+            $fromHour = Carbon::now()->addHours(random_int(1, 6));
+            $toHour = Carbon::now()->addHours(random_int(6, 12));
+        
+            $durationInMinutes = $toHour->diffInMinutes($fromHour);
+            $duration = Carbon::now()->startOfDay()->addMinutes($durationInMinutes)->format('H:i:s');
+
+
+            FlightsTime::create([
+                'departe_day'=>Carbon::now()->addDays(random_int(1, 30)),
+                'From_hour' => $fromHour->format('H:i:s'),
+                'To_hour' => $toHour->format('H:i:s'),
+                'duration'=>  $duration,
+                'flights_id'=>random_int(1,10),
+                'adults_price'=>random_int(1000,2000),
+                'children_price'=>random_int(100,400),
+            ]);
+        }
+
+        for($i = 0 ; $i<17 ; $i++){
+            FlightsReservation::create([
+                'user_id'=>random_int(1,17),
+                'flights_times_id'=>random_int(1,17),
+                'flight_class'=>$class[$i%3],
+                'num_of_adults'=>random_int(1,10),
+                'num_of_children'=>random_int(1,10),
+                'PayPal'=>random_int(1,10),
+                'Points'=>random_int(1,10)
             ]);
         }
     }

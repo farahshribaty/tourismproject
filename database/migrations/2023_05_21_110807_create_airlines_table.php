@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('details');
             $table->integer('rate')->nullable();
             $table->integer('num_of_ratings')->nullable();
+            $table->string('path');
             $table->foreignId('country_id')->constrained('countries');
             $table->timestamps();
         });

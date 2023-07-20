@@ -19,11 +19,16 @@ class Airline extends Authenticatable
         'location',
         'phone_number',
         'rate',
+        'path',
         'country_id',
     ];
 
     public function flights()
     {
-        return $this->hasMany(Flight::class);
+        return $this->hasMany(Flights::class,'flights_id');
+    }
+    public function country()
+    {
+        return $this->belongsTo(Country::class,'country_id');
     }
 }

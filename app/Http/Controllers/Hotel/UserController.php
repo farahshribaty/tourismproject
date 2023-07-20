@@ -13,6 +13,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Password;
 
+use function PHPSTORM_META\type;
 
 class UserController extends Controller
 {
@@ -119,6 +120,16 @@ class UserController extends Controller
                     $q->where('hotel_resevations.check_in', '<=', $checkOut)
                         ->Where('hotel_resevations.check_out', '>=', $checkIn);
                 });
+            });
+        }
+        if($request->has('num_of_adults')){
+            $query->whereHas('hotel_resevations',function($que)use($request){
+                $que->where('num_of_adults','<=',$request->num_of_adults);
+            });
+        }
+        if($request->has('num_of_children')){
+            $query->whereHas('hotel_resevations',function($que)use($request){
+                $que->where('num_of_children','<=',$request->num_of_children);
             });
         }
 
