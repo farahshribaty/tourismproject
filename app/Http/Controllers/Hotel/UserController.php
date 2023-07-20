@@ -122,6 +122,16 @@ class UserController extends Controller
                 });
             });
         }
+        if($request->has('num_of_adults')){
+            $query->whereHas('hotel_resevations',function($que)use($request){
+                $que->where('num_of_adults','<=',$request->num_of_adults);
+            });
+        }
+        if($request->has('num_of_children')){
+            $query->whereHas('hotel_resevations',function($que)use($request){
+                $que->where('num_of_children','<=',$request->num_of_children);
+            });
+        }
 
         if ($request->has('rate')) {                    //(filter:rate)
             $query->where('rate', '=', $request->input('rate'));

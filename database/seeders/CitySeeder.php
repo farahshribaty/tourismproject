@@ -17,7 +17,7 @@ class CitySeeder extends Seeder
         // adding cities
 
         $cities = [
-            'damascus', 'cairo', 'istanbul'
+            'damascus', 'cairo', 'istanbul','Dubai','Jordan','Eraq','Moscuo','China','Saudi Arabia'
         ];
         $Countries = Country::get();
 
