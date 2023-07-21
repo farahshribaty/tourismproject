@@ -15,6 +15,7 @@ class TripsReservation extends Model
         'child',
         'adult',
         'points_added',
+        'money_spent',
         'active',
     ];
 

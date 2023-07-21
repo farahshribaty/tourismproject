@@ -7,6 +7,7 @@ use App\Http\Controllers\Users\UserController;
 use App\Models\Trip;
 use App\Models\TripDate;
 use App\Models\TripDeparture;
+use App\Models\TripFavourite;
 use App\Models\TripOffer;
 use App\Models\TripReview;
 use App\Models\TripsReservation;
@@ -149,7 +150,7 @@ class UserTripsController extends UserController
             'shortTrips'=>$shortTrips,
             'longTrips'=>$longTrips,
             'local'=>$local,
-            'offers'=>$offers,
+            'offers'=>$trip_offers,
         ]);
     }
 
@@ -236,9 +237,13 @@ class UserTripsController extends UserController
     {
         $trip = Trip::where('id',$request->id)
             ->with(['photos','destination','services','activities','days',
-                'departure'=>function($query){
-                    $query->select(['id','trip_id','flight_id','departure_details','city_id'])
-                    ->with(['city','dates']);
+//                'departure'=>function($query){
+//                    $query->select(['id','trip_id','flight_id','departure_details','city_id'])
+//                    ->with(['city','dates']);
+//                },
+                'dates'=>function($query){
+//                    $query->select(['id','departure_date','current_reserved_people','price',DB::raw('max_persons-current_reserved_people as remaining_seats')]);
+                    $query->selectRaw('id, departure_date, trip_id, price');
                 },
                 'offers'=>function($query){
                     $time = Carbon::now();
@@ -246,7 +251,8 @@ class UserTripsController extends UserController
                 }])
             ->first();
 
-        $reviews = TripReview::where('trip_id',$request->id)
+        $reviews = TripReview::select(['id','stars','comment','user_id'])
+            ->where('trip_id',$request->id)
             ->with('user',function($q){
                 $q->select(['id','first_name','last_name']);
             })
@@ -261,38 +267,39 @@ class UserTripsController extends UserController
     }
 
     // todo: send prices after discount!
-    public function viewDeparturesAndDatesForSomeTrip(Request $request): JsonResponse
-    {
-        $request->validate([
-            'trip_id'=>'required',
-        ]);
 
-        $trip = Trip::where('id',$request->trip_id)->first();
-        if($trip == null){
-            return response()->json([
-                'success'=>false,
-                'message'=>'Trip not found',
-            ]);
-        }
+//    public function viewDeparturesAndDatesForSomeTrip(Request $request): JsonResponse
+//    {
+//        $request->validate([
+//            'trip_id'=>'required',
+//        ]);
+//
+//        $trip = Trip::where('id',$request->trip_id)->first();
+//        if($trip == null){
+//            return response()->json([
+//                'success'=>false,
+//                'message'=>'Trip not found',
+//            ]);
+//        }
+//
+//        $departures = TripDeparture::select(['trip_departures.id','trip_departures.flight_id','trip_departures.departure_details','cities.name as from_city'])
+//            ->join('cities','cities.id','=','trip_departures.city_id')
+//            ->where('trip_departures.trip_id',$request->trip_id)
+//            ->with(['dates' => function($q)use($trip){
+//                $date = Carbon::now()->addDay();
+//                $q->select([DB::raw($trip['max_persons'].' - current_reserved_people as available_seats'),'id','departure_id','departure_date','price'])
+//                    ->where('departure_date','>=',$date)                              // just dates form now on, and that have available seats
+//                    ->where('current_reserved_people','<',$trip['max_persons']);
+//            }])
+//            ->get();
+//
+//        return response()->json([
+//            'success'=>true,
+//            'departures'=>$departures,
+//        ]);
+//    }
 
-        $departures = TripDeparture::select(['trip_departures.id','trip_departures.flight_id','trip_departures.departure_details','cities.name as from_city'])
-            ->join('cities','cities.id','=','trip_departures.city_id')
-            ->where('trip_departures.trip_id',$request->trip_id)
-            ->with(['dates' => function($q)use($trip){
-                $date = Carbon::now()->addDay();
-                $q->select([DB::raw($trip['max_persons'].' - current_reserved_people as available_seats'),'id','departure_id','departure_date','price'])
-                    ->where('departure_date','>=',$date)                              // just dates form now on, and that have available seats
-                    ->where('current_reserved_people','<',$trip['max_persons']);
-            }])
-            ->get();
-
-        return response()->json([
-            'success'=>true,
-            'departures'=>$departures,
-        ]);
-    }
-
-    // todo: add points to user account and erase money form his wallet
+    // todo: add points to user account
     public function makeReservation(Request $request): JsonResponse
     {
         $request->validate([
@@ -313,10 +320,14 @@ class UserTripsController extends UserController
         }
 
 
-        $trip = Trip::whereHas('departure',function($query)use($request){
-            $query->whereHas('dates',function($q)use($request){
-                $q->where('id',$request['date_id']);
-            });
+//        $trip = Trip::whereHas('departure',function($query)use($request){
+//            $query->whereHas('dates',function($q)use($request){
+//                $q->where('id',$request['date_id']);
+//            });
+//        })->first();
+
+        $trip = Trip::whereHas('dates',function($q)use($request){
+            $q->where('id',$request['date_id']);
         })->first();
 
         $date = TripDate::where('id',$request['date_id'])->first();
@@ -355,6 +366,7 @@ class UserTripsController extends UserController
             'user_id'=>$request->user()->id,
             'child'=>$request->children,
             'adult'=>$request->adults,
+            'money_spent'=>$money_needed,
             'points_added'=>10,
             'active'=>1,
         ]);
@@ -370,13 +382,15 @@ class UserTripsController extends UserController
 
         // todo: add points to user account and erase money form his wallet
         $user = User::where('id',$request->user()->id)->first();
-
+        User::where('id','=',$user['id'])
+            ->update([
+                'wallet'=>$user['wallet']-$money_needed,
+            ]);
 
 
         // getting reservation to show it to user
 
         $reservation = TripsReservation::where('date_id',$date['id'])->where('user_id',$request->user()->id)->orderBy('id','desc')->first();
-        $reservation['money spent']=$money_needed;
         $reservation['date of departure']=$date['departure_date'];
 
 
@@ -453,6 +467,13 @@ class UserTripsController extends UserController
                 'active'=>0,
             ]);
 
+        $user = User::where('id','=',$request->user()->id)->first();
+
+        User::where('id','=',$user['id'])
+            ->update([
+                'wallet'=>$user['wallet']+$reservation['money_spent'],
+            ]);
+
         return $this->success('Reservation cancelled successfully!');
 
     }
@@ -506,6 +527,39 @@ class UserTripsController extends UserController
         return response()->json([
             'status'=>true,
             'message'=>'review has been sent successfully',
+        ]);
+    }
+
+    public function addToFavourites(Request $request): JsonResponse
+    {
+        $request->validate([
+            'trip_id'=>'required',
+        ]);
+
+        TripFavourite::create([
+            'user_id'=> $request->user()->id,
+            'trip_id'=> $request->trip_id,
+        ]);
+
+        return response()->json([
+            'success'=>true,
+            'message'=>'Trip added to favourites successfully',
+        ]);
+    }
+
+    public function removeFromFavourites(Request $request): JsonResponse
+    {
+        $request->validate([
+            'trip_id'=>'required',
+        ]);
+
+        TripFavourite::where('user_id','=',$request->user()->id)
+            ->where('trip_id','=',$request->trip_id)
+            ->delete();
+
+        return response()->json([
+            'success'=>true,
+            'message'=>'Trip removed from favourites successfully',
         ]);
     }
 

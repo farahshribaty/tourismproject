@@ -26,5 +26,7 @@ Route::group( ['middleware' => ['auth:user-api'] ],function(){
     Route::post('trip/makeReservation',[UserTripsController::class,'makeReservation']);
     Route::post('trip/sendReview',[UserTripsController::class,'addReview']);
     Route::post('trip/cancellingReservation',[UserTripsController::class,'cancellingReservation']);
+    Route::post('trip/addToFavourites',[UserTripsController::class,'addToFavourites']);
+    Route::post('trip/removeFromFavourites',[UserTripsController::class,'removeFromFavourites']);
 });
 
