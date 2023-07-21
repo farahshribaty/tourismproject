@@ -15,11 +15,11 @@ class FlightsController extends Controller
 
     public function popularCountries()
     {
-        $popularCountries = FlightsReservation::select('countries.id', 'countries.name', DB::raw('count(*) as total'))
+        $popularCountries = FlightsReservation::select('countries.id', 'countries.name','countries.path', DB::raw('count(*) as total'))
         ->join('flights_times', 'flights_reservations.flights_times_id', '=', 'flights_times.id')
         ->join('flights', 'flights_times.flights_id', '=', 'flights.id')
         ->join('countries', 'flights.distination', '=', 'countries.id')
-        ->groupBy('countries.id', 'countries.name')
+        ->groupBy('countries.id', 'countries.name','countries.path')
         ->orderByDesc('total')
         ->take(6) // Get top 5 popular countries
         ->get();
@@ -61,10 +61,6 @@ class FlightsController extends Controller
 
         $flights = $outboundFlights->union($returnFlights)->get();
 
-        // $flights = $flights
-        //     ->with(['country', 'airline'])
-        //     ->paginate(10);
-
         return response()->json([
             'message' => "done",
             'flights' => $flights,
@@ -73,7 +69,8 @@ class FlightsController extends Controller
 
     public function getCountries()
     {
-        $countries = Country::select('name')->get();
+        $countries = Country::select('name','path')
+        ->get();
 
         return response()->json([
             'message' => "done",

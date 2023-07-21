@@ -21,6 +21,7 @@ class CountrySeeder extends Seeder
         foreach($countries as $country){
             Country::create([
                 'name'=>$country,
+                'path'=>'http://127.0.0.1:8000/images/countries/'.'1111.jpg',
             ]);
         }
     }

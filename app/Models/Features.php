@@ -24,8 +24,9 @@ class Features extends Model
            'updated_at',
        ];
    
-       public function Room()
-       {
-           return $this->belongsToMany(Room::class,'room_features','features_id','room_id');
-       }
+       public function rooms()
+      {
+        return $this->belongsToMany(Room::class, 'room_features', 'features_id', 'room_id');
+      }
+
 }

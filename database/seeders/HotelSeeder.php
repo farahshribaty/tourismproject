@@ -36,9 +36,10 @@ class HotelSeeder extends Seeder
                 'num_of_rooms'=>random_int(1,20),
                 'rate'=> random_int(1,5),
                 'num_of_ratings'=> random_int(10,3000),
+                'stars'=>random_int(1,5),
                 // 'photo' =>'http://127.0.0.1:8000/images/hotel/'.'1685138340.jpg',
                 'website_url'=>'https://hotel.com',
-                'city_id'=>random_int(1,3),
+                'city_id'=>random_int(1,9),
                 'type_id'=>random_int(1,5),
             ]);
         }
@@ -53,9 +54,8 @@ class HotelSeeder extends Seeder
         }
         for($i = 0 ; $i<17 ; $i++){
             HotelReview::create([
-                'user_id'=>random_int(1,2),
+                'user_id'=>random_int(1,20),
                 'hotel_id'=>random_int(1,17),
-                'stars'=>random_int(1,5),
                 'comment'=>'this is my comment'
             ]);
         }

@@ -17,7 +17,12 @@ class HotelController extends Controller
     public function ShowALLHotel() //done
     {
         $hotel = Hotel::orderBy('type_id','asc')
-        ->with(['photos','city'])
+        ->with(['photo','city'=> function ($query) {
+            $query->select('id','name','country_id')
+            ->with(['country' => function ($q) {
+                $q->select('id','name');
+            }]);
+        }]) 
         ->get();
 
        return response()->json([
@@ -114,20 +119,113 @@ class HotelController extends Controller
         ]);
     }
 
-    public function TopRated() //hotels /done
+    public function TopRatedAndTypes() //hotels /done
     {
         $topRated = Hotel::orderBy('rate','desc')
-        ->with(['photo','city'])
+        ->with(['photo','city'=> function ($query) {
+            $query->select('id','name','country_id')
+            ->with(['country' => function ($q) {
+                $q->select('id','name');
+            }]);
+        }]) 
         ->take(6)
         ->get();
 
-       $topRated = $topRated->makeHidden(['email','location','phone_number',
+       $topRated = $topRated->makeHidden(['email','phone_number',
        'details','website_url','created_at','updated_at']);
+
+       $Chain = Hotel::where('type_id','=',1)
+        ->take(5)
+        ->with(['photo','city'=> function ($query) {
+            $query->select('id','name','country_id')
+            ->with(['country' => function ($q) {
+                $q->select('id','name');
+            }]);
+        }]) 
+        ->get();
+        $Chain = $Chain->makeHidden(['email','phone_number',
+       'details','website_url','created_at','updated_at']);
+
+       $Motel = Hotel::where('type_id','=',2)
+        ->take(5)
+        ->with(['photo','city'=> function ($query) {
+            $query->select('id','name','country_id')
+            ->with(['country' => function ($q) {
+                $q->select('id','name');
+            }]);
+        }]) 
+        ->get();
+        $Motel = $Motel->makeHidden(['email','phone_number',
+       'details','website_url','created_at','updated_at']);
+
+       $Resorts = Hotel::where('type_id','=',3)
+        ->take(5)
+        ->with(['photo','city'=> function ($query) {
+            $query->select('id','name','country_id')
+            ->with(['country' => function ($q) {
+                $q->select('id','name');
+            }]);
+        }]) 
+        ->get();
+        $Resorts = $Resorts->makeHidden(['email','phone_number',
+       'details','website_url','created_at','updated_at']);
+
+       $Inns = Hotel::where('type_id','=',4)
+       ->take(5)
+       ->with(['photo','city'=> function ($query) {
+        $query->select('id','name','country_id')
+        ->with(['country' => function ($q) {
+            $q->select('id','name');
+           }]);
+        }]) 
+       ->get();
+       $Inns = $Inns->makeHidden(['email','phone_number',
+      'details','website_url','created_at','updated_at']);
+
+      $All_suites = Hotel::where('type_id','=',5)
+      ->take(5)
+      ->with(['photo','city'=> function ($query) {
+        $query->select('id','name','country_id')
+        ->with(['country' => function ($q) {
+            $q->select('id','name');
+           }]);
+        }]) 
+      ->get();
+      $All_suites = $All_suites->makeHidden(['email','phone_number',
+     'details','website_url','created_at','updated_at']);
+
+
 
        return response()->json([
             'message'=>"done",
-            'Hotels'=> $topRated,
+            'topRated'=> $topRated,
+            'Chain'=> $Chain,
+            'Motel'=> $Motel,
+            'Resorts'=> $Resorts,
+            'Inns'=> $Inns,
+            'All_suites'=> $All_suites,
            ]);
+    }
+
+    public function TopRated()
+    {
+        $topRated = Hotel::orderBy('rate','desc')
+        ->with(['photo','city'=> function ($query) {
+            $query->select('id','name','country_id')
+            ->with(['country' => function ($q) {
+                $q->select('id','name');
+            }]);
+        }]) 
+        ->take(6)
+        ->get();
+
+       $topRated = $topRated->makeHidden(['email','phone_number',
+       'details','website_url','created_at','updated_at']);
+
+       return response()->json([
+        'message'=>"done",
+        'topRated'=> $topRated,
+       ]);
 
     }
 
@@ -138,7 +236,7 @@ class HotelController extends Controller
         $rooms = Room::select('rooms.*', 'hotels.location','hotels.city_id')
         ->join('hotels', 'rooms.hotel_id', '=', 'hotels.id')
         ->where('rooms.hotel_id', '=', $hotel_id)
-        ->with(['photo'])
+        ->with(['photo','features'])
         ->get();
 
         $rooms = $rooms->makeHidden(['details','created_at','updated_at']);
