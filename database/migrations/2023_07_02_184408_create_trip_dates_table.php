@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('trip_dates', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('departure_id');
+            $table->foreignId('trip_id');
             $table->dateTime('departure_date');
             $table->integer('current_reserved_people')->default(0);
             $table->integer('price');

@@ -32,6 +32,14 @@ class Flights extends Authenticatable
     {
         return $this->belongsTo(Country::class,'country_id');
     }
+    public function from()
+    {
+        return $this->belongsTo(Country::class,'from');
+    }
+    public function destination()
+    {
+        return $this->belongsTo(Country::class,'distination');
+    }
     public function Flights()
     {
         return $this->belongsTo(FlightsTime::class,'flights_id');

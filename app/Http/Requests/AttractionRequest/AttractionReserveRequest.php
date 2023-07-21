@@ -27,7 +27,7 @@ class AttractionReserveRequest extends FormRequest
             'book_date'=>'required',
             'adults'=>'required',
             'children'=>'required',
-            'payment'=>'',
+            //'payment'=>'',
             'points_added'=> '',
         ];
     }

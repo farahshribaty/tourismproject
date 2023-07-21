@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
+use App\Models\Attraction;
 use App\Models\Country;
 use App\Models\City;
 use App\Models\Hotel;
+use App\Models\TripCompany;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Dotenv\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -49,7 +52,7 @@ class AdminController extends Controller
             ]);
     }
     public function AdminLogin(Request $request) //MAin Admin Login
-    { 
+    {
         $request->validate([
 
             'email'=>'required|email',
@@ -75,7 +78,7 @@ class AdminController extends Controller
         {
             return 'password not found';
         }
-        
+
     }
     public function AddCountry(Request $request)
     {
@@ -117,7 +120,7 @@ class AdminController extends Controller
 
     }
     //this should work for users..:
-    public function ShowCities(Request $request) 
+    public function ShowCities(Request $request)
     {
         // Find a country by its ID
         $country = Country::find($request->country_id);
@@ -133,6 +136,35 @@ class AdminController extends Controller
         // Return the list of cities as a JSON response
         return response()->json(['cities' => $cities], 200);
     }
+
+    public function getAllUsers()
+    {
+        $users = User::paginate(10);
+        return response()->json([
+            'success'=>true,
+            'data'=>$users,
+        ]);
+    }
+
+    public function getAllTripCompanies()
+    {
+        $companies = TripCompany::paginate(10);
+        return response()->json([
+            'success'=>true,
+            'data'=>$companies,
+        ]);
+    }
+
+    public function getAllAttractions()
+    {
+        $attractions = Attraction::paginate(10);
+        return response()->json([
+            'success'=>true,
+            'data'=>$attractions,
+        ]);
+    }
+
+
     public function edit(Admin $admin)
     {
         //

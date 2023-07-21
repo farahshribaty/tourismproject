@@ -89,16 +89,16 @@ class TripSeeder extends Seeder
 
         // adding departures for each trip
 
-        foreach($trips as $trip){
-            for($i=0;$i<3;$i++){
-                TripDeparture::create([
-                    'trip_id'=>$trip['id'],
-                    'flight_id'=>0,
-                    'city_id'=>$i+1,
-                    'departure_details'=>($i==$trip['destination'] ? 'You are already in the target city! there is no further fees!':'The trip will start from this city with the following flight')
-                ]);
-            }
-        }
+//        foreach($trips as $trip){
+//            for($i=0;$i<3;$i++){
+//                TripDeparture::create([
+//                    'trip_id'=>$trip['id'],
+//                    'flight_id'=>0,
+//                    'city_id'=>$i+1,
+//                    'departure_details'=>($i==$trip['destination'] ? 'You are already in the target city! there is no further fees!':'The trip will start from this city with the following flight')
+//                ]);
+//            }
+//        }
 
         // adding some services for each trip
 
@@ -141,16 +141,16 @@ class TripSeeder extends Seeder
             }
         }
 
-        // adding dates for each departure (date of departure)
+        // adding dates for each departure (date of trip)
 
-        $departs = TripDeparture::get();
+        $trips = Trip::get();
 
-        foreach($departs as $depart){
+        foreach($trips as $trip){
             for($i=0;$i<3;$i++){
                 TripDate::create([
-                    'departure_id'=>$depart['id'],
+                    'trip_id'=>$trip['id'],
                     'departure_date'=> Carbon::now()->addMonths($i),
-                    'price'=> ($depart['trip_id']*100),
+                    'price'=> ($trip['id']*100),
                 ]);
             }
         }
