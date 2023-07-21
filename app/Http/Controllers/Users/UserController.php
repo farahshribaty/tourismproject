@@ -6,10 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest\UserLoginRequest;
 use App\Http\Requests\UserRequest\UserRegistrationRequest;
 use App\Models\Attraction;
+use App\Models\FlightsReservation;
 use App\Models\Hotel;
 use App\Models\Trip;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -106,9 +108,6 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
-        //$top_countries;
-
-        //$top_hotels;
 
         $top_trips = Trip::select(['id','destination','description','days_number','rate','num_of_ratings','max_persons','start_age','end_age'])
             ->with(['photo',
@@ -156,12 +155,22 @@ class UserController extends Controller
            $top_hotels = $top_hotels->makeHidden(['email','phone_number',
            'details','website_url','created_at','updated_at']);
 
+        $popularCountries = FlightsReservation::select('countries.id', 'countries.name','countries.path', DB::raw('count(*) as total'))
+        ->join('flights_times', 'flights_reservations.flights_times_id', '=', 'flights_times.id')
+        ->join('flights', 'flights_times.flights_id', '=', 'flights.id')
+        ->join('countries', 'flights.distination', '=', 'countries.id')
+        ->groupBy('countries.id', 'countries.name','countries.path')
+        ->orderByDesc('total')
+        ->take(6) // Get top 5 popular countries
+        ->get();
+
         return response()->json([
             'success'=>true,
             'top_attractions'=>$top_attractions,
             'top_trips'=>$top_trips,
             'trip_offers'=>$trip_offers,
-            'top_hotels'=> $top_hotels
+            'top_hotels'=> $top_hotels,
+            'popularCountries'=> $popularCountries
         ]);
     }
 

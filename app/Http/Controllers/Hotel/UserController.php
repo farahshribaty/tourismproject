@@ -170,7 +170,7 @@ class UserController extends Controller
         }
 
         $hotels = $query
-            ->with(['photo', 'city', 'city.country', 'type'])
+            ->with(['photo', 'city', 'city.country', 'type','facilities'])
             ->paginate(10);
 
         return response()->json([

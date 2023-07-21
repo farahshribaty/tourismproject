@@ -40,27 +40,27 @@ class FlightsController extends Controller
         $children = $request->input('children');
 
         // Outbound flights
-//        $outboundFlights = Flights::select('flights.id', 'flights.from', 'flights.distination', 'flights_times.departe_day', 'flights.available_seats')
-//            ->join('flights_times', 'flights_times.flights_id', '=', 'flights.id')
-//            ->where('flights.from', 'like', '%' . $from . '%')
-//            ->where('flights.distination','like', '%' . $distination. '%')
-//            ->where('flights_times.departe_day', '=', $departe_day)
-//            ->where(function ($query) use ($adults, $children) {
-//                $query->where('flights.available_seats', '>=', $adults + $children);
-//            });
+        //        $outboundFlights = Flights::select('flights.id', 'flights.from', 'flights.distination', 'flights_times.departe_day', 'flights.available_seats')
+        //            ->join('flights_times', 'flights_times.flights_id', '=', 'flights.id')
+        //            ->where('flights.from', 'like', '%' . $from . '%')
+        //            ->where('flights.distination','like', '%' . $distination. '%')
+        //            ->where('flights_times.departe_day', '=', $departe_day)
+        //            ->where(function ($query) use ($adults, $children) {
+        //                $query->where('flights.available_seats', '>=', $adults + $children);
+        //            });
 
-//        $outboundFlights = Flights::select('flights.id', 'flights.from', 'flights.distination', 'flights_times.departe_day', 'flights.available_seats')
-//            ->join('flights_times', 'flights_times.flights_id', '=', 'flights.id')
-//            ->whereHas('from',function($q)use($from){
-//                $q->where('name','=',$from);
-//            })
-//            ->whereHas('destination',function($q)use($distination){
-//                $q->where('name','=',$distination);
-//            })
-//            ->where('flights_times.departe_day', '=', $departe_day)
-//            ->where(function ($query) use ($adults, $children) {
-//                $query->where('flights.available_seats', '>=', $adults + $children);
-//            });
+        //        $outboundFlights = Flights::select('flights.id', 'flights.from', 'flights.distination', 'flights_times.departe_day', 'flights.available_seats')
+        //            ->join('flights_times', 'flights_times.flights_id', '=', 'flights.id')
+        //            ->whereHas('from',function($q)use($from){
+        //                $q->where('name','=',$from);
+        //            })
+        //            ->whereHas('destination',function($q)use($distination){
+        //                $q->where('name','=',$distination);
+        //            })
+        //            ->where('flights_times.departe_day', '=', $departe_day)
+        //            ->where(function ($query) use ($adults, $children) {
+        //                $query->where('flights.available_seats', '>=', $adults + $children);
+        //            });
 
         $outboundFlights = Flights::select('flights.id', 'flights.from', 'flights_times.departe_day', 'flights.available_seats', 'country_from.name as from', 'country_to.name as to')
             ->join('flights_times', 'flights_times.flights_id', '=', 'flights.id')
