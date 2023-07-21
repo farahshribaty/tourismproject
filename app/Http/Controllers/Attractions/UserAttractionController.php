@@ -24,7 +24,7 @@ class UserAttractionController extends UserController
      *
      * @return JsonResponse
      */
-    public function index(): JsonResponse             //wrong!
+    public function index(Request $request): JsonResponse             //wrong!
     {
         $topRated = Attraction::select(['id','city_id','name','rate','num_of_ratings','adult_price','child_price'])
             ->orderBy('rate','desc')

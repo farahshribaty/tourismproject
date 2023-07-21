@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Users;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest\UserLoginRequest;
 use App\Http\Requests\UserRequest\UserRegistrationRequest;
+use App\Models\Attraction;
 use App\Models\Hotel;
+use App\Models\Trip;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -90,21 +93,6 @@ class UserController extends Controller
                 'message'=>'email is not valid',
             ]);
         }
-//        if(Auth::guard('user')->attempt(['email' => $data['email'], 'password' => $data['password']])){
-//
-//            $user = User::where('email','=',$request->email)->first();
-//            $user['token'] = $user->createToken('MyApp')->accessToken;
-//            return response()->json([
-//                'success'=>true,
-//                'data'=>$user,
-//            ],200);
-//        }
-//        else{
-//            return response()->json([
-//                'success'=>false,
-//                'message'=>'incorrect credentials',
-//            ],400);
-//        }
     }
 
     public function logout(Request $request)
@@ -113,6 +101,54 @@ class UserController extends Controller
         return response()->json([
             'success'=>true,
             'message'=>'logged out successfully',
+        ]);
+    }
+
+    public function index(Request $request)
+    {
+        //$top_countries;
+
+        //$top_hotels;
+
+        $top_trips = Trip::select(['id','destination','description','days_number','rate','num_of_ratings','max_persons','start_age','end_age'])
+            ->with(['photo',
+            'destination'=>function($q){
+                $q->with(['country']);
+            }
+            ])
+            ->availableTrips()
+            ->orderBy('rate','desc')
+            ->take(6)
+            ->get();
+
+        $trip_offers = Trip::select(['id','destination','description','days_number','rate','num_of_ratings','max_persons','start_age','end_age'])
+            ->with(['photo',
+                'destination'=>function($q){
+                    $q->with(['country']);
+                },
+                'offer',
+            ])
+            ->whereHas('offers',function($query){
+                $time = Carbon::now();
+                $query->where('offer_end','>=',$time)
+                    ->where('active',true);
+            })
+            ->availableTrips()
+            ->take(6)
+            ->get();
+
+        $top_attractions = Attraction::select(['id','city_id','name','rate','num_of_ratings','adult_price','child_price'])
+            ->orderBy('rate','desc')
+            ->with(['photo','city'])
+            ->take(6)
+            ->get();
+
+
+        return response()->json([
+            'success'=>true,
+            'top_attractions'=>$top_attractions,
+            'top_trips'=>$top_trips,
+            'trip_offers'=>$trip_offers,
         ]);
     }
 

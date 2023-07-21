@@ -41,8 +41,12 @@ class Trip extends Model
         return $this->hasMany(TripDay::class,'trip_id');
     }
 
-    public function departure(){
-        return $this->hasMany(TripDeparture::class,'trip_id');
+//    public function departure(){
+//        return $this->hasMany(TripDeparture::class,'trip_id');
+//    }
+
+    public function dates(){
+        return $this->hasMany(TripDate::class,'trip_id');
     }
 
     public function photos(){
@@ -51,12 +55,18 @@ class Trip extends Model
 
     // give me only the trips that have at least one departure in the future have at least one seat available
     public function scopeAvailableTrips($query){
-        return $query->whereHas('departure',function($query){
-            $query->whereHas('dates',function($que){
-                $date = Carbon::now()->addDays(1);
-                $que->whereRaw('current_reserved_people < max_persons')
-                    ->where('departure_date','>',$date);
-            });
+//        return $query->whereHas('departure',function($query){
+//            $query->whereHas('dates',function($que){
+//                $date = Carbon::now()->addDays(1);
+//                $que->whereRaw('current_reserved_people < max_persons')
+//                    ->where('departure_date','>',$date);
+//            });
+//        });
+
+        return $query->whereHas('dates',function($query){
+            $date = Carbon::now()->addDays(1);
+            $query->whereRaw('current_reserved_people < max_persons')
+                ->where('departure_date','>',$date);
         });
     }
 

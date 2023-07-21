@@ -10,7 +10,7 @@ class TripDate extends Model
     use HasFactory;
 
     protected $fillable = [
-        'departure_id',
+        'trip_id',
         'departure_date',
         'current_reserved_people',
         'price',
@@ -25,5 +25,7 @@ class TripDate extends Model
         return $this->hasMany(TripsReservation::class,'date_id');
     }
 
-
+    public function trip(){
+        return $this->belongsTo(Trip::class,'trip_id');
+    }
 }

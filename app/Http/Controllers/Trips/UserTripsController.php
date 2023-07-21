@@ -42,10 +42,13 @@ class UserTripsController extends UserController
                 $q->with(['country']);
                 }
             ])
-            ->whereHas('departure',function($query){
-                $query->whereHas('dates',function($q){
-                    $q->where('price','>=',200);
-                });
+//            ->whereHas('departure',function($query){
+//                $query->whereHas('dates',function($q){
+//                    $q->where('price','>=',200);
+//                });
+//            })
+            ->whereHas('dates',function($query){
+                $query->where('price','>=',200);
             })
             ->availableTrips()
             ->take(6)
@@ -59,10 +62,13 @@ class UserTripsController extends UserController
                     $q->with(['country']);
                 }
             ])
-            ->whereHas('departure',function($query){
-                $query->whereHas('dates',function($q){
-                    $q->where('price','<=',2000);
-                });
+//            ->whereHas('departure',function($query){
+//                $query->whereHas('dates',function($q){
+//                    $q->where('price','<=',2000);
+//                });
+//            })
+            ->whereHas('dates',function($q){
+                $q->where('price','<=',2000);
             })
             ->availableTrips()
             ->take(6)
@@ -118,7 +124,7 @@ class UserTripsController extends UserController
 
 
         // trips with offers
-        $offers = Trip::select(['id','destination','description','days_number','rate','num_of_ratings','max_persons','start_age','end_age'])
+        $trip_offers = Trip::select(['id','destination','description','days_number','rate','num_of_ratings','max_persons','start_age','end_age'])
             ->with(['photo',
                 'destination'=>function($q){
                     $q->with(['country']);
@@ -135,7 +141,6 @@ class UserTripsController extends UserController
             ->get();
 
 
-        // todo: make the (local), by getting the destinations with the same city from ip address. and make offers, which needs one more table.
         return response()->json([
             'status'=>true,
             'topRated'=>$topRated,
@@ -151,7 +156,6 @@ class UserTripsController extends UserController
     public function searchForTrip(Request $request): JsonResponse
     {
         $request->validate([
-            'from'=>'required',
             'to'=>'required',
         ]);
 
@@ -161,28 +165,46 @@ class UserTripsController extends UserController
             ->whereHas('destination',function($q)use($request){         // to city (mandatory)
                 $q->where('name','like','%'.$request->to.'%');
             })
+//
+//            ->whereHas('departure',function($query)use($request){        // form city (mandatory)
+//                $query->whereHas('city',function($q)use($request){
+//                    $q->where('name','like','%'.$request->from.'%');
+//                });
+//            })
 
-            ->whereHas('departure',function($query)use($request){        // form city (mandatory)
-                $query->whereHas('city',function($q)use($request){
-                    $q->where('name','like','%'.$request->from.'%');
+//            ->when($request->min_price,function($query)use($request){        // start price (filter, not mandatory)
+//                $query->whereHas('departure',function($que)use($request){
+//                    $que->whereHas('dates',function($q)use($request){
+//                        $q->where('price','>=',$request->min_price);
+//                    });
+//                });
+//            })
+
+            ->when($request->max_price,function($query)use($request){         // start price (filter, not mandatory)
+                $query->whereHas('dates',function($q)use($request){
+                    $q->where('price','<=',$request->max_price);
                 });
             })
 
-            ->when($request->min_price,function($query)use($request){        // start price (filter, not mandatory)
-                $query->whereHas('departure',function($que)use($request){
-                    $que->whereHas('dates',function($q)use($request){
-                        $q->where('price','>=',$request->min_price);
-                    });
+            ->when($request->min_price,function($query)use($request){         // start price (filter, not mandatory)
+                $query->whereHas('dates',function($q)use($request){
+                    $q->where('price','>=',$request->min_price);
                 });
             })
 
-            ->when($request->max_price,function($query)use($request){        // end price (filter, not mandatory)
-                $query->whereHas('departure',function($que)use($request){
-                    $que->whereHas('dates',function($q)use($request){
-                        $q->where('price','<=',$request->max_price);
-                    });
-                });
-            })
+//            ->when($request->max_price,function($query)use($request){        // end price (filter, not mandatory)
+//                $query->whereHas('departure',function($que)use($request){
+//                    $que->whereHas('dates',function($q)use($request){
+//                        $q->where('price','<=',$request->max_price);
+//                    });
+//                });
+//            })
+
+//            ->when($request->max_price,function($query)use($request){          // end price (filter, not mandatory)
+//                $query->whereHas('dates',function($q)use($request){
+//                    $q->where('price','<=',$request->max_price);
+//                });
+//            })
 
             ->when($request->start_age,function($query)use($request){        // start age (filter, not mandatory)
                 $query->where('start_age','<=',$request->start_age);
