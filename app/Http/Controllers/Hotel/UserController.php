@@ -176,7 +176,7 @@ class UserController extends Controller
         return response()->json([
             'success' => true,
             'data' => $hotels,
-        ], 200);
+        ]);
     }
 
     public function Reservations(Request $request)
@@ -187,27 +187,6 @@ class UserController extends Controller
             })->get();
 
         return $data;
-    }
-
-    public function searchForHotel(Request $request)
-    {
-        $hotel = Hotel::whereHas('city',function($query) use($request){
-                $query->where('name',$request->word);
-            })
-            ->orWhere('name','like','%'.$request->word.'%')
-            ->when($request->price,function($query) use($request){
-                $query->where('adult_price','<=',$request->price);
-            })
-            ->when($request->hotel_type_id,function($query) use($request){
-                $query->where('hotel_type_id','=',$request->hotel_type_id);
-            })
-            ->with(['photo','city'])
-            ->paginate(10);
-
-        return response()->json([
-            'success'=>true,
-            'data'=>$hotel,
-        ],200);
     }
 
     public function addReview(Request $request) //done

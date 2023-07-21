@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('hotel_id')->constrained('hotels');
-            $table->integer('stars');
             $table->text('comment')->nullable();
             $table->timestamps();
         });

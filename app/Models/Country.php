@@ -16,7 +16,8 @@ class Country extends Model
     protected $primaryKey='id';
 
     protected $fillable=[
-        'name'
+        'name',
+        'path'
     ];
 
     protected $hidden = [

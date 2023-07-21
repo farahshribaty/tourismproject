@@ -72,7 +72,7 @@ class UserController extends Controller
         $user = User::where('email','=',$request->email)->first();
 
         if($user){
-//            return $user['password'];
+       //            return $user['password'];
             if(Hash::check($request->password,$user['password'])){
                 $user['token'] = $user->createToken('MyApp')->accessToken;
                 return response()->json([
@@ -106,10 +106,6 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
-        //$top_countries;
-
-        //$top_hotels;
-
         $top_trips = Trip::select(['id','destination','description','days_number','rate','num_of_ratings','max_persons','start_age','end_age'])
             ->with(['photo',
             'destination'=>function($q){
@@ -143,12 +139,25 @@ class UserController extends Controller
             ->take(6)
             ->get();
 
+        $top_hotels = Hotel::orderBy('rate','desc')
+            ->with(['photo','city'=> function ($query) {
+             $query->select('id','name','country_id')
+             ->with(['country' => function ($q) {
+             $q->select('id','name');
+                }]);
+            }])
+            ->take(6)
+            ->get();
+
+           $top_hotels = $top_hotels->makeHidden(['email','phone_number',
+           'details','website_url','created_at','updated_at']);
 
         return response()->json([
             'success'=>true,
             'top_attractions'=>$top_attractions,
             'top_trips'=>$top_trips,
             'trip_offers'=>$trip_offers,
+            'top_hotels'=> $top_hotels
         ]);
     }
 

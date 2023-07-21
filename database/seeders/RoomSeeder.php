@@ -17,7 +17,7 @@ class RoomSeeder extends Seeder
      */
     public function run(): void
     {
-        for($i = 0 ; $i<30 ; $i++){
+        for($i = 0 ; $i<100 ; $i++){
 
         Room::create([
         'room_type'=>random_int(1,9),
@@ -30,10 +30,10 @@ class RoomSeeder extends Seeder
         ]);
         }
 
-        for($i = 0 ; $i<30 ; $i++)
+        for($i = 0 ; $i<100 ; $i++)
         {
             RoomFeatures::create([
-                'room_id'=>random_int(2,18),
+                'room_id'=>random_int(1,60),
                 'features_id'=>random_int(1,5)
                 ]);
         }
@@ -50,7 +50,7 @@ class RoomSeeder extends Seeder
             HotelResevation::create([
                 'user_id'=>random_int(1,15),
                 'hotel_id'=>random_int(1,17),
-                'room_id'=>random_int(1,17),
+                'room_id'=>random_int(1,60),
                 'check_in'=>Carbon::now()->addDays(random_int(1, 14))->setTime(random_int(0, 23),
                 random_int(0, 59), random_int(0, 59)),
                 'check_out'=>Carbon::now()->addDays(random_int(15, 30))->setTime(random_int(0, 23),

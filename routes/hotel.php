@@ -17,6 +17,7 @@ Route::post('admin/addRoomPhoto',[AdminController::class, 'addRoomPhotos']);
 
 //Hotel user Routes:
 Route::post('user/addReview',[UserController::class, 'addReview']);
+Route::get('TopRatedAndTypes',[HotelController::class, 'TopRatedAndTypes']);
 Route::get('TopRated',[HotelController::class, 'TopRated']);
 Route::get('ShowHotelTypes',[HotelController::class, 'ShowHotelTypes']);
 Route::get('ShowRoomsTypes',[HotelController::class, 'ShowRoomsTypes']);

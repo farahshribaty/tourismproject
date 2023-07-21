@@ -25,19 +25,23 @@ class Room extends Model
     public function Type(){
         return $this->belongsTo(RoomType::class, 'room_types_id');
     }
+
     public function Hotel(){
         return $this->belongsTo(Hotel::class, 'hotel_id');
     }
     // public function Photo(){
     //     return $this->hasOne(TripPhoto::class,'trip_id')->latest('id');
     // }
-    public function photo(){
+    public function photo()
+    {
         return $this->hasMany(RoomPhotos::class, 'room_id');
     }
-    public function Features()
+
+    public function features()
     {
-        return $this->belongsToMany(Features::class,'room_features','room_id','features_id');
+        return $this->belongsToMany(Features::class,'room_features','room_id', 'features_id');
     }
+
     public function HotelReservation()
     {
         return $this->belongsTo(HotelResevation::class,'hotel_resevations.id');
