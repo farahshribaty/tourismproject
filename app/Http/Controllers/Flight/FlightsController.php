@@ -68,7 +68,7 @@ class FlightsController extends Controller
             ->join('countries as country_to','flights.distination','=','country_to.id')
             ->where('country_from.name','=',$from)
             ->where('country_to.name','=',$distination)
-            ->where('flights_times.departe_day', '=', $returnDay)
+            ->where('flights_times.departe_day', '=', $departe_day)
             ->where(function ($query) use ($adults, $children) {
                 $query->where('flights.available_seats', '>=', $adults + $children);
             });
