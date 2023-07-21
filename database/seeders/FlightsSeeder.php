@@ -26,30 +26,63 @@ class FlightsSeeder extends Seeder
             'First Class','Second Class','Bissness Class'
         ];
 
+//        for($i = 0 ; $i<17 ; $i++)
+//        {
+//            Flights::create([
+//                'flight_name'=>$names[$i],
+//                'flight_number'=>random_int(1000,20000),
+//                'airline_id'=>random_int(1,17),
+//                'from'=> random_int(1,9),
+//                'distination'=>random_int(1,9),
+//                'available_weight'=> random_int(50,70),
+//                'available_seats'=>random_int(50,100)
+//            ]);
+//        }
+
         for($i = 0 ; $i<17 ; $i++)
         {
             Flights::create([
                 'flight_name'=>$names[$i],
                 'flight_number'=>random_int(1000,20000),
                 'airline_id'=>random_int(1,17),
-                'from'=> random_int(1,9),
-                'distination'=>random_int(1,9),
+                'from'=> ($i%2==0 ? 1:2),
+                'distination'=> ($i%2==0 ? 2:1),
                 'available_weight'=> random_int(50,70),
                 'available_seats'=>random_int(50,100)
             ]);
         }
 
+//        for($i = 0 ; $i<17 ; $i++){
+//
+//            $fromHour = Carbon::now()->addHours(random_int(1, 6));
+//            $toHour = Carbon::now()->addHours(random_int(6, 12));
+//
+//            $durationInMinutes = $toHour->diffInMinutes($fromHour);
+//            $duration = Carbon::now()->startOfDay()->addMinutes($durationInMinutes)->format('H:i:s');
+//
+//
+//            FlightsTime::create([
+//                'departe_day'=>Carbon::now()->addDays(random_int(1, 30)),
+//                'From_hour' => $fromHour->format('H:i:s'),
+//                'To_hour' => $toHour->format('H:i:s'),
+//                'duration'=>  $duration,
+//                'flights_id'=>random_int(1,10),
+//                'adults_price'=>random_int(1000,2000),
+//                'children_price'=>random_int(100,400),
+//            ]);
+//        }
+
         for($i = 0 ; $i<17 ; $i++){
 
             $fromHour = Carbon::now()->addHours(random_int(1, 6));
             $toHour = Carbon::now()->addHours(random_int(6, 12));
-        
+
             $durationInMinutes = $toHour->diffInMinutes($fromHour);
             $duration = Carbon::now()->startOfDay()->addMinutes($durationInMinutes)->format('H:i:s');
 
 
             FlightsTime::create([
-                'departe_day'=>Carbon::now()->addDays(random_int(1, 30)),
+                'departe_day'=>($i%2==0 ? '2023-9-10':'2023-9-15'),
                 'From_hour' => $fromHour->format('H:i:s'),
                 'To_hour' => $toHour->format('H:i:s'),
                 'duration'=>  $duration,
