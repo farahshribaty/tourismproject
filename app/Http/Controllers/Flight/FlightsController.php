@@ -96,7 +96,7 @@ class FlightsController extends Controller
 
     public function getCountries()
     {
-        $countries = Country::select('name','path')
+        $countries = Country::select('id','name','path')
         ->get();
 
         return response()->json([
