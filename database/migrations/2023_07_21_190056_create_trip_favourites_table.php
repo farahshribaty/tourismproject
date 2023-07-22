@@ -9,18 +9,12 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-
     public function up(): void
     {
-        Schema::create('trips_reservations', function (Blueprint $table) {
+        Schema::create('trip_favourites', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('date_id');
             $table->foreignId('user_id');
-            $table->integer('child');
-            $table->integer('adult');
-            $table->integer('points_added');
-            $table->integer('money_spent');
-            $table->boolean('active');
+            $table->foreignId('trip_id');
             $table->timestamps();
         });
     }
@@ -30,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('trips_reservations');
+        Schema::dropIfExists('trip_favourites');
     }
 };

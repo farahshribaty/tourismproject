@@ -62,7 +62,7 @@ class FlightsController extends Controller
         //                $query->where('flights.available_seats', '>=', $adults + $children);
         //            });
 
-        $outboundFlights = Flights::select('flights.id', 'flights.from', 'flights_times.departe_day', 'flights.available_seats', 'country_from.name as from', 'country_to.name as to')
+        $outboundFlights = Flights::select('flights.id',  'flights_times.departe_day', 'flights.available_seats', 'country_from.name as from', 'country_to.name as to', 'flights_times.adults_price', 'flights_times.children_price','flights_times.From_hour', 'flights_times.To_hour')
             ->join('flights_times', 'flights_times.flights_id', '=', 'flights.id')
             ->join('countries as country_from','flights.from','=','country_from.id')
             ->join('countries as country_to','flights.distination','=','country_to.id')
@@ -75,7 +75,7 @@ class FlightsController extends Controller
 
 
         // Return flights
-        $returnFlights = Flights::select('flights.id', 'flights.from', 'flights_times.departe_day', 'flights.available_seats', 'country_from.name as from', 'country_to.name as to')
+        $returnFlights = Flights::select('flights.id',  'flights_times.departe_day', 'flights.available_seats', 'country_from.name as from', 'country_to.name as to', 'flights_times.adults_price', 'flights_times.children_price','flights_times.From_hour', 'flights_times.To_hour')
             ->join('flights_times', 'flights_times.flights_id', '=', 'flights.id')
             ->join('countries as country_from','flights.from','=','country_from.id')
             ->join('countries as country_to','flights.distination','=','country_to.id')
