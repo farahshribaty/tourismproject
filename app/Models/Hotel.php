@@ -44,6 +44,10 @@ class Hotel extends Authenticatable
     {
         return $this->hasMany(HotelPhoto::class,'hotel_id');
     }
+    public function onePhoto()
+    {
+        return $this->hasOne(HotelPhoto::class,'hotel_id')->latest('id');
+    }
     public function Facilities()
     {
         return $this->belongsToMany(Facilities::class,'hotels_facilities','hotel_id','facilities_id');

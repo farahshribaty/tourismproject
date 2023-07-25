@@ -207,16 +207,28 @@ class UserController extends Controller
     {
         $word = $request->word;
 
-        $hotels = Hotel::where('name','like','%'.$word.'%')
+        $hotels = Hotel::select(['id','name','location','rate','num_of_ratings','city_id'])
+            ->where('name','like','%'.$word.'%')
             ->orWhereHas('City',function($q)use($word){
-                $q->where('name','like','%'.$word.'%');
-            })->take(6)->get();
+                $q->where('name','like','%'.$word.'%')
+                    ->orWhereHas('country',function($que)use($word){
+                        $que->where('name','like','%'.$word.'%');
+                    });
+            })
+            ->with(['City',
+                'City.country'=>function($q){
+                $q->select(['id','name']);
+                },
+                'onePhoto'])
+            ->take(6)->get();
 
 
         $attractions = Attraction::where('name','like','%'.$word.'%')
             ->orWhereHas('city',function($q)use($word){
                 $q->where('name','like','%'.$word.'%');
             })->take(6)->get();
+
+
 
         $trips = Trip::where('description','like','%'.$word.'%')
             ->orWhereHas('destination',function($q)use($word){

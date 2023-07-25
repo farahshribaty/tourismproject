@@ -25,18 +25,8 @@ Route::get('ShowAllHotel',[HotelController::class, 'ShowALLHotel']);
 Route::post('ShowHotelRooms',[HotelController::class, 'ShowHotelRooms']);
 Route::post('hotel/Hotelsearch',[UserController::class, 'Hotelsearch']);
 
-
 // trial root:
 Route::post('getReservations',[UserController::class,'Reservations']);
-
-
-
-// this is mohamad code:
-//Route::post('get')
-
-
-
-
 
 Route::group( ['prefix' => 'hotel','middleware' => ['auth:hotel-api'] ],function(){
 
