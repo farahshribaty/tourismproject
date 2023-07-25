@@ -268,37 +268,6 @@ class UserTripsController extends UserController
 
     // todo: send prices after discount!
 
-//    public function viewDeparturesAndDatesForSomeTrip(Request $request): JsonResponse
-//    {
-//        $request->validate([
-//            'trip_id'=>'required',
-//        ]);
-//
-//        $trip = Trip::where('id',$request->trip_id)->first();
-//        if($trip == null){
-//            return response()->json([
-//                'success'=>false,
-//                'message'=>'Trip not found',
-//            ]);
-//        }
-//
-//        $departures = TripDeparture::select(['trip_departures.id','trip_departures.flight_id','trip_departures.departure_details','cities.name as from_city'])
-//            ->join('cities','cities.id','=','trip_departures.city_id')
-//            ->where('trip_departures.trip_id',$request->trip_id)
-//            ->with(['dates' => function($q)use($trip){
-//                $date = Carbon::now()->addDay();
-//                $q->select([DB::raw($trip['max_persons'].' - current_reserved_people as available_seats'),'id','departure_id','departure_date','price'])
-//                    ->where('departure_date','>=',$date)                              // just dates form now on, and that have available seats
-//                    ->where('current_reserved_people','<',$trip['max_persons']);
-//            }])
-//            ->get();
-//
-//        return response()->json([
-//            'success'=>true,
-//            'departures'=>$departures,
-//        ]);
-//    }
-
     // todo: add points to user account
     public function makeReservation(Request $request): JsonResponse
     {
