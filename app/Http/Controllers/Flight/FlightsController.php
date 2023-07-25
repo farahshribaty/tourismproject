@@ -112,5 +112,4 @@ class FlightsController extends Controller
         'final flights' => $flights,
         ]);
     }
-
 }
