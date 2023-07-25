@@ -12,6 +12,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Dotenv\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
@@ -144,6 +145,39 @@ class AdminController extends Controller
             'success'=>true,
             'data'=>$users,
         ]);
+    }
+
+    function login(Request $request)
+    {
+        $request->validate([
+            'email'=>'required',
+            'password'=>'required',
+        ]);
+
+        $sections = ['hotel_admin', 'airline_admin', 'trip_admin', 'attraction_admin'];
+
+        // Attempt authentication against each section table
+        foreach ($sections as $section) {
+            $response = Http::post('http://127.0.0.1:8000' . '/oauth/token', [
+                'grant_type' => 'password',
+//                'client_id' => config('passport.password_client_id'),
+//                'client_secret' => config('passport.password_client_secret'),
+                'client_id' => 4,
+                'client_secret' => 'LnSYxgNXqH2aXHIQZdRxRviC9UhqbCVUykCqBaIv',
+                'username' => $request->email,
+                'password' => $request->password,
+                'scope' => $section,
+            ]);
+            return $response;
+
+            if ($response->successful()) {
+                // If authentication succeeds, return the authenticated user
+                return Auth::guard($section)->user();
+            }
+        }
+
+        // If authentication fails for all sections, return null
+        return 'failed';
     }
 
     public function getAllTripCompanies()

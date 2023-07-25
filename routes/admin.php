@@ -14,6 +14,8 @@ Route::post('city',[AdminController::class, 'AddCity']);
 Route::get('showcity',[AdminController::class, 'ShowCities']);
 Route::get('getAllUsers',[AdminController::class,'getAllUsers']);
 
+Route::post('login',[AdminController::class,'login']);
+
 Route::group( ['prefix' => 'admin','middleware' => ['auth:admin-api'] ],function(){
 
 });
