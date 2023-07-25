@@ -9,6 +9,7 @@ use App\Models\Flights;
 use App\Models\FlightsReservation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Nette\Utils\DateTime;
 
 class FlightsController extends Controller
 {

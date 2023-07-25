@@ -21,12 +21,13 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::post('register',[UserController::class,'register1']);
+Route::post('register',[UserController::class,'register']);
 Route::post('login',[UserController::class,'login']);
 Route::post('logout',[UserController::class,'logout'])->middleware('auth:user-api');
 
 
 Route::get('index',[UserController::class,'index']);
+Route::post('searchForAll',[UserController::class,'searchForAll']);
 
 
 // Email verification routes

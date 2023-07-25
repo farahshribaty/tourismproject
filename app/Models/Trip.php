@@ -13,6 +13,7 @@ class Trip extends Model
     protected $fillable = [
         'trip_company_id',
         'destination',
+        'description',
         'details',
         'days_number',
         'max_persons',

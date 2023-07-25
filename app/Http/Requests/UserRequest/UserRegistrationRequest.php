@@ -21,6 +21,7 @@ class UserRegistrationRequest extends FormRequest
      */
     public function rules(): array
     {
+
         return [
             //
             'first_name'=>'required',

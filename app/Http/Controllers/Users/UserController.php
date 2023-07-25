@@ -11,11 +11,15 @@ use App\Models\Hotel;
 use App\Models\Trip;
 use App\Models\User;
 use Carbon\Carbon;
+use http\Message;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
+use PhpParser\Error;
 
 class UserController extends Controller
 {
@@ -26,13 +30,39 @@ class UserController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
 
-    public function register(UserRegistrationRequest $request)
+    public function register(Request $request)
     {
-        $info = $request->validated();
+
+        try {
+            $validator = Validator::make($request->all(), [
+                'first_name'=>'required',
+                'last_name'=>'required',
+                'email'=>'required|unique:users|email',
+                'password'=>'required|confirmed',
+                'phone_number'=>'required',
+            ]);
+
+            if ($validator->fails()) {
+                throw new ValidationException($validator);
+            }
+            $info = $request->validated();
+
+            $info['points']=0;
+            $info['wallet']=100000;
+            User::create($info);
+            // Create a new user with the input data
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success'=>'true',
+                'data'=>$e->getMessage(),
+            ],200);
+
+        } catch (\Exception $e) {
+            // Handle other exceptions
+        }
+
         $info['points']=0;
         $info['wallet']=100000;
-        User::create($info);
-
         $user = User::where('email','=',$info['email'])->first();
         $user['token'] = $user->createToken('MyApp')->accessToken;
 
@@ -170,6 +200,34 @@ class UserController extends Controller
             'trip_offers'=>$trip_offers,
             'top_hotels'=> $top_hotels,
             'popularCountries'=> $popularCountries
+        ]);
+    }
+
+    public function searchForAll(Request $request)
+    {
+        $word = $request->word;
+
+        $hotels = Hotel::where('name','like','%'.$word.'%')
+            ->orWhereHas('City',function($q)use($word){
+                $q->where('name','like','%'.$word.'%');
+            })->take(6)->get();
+
+
+        $attractions = Attraction::where('name','like','%'.$word.'%')
+            ->orWhereHas('city',function($q)use($word){
+                $q->where('name','like','%'.$word.'%');
+            })->take(6)->get();
+
+        $trips = Trip::where('description','like','%'.$word.'%')
+            ->orWhereHas('destination',function($q)use($word){
+                $q->where('name','like','%'.$word.'%');
+            })->take(6)->get();
+
+        return response()->json([
+            'success'=>true,
+            'hotels'=>$hotels,
+            'attractions'=>$attractions,
+            'trips'=>$trips,
         ]);
     }
 
