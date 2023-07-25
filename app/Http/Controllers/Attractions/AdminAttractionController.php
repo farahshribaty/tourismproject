@@ -47,7 +47,7 @@ class AdminAttractionController extends Controller
         $new_date = DateTime::createfromformat('Y-m-d H:i:s',$date);
         $att['open_at'] = $new_date->format('H:i');
 
-//        $att['open_at']=$att['open_at']->format('H:i:s');
+     //      $att['open_at']=$att['open_at']->format('H:i:s');
 
         return response()->json([
             $att,

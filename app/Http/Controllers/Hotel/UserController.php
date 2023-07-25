@@ -100,6 +100,8 @@ class UserController extends Controller
     public function Hotelsearch(Request $request)
     {
         $query = Hotel::query();
+        $num_of_adults = $request->input('num_of_adults');
+        $num_of_children = $request->input('num_of_children');
 
         if ($request->has('name')) {
             $query->where('name', 'like', '%' . $request->input('name') . '%');
@@ -122,19 +124,23 @@ class UserController extends Controller
                 });
             });
         }
-        if($request->has('num_of_adults')){
-            $query->whereHas('hotel_resevations',function($que)use($request){
-                $que->where('num_of_adults','<=',$request->num_of_adults);
-            });
-        }
-        if($request->has('num_of_children')){
-            $query->whereHas('hotel_resevations',function($que)use($request){
-                $que->where('num_of_children','<=',$request->num_of_children);
-            });
-        }
+        // if($request->has('num_of_adults')){
+        //     $query->whereHas('hotel_resevations',function($que)use($request){
+        //         $que->where('hotel_resevations.num_of_adults','<=',$request->num_of_adults);
+        //     });
+        // }
+        // if($request->has('num_of_children')){
+        //     $query->whereHas('hotel_resevations',function($que)use($request){
+        //         $que->where('hotel_resevations.num_of_children','<=',$request->num_of_children);
+        //     });
+        // }
 
         if ($request->has('rate')) {                    //(filter:rate)
             $query->where('rate', '=', $request->input('rate'));
+        }
+
+        if ($request->has('stars')) {                    //(filter:stars)
+            $query->where('stars', '=', $request->input('stars'));
         }
 
         if($request->has('max_price')){
@@ -174,8 +180,8 @@ class UserController extends Controller
             ->paginate(10);
 
         return response()->json([
-            'success' => true,
-            'data' => $hotels,
+            'message' => "done",
+            'All hotels' => $hotels,
         ]);
     }
 
