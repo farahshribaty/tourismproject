@@ -47,66 +47,58 @@ class FlightsController extends Controller
 
     public function searchFlights(Request $request)
     {
-            $from = $request->input('from');
-            $distination = $request->input('distination');
-            $departe_day = $request->input('departe_day');
-            $return_day = $request->input('return_day');
-            $adults = $request->input('adults');
-            $children = $request->input('children');
+        $from = $request->input('from');
+        $distination = $request->input('distination');
+        $departe_day = $request->input('departe_day');
+        $return_day = $request->input('return_day');
+        $adults = $request->input('adults');
+        $children = $request->input('children');
 
-            $outboundFlights = Flights::select('flights.id',  'flights_times.departe_day', 'flights.available_seats', 'country_from.name as from', 'country_to.name as to', 'flights_times.adults_price', 'flights_times.children_price','flights_times.From_hour', 'flights_times.To_hour')
-                ->join('flights_times', 'flights_times.flights_id', '=', 'flights.id')
-                ->join('countries as country_from','flights.from','=','country_from.id')
-                ->join('countries as country_to','flights.distination','=','country_to.id')
-                ->where('country_from.name','LIKE', '%'.$from.'%')
-                ->where('country_to.name','LIKE', '%'.$distination.'%')
-                ->where('flights_times.departe_day', '>=', Carbon::parse($departe_day))
-                ->where(function ($query) use ($adults, $children) {
-                    $query->where('flights.available_seats', '>=', $adults + $children);
-                })->take(4)->get()->toArray();
+        $outboundFlights = Flights::select('flights.id',  'flights_times.departe_day', 'flights.available_seats', 'country_from.name as from', 'country_to.name as to', 'flights_times.adults_price', 'flights_times.children_price','flights_times.From_hour', 'flights_times.To_hour')
+        ->join('flights_times', 'flights_times.flights_id', '=', 'flights.id')
+        ->join('countries as country_from','flights.from','=','country_from.id')
+        ->join('countries as country_to','flights.distination','=','country_to.id')
+        ->where('country_from.name','LIKE', '%'.$from.'%')
+        ->where('country_to.name','LIKE', '%'.$distination.'%')
+        ->where('flights_times.departe_day', '>=', Carbon::parse($departe_day))
+        ->where(function ($query) use ($adults, $children) {
+         $query->where('flights.available_seats', '>=', $adults + $children);
+        })->take(4)->get()->toArray();
 
-//             Return flights
-                 if(isset($return_day))
-                 {
-                    $returnFlights = Flights::select('flights.id',  'flights_times.departe_day', 'flights.available_seats', 'country_from.name as from', 'country_to.name as to', 'flights_times.adults_price', 'flights_times.children_price','flights_times.From_hour', 'flights_times.To_hour')
-                    ->join('flights_times', 'flights_times.flights_id', '=', 'flights.id')
-                    ->join('countries as country_from','flights.from','=','country_from.id')
-                    ->join('countries as country_to','flights.distination','=','country_to.id')
-                    ->where('country_from.name','LIKE', '%'.$distination.'%')
-                    ->where('country_to.name','LIKE', '%'.$from.'%')
-                    ->where('flights_times.departe_day', '>=',  Carbon::parse($return_day))
-                    ->where(function ($query) use ($departe_day) {
-                        $query->where(function ($query) use ($departe_day) {
-                            $query->whereDate('flights_times.departe_day', '>', Carbon::parse($departe_day))
-                                  ->orWhere(function ($query) use ($departe_day) {
-                                      $query->whereDate('flights_times.departe_day', '=', Carbon::parse($departe_day))
-                                            ->whereRaw('flights_times.From_hour >= ?', [Carbon::parse($departe_day)->format('H:i:s')])
-                                            ->whereRaw('flights_times.From_hour <= ?', [Carbon::parse($departe_day)->addHours(2)->format('H:i:s')]);
-                                  });
+        //Return flights
+        if(isset($return_day)&&$return_day!=null)
+        {
+        $returnFlights = Flights::select('flights.id',  'flights_times.departe_day', 'flights.available_seats', 'country_from.name as from', 'country_to.name as to', 'flights_times.adults_price', 'flights_times.children_price','flights_times.From_hour', 'flights_times.To_hour')
+        ->join('flights_times', 'flights_times.flights_id', '=', 'flights.id')
+        ->join('countries as country_from','flights.from','=','country_from.id')
+        ->join('countries as country_to','flights.distination','=','country_to.id')
+        ->where('country_from.name','LIKE', '%'.$distination.'%')
+        ->where('country_to.name','LIKE', '%'.$from.'%')
+        ->where('flights_times.departe_day', '>=',  Carbon::parse($return_day))
+        ->where(function ($query) use ($departe_day) {
+            $query->where(function ($query) use ($departe_day) {
+                $query->whereDate('flights_times.departe_day', '>', Carbon::parse($departe_day))
+                        ->orWhere(function ($query) use ($departe_day) {
+                            $query->whereDate('flights_times.departe_day', '=', Carbon::parse($departe_day))
+                                ->whereRaw('flights_times.From_hour >= ?', [Carbon::parse($departe_day)->format('H:i:s')])
+                                ->whereRaw('flights_times.From_hour <= ?', [Carbon::parse($departe_day)->addHours(2)->format('H:i:s')]);
                         });
-                    })
-                    ->where(function ($query) use ($adults, $children) {
-                        $query->where('flights.available_seats', '>=', $adults + $children);
-                    })->take(4)->get()->toArray();
+            });
+        })
+        ->where(function ($query) use ($adults, $children) {
+            $query->where('flights.available_seats', '>=', $adults + $children);
+        })->take(4)->get()->toArray();
 
+        $flights = Arr::crossJoin($outboundFlights,$returnFlights);
+        }
+        else{
+        $flights = $outboundFlights;
+        }
 
-                    $flights = Arr::crossJoin($outboundFlights,$returnFlights);
-
-                  //$flights = $outboundFlights->union($returnFlights)->get();
-                 }
-                 else
-                 {
-                     $flights = $outboundFlights;
-                 }
-
-
-           return response()->json([
-               'final flights'=>$flights,
-//            'message' => "done",
-//            'outboundFlights'=>$outboundFlights,
-//            'returnFlights'=>$returnFlights,
-            //'flights' => $flights,
-            ]);
+        return response()->json([
+        'message' => "done",
+        'final flights' => $flights,
+        ]);
     }
 
 }
