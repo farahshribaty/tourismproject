@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('attraction_admins', function (Blueprint $table) {
             $table->id();
             $table->foreignId('attraction_id');
-            $table->string('email')->unique();
+            $table->string('user_name')->unique();
             $table->string('password');
             $table->timestamps();
         });

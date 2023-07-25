@@ -3,15 +3,20 @@
 namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
+use App\Models\AirlineAdmin;
 use App\Models\Attraction;
+use App\Models\AttractionAdmin;
 use App\Models\Country;
 use App\Models\City;
 use App\Models\Hotel;
+use App\Models\HotelAdmin;
+use App\Models\TripAdmin;
 use App\Models\TripCompany;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Dotenv\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Http\Request;
@@ -149,35 +154,33 @@ class AdminController extends Controller
 
     function login(Request $request)
     {
-        $request->validate([
-            'email'=>'required',
-            'password'=>'required',
-        ]);
+        $tables = ['main_admin','airline_admin','hotel_admin','attraction_admin','trip_admin'];
+        $admins[0] = Admin::where('user_name','=',$request->user_name)->first();
+        $admins[1] = AirlineAdmin::where('user_name','=',$request->user_name)->first();
+        $admins[2] = HotelAdmin::where('user_name','=',$request->user_name)->first();
+        $admins[3] = AttractionAdmin::where('user_name','=',$request->user_name)->first();
+        $admins[4] = TripAdmin::where('user_name','=',$request->user_name)->first();
 
-        $sections = ['hotel_admin', 'airline_admin', 'trip_admin', 'attraction_admin'];
-
-        // Attempt authentication against each section table
-        foreach ($sections as $section) {
-            $response = Http::post('http://127.0.0.1:8000' . '/oauth/token', [
-                'grant_type' => 'password',
-//                'client_id' => config('passport.password_client_id'),
-//                'client_secret' => config('passport.password_client_secret'),
-                'client_id' => 4,
-                'client_secret' => 'LnSYxgNXqH2aXHIQZdRxRviC9UhqbCVUykCqBaIv',
-                'username' => $request->email,
-                'password' => $request->password,
-                'scope' => $section,
-            ]);
-            return $response;
-
-            if ($response->successful()) {
-                // If authentication succeeds, return the authenticated user
-                return Auth::guard($section)->user();
+        $i=0;
+        foreach($admins as $admin){
+            if(isset($admin)){
+//                if(Hash::check($request->password,$admin->password)){
+                  if($request->password == $admin['password']){
+                      $admin['admin_type'] = $tables[$i];
+                      $admin['token'] = $admin->createToken('MyApp')->accessToken;
+                      return response()->json([
+                          'success'=>true,
+                          'admin'=>$admin,
+                      ],200);
+                }
             }
+            $i++;
         }
 
-        // If authentication fails for all sections, return null
-        return 'failed';
+        return response()->json([
+            'success'=>false,
+            'message'=>'Incorrect email or password',
+        ],400);
     }
 
     public function getAllTripCompanies()
