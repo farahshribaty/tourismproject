@@ -33,38 +33,27 @@ class UserController extends Controller
 
     public function register(Request $request): JsonResponse
     {
-
-        try {
-            $validator = Validator::make($request->all(), [
-                'first_name'=>'required',
-                'last_name'=>'required',
-                'email'=>'required|unique:users|email',
-                'password'=>'required|confirmed',
-                'phone_number'=>'required',
-            ]);
-
-            if ($validator->fails()) {
-                throw new ValidationException($validator);
-            }
-            $info = $request->validated();
-
-            $info['points']=0;
-            $info['wallet']=100000;
-            User::create($info);
-            // Create a new user with the input data
-        } catch (ValidationException $e) {
-            return response()->json([
-                'success'=>'true',
-                'data'=>$e->getMessage(),
-            ],200);
-
-        } catch (\Exception $e) {
-            // Handle other exceptions
+        $validated_data = Validator::make($request->all(), [
+            'first_name'=>'required',
+            'last_name'=>'required',
+            'email'=>'required|unique:users|email',
+            'password'=>'required|confirmed',
+            'phone_number'=>'required',
+        ]);
+        if($validated_data->fails()){
+            return response()->json(['error' => $validated_data->errors()->all()]);
         }
 
-        $info['points']=0;
-        $info['wallet']=100000;
-        $user = User::where('email','=',$info['email'])->first();
+        $user = User::create([
+            'first_name'=>$request->first_name,
+            'last_name'=>$request->last_name,
+            'email'=>$request->email,
+            'password'=>$request->password,
+            'phone_number'=>$request->phone_number,
+            'points'=>0,
+            'wallet'=>100000,
+        ]);
+
         $user['token'] = $user->createToken('MyApp')->accessToken;
 
         return response()->json([

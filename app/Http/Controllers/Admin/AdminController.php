@@ -14,10 +14,10 @@ use App\Models\TripAdmin;
 use App\Models\TripCompany;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
-use Dotenv\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
@@ -143,17 +143,18 @@ class AdminController extends Controller
         return response()->json(['cities' => $cities], 200);
     }
 
-    public function getAllUsers()
-    {
-        $users = User::paginate(10);
-        return response()->json([
-            'success'=>true,
-            'data'=>$users,
-        ]);
-    }
 
-    function login(Request $request)
+    function login(Request $request)     // this login is for all admins
     {
+        $validated_data = Validator::make($request->all(), [
+            'user_name' => 'required',
+            'password' => 'required',
+        ]);
+
+        if($validated_data->fails()){
+            return response()->json(['error' => $validated_data->errors()->all()]);
+        }
+
         $tables = ['main_admin','airline_admin','hotel_admin','attraction_admin','trip_admin'];
         $admins[0] = Admin::where('user_name','=',$request->user_name)->first();
         $admins[1] = AirlineAdmin::where('user_name','=',$request->user_name)->first();
@@ -172,7 +173,7 @@ class AdminController extends Controller
                           'success'=>true,
                           'admin'=>$admin,
                       ],200);
-                }
+                  }
             }
             $i++;
         }
@@ -181,24 +182,6 @@ class AdminController extends Controller
             'success'=>false,
             'message'=>'Incorrect email or password',
         ],400);
-    }
-
-    public function getAllTripCompanies()
-    {
-        $companies = TripCompany::paginate(10);
-        return response()->json([
-            'success'=>true,
-            'data'=>$companies,
-        ]);
-    }
-
-    public function getAllAttractions()
-    {
-        $attractions = Attraction::paginate(10);
-        return response()->json([
-            'success'=>true,
-            'data'=>$attractions,
-        ]);
     }
 
 
