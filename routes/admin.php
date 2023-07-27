@@ -38,6 +38,16 @@ Route::get('getAllTripCompanies',[TripController::class,'getAllTripCompanies']);
 
 // Attraction Operations:
 Route::get('getAllAttractions',[AttractionController::class,'getAllAttractions']);
+Route::get('getAttractionDetails',[AttractionController::class,'getAttractionDetails']);
+Route::post('editAttractionDetails',[AttractionController::class,'editAttractionDetails']);
+Route::get('deleteAttraction',[AttractionController::class,'deleteAttraction']);
+Route::post('uploadMultiplePhotos',[AttractionController::class,'uploadMultiplePhotos']);
+Route::post('uploadOnePhoto',[AttractionController::class,'uploadOnePhoto']);
+Route::post('deleteOnePhoto',[AttractionController::class,'deleteOnePhoto']);
+Route::get('getLatestReservations',[AttractionController::class,'getLatestReservations']);
+
+
+
 
 
 

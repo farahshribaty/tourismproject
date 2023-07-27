@@ -180,7 +180,7 @@ class UserController extends Controller
         ->join('countries', 'flights.distination', '=', 'countries.id')
         ->groupBy('countries.id', 'countries.name','countries.path')
         ->orderByDesc('total')
-        ->take(6) // Get top 5 popular countries
+        ->take(5) // Get top 5 popular countries
         ->get();
 
         return response()->json([
@@ -209,7 +209,7 @@ class UserController extends Controller
                 'City.country'=>function($q) {
                     $q->select(['id', 'name']);
                 },
-                'onePhoto'])
+                'photo'])
             ->take(6)->get();
 
 

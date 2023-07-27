@@ -65,7 +65,7 @@ class RouteServiceProvider extends ServiceProvider
 
             //for attraction:
             Route::middleware('api')
-                ->prefix('api')
+                ->prefix('api/attraction')
                 ->group(base_path('routes/attraction.php'));
 
             Route::middleware('web')

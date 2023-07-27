@@ -24,12 +24,20 @@ use App\Http\Requests\LoginRequest;
 
 class AdminController extends Controller
 {
+    // This controller contains all operations that the Main Admin can do, which are dependent of any section.
+
+
+    /**
+     * Creating new Admin
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function CreateAdmin(Request $request) //done
     {
         $request->validate([
             'first_name'=>['required','max:55'],
             'last_name'=>['required','max:55'],
-            'email'=>['email','required','unique:hotels'],
+            'user_name'=>['email','required','unique:hotels'],
             'password'=>[
                 'required',
                'confirmed',
@@ -44,7 +52,7 @@ class AdminController extends Controller
         $admin = new Admin();
         $admin->first_name = $request->first_name;
         $admin->last_name = $request->last_name;
-        $admin->email = $request->email;
+        $admin->user_name = $request->user_name;
         $admin->password =$request->password;  //should add bcrypt() but it didn;t eork on the login bcuz of it
         $admin->phone_number = $request->phone_number;
 
@@ -57,6 +65,8 @@ class AdminController extends Controller
                    'access_token'=>$accessToken
             ]);
     }
+
+
     public function AdminLogin(Request $request) //MAin Admin Login
     {
         $request->validate([
@@ -86,6 +96,8 @@ class AdminController extends Controller
         }
 
     }
+
+
     public function AddCountry(Request $request)
     {
         $request->validate([
@@ -101,6 +113,8 @@ class AdminController extends Controller
             'message'=>"country added successfuly"
         ]);
     }
+
+
     public function AddCity(Request $request) //done
     {
         // Find a country by its ID
@@ -125,6 +139,8 @@ class AdminController extends Controller
             'message' => 'City added to country'], 200);
 
     }
+
+
     //this should work for users..:
     public function ShowCities(Request $request)
     {
@@ -142,6 +158,7 @@ class AdminController extends Controller
         // Return the list of cities as a JSON response
         return response()->json(['cities' => $cities], 200);
     }
+
 
 
     function login(Request $request)     // this login is for all admins
