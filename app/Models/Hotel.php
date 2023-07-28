@@ -24,6 +24,7 @@ class Hotel extends Authenticatable
         'rate',
         'stars',
         'num_of_ratings',
+        'price_start_from',
         'website_url',
         'city_id',
         'type_id'

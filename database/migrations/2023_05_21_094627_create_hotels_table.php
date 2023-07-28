@@ -22,6 +22,7 @@ return new class extends Migration
             $table->integer('rate')->nullable();
             $table->integer('num_of_ratings')->nullable();
             $table->integer('stars');
+            $table->integer('price_start_from');
             $table->string('website_url')->nullable();
             $table->foreignId('city_id')->constrained('cities');
             $table->foreignId('type_id')->constrained('types');

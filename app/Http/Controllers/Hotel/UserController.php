@@ -124,24 +124,20 @@ class UserController extends Controller
                 });
             });
         }
-        // if($request->has('num_of_adults')){
-        //     $query->whereHas('hotel_resevations',function($que)use($request){
-        //         $que->where('hotel_resevations.num_of_adults','<=',$request->num_of_adults);
-        //     });
-        // }
-        // if($request->has('num_of_children')){
-        //     $query->whereHas('hotel_resevations',function($que)use($request){
-        //         $que->where('hotel_resevations.num_of_children','<=',$request->num_of_children);
-        //     });
-        // }
 
-        if ($request->has('rate')) {                    //(filter:rate)
+        // Rate Filters
+
+        if ($request->has('rate')) {                    
             $query->where('rate', '=', $request->input('rate'));
         }
 
-        if ($request->has('stars')) {                    //(filter:stars)
+        // stars Filters
+
+        if ($request->has('stars')) {                   
             $query->where('stars', '=', $request->input('stars'));
         }
+
+        //price Filters
 
         if($request->has('max_price')){
             $query->whereHas('Room',function($que)use($request){
@@ -181,7 +177,7 @@ class UserController extends Controller
 
         return response()->json([
             'message' => "done",
-            'All hotels' => $hotels,
+            'All_hotels' => $hotels,
         ]);
     }
 
@@ -198,7 +194,7 @@ class UserController extends Controller
     public function addReview(Request $request) //done
     {
         $request->validate([
-            'stars'=>'required',
+            'rate'=>'required',
             'hotel_id'=>'required',
         ]);
 
@@ -218,9 +214,12 @@ class UserController extends Controller
         if(isset($request->comment)){
             $comment = $request->comment;
         }
+        if(isset($request->rate)){
+            $rate = $request->rate;
+        }
 
         HotelReview::create([
-            'stars'=>$request->stars,
+            'rate'=>$rate,
             'comment'=>$comment,
             'user_id'=>$request->user_id,
             'hotel_id'=>$request->hotel_id,
@@ -238,8 +237,9 @@ class UserController extends Controller
 
         $num_of_ratings = $hotel['num_of_ratings'];
         $rate = $hotel->rate;
-
-        $new_rate = (($num_of_ratings*$rate)+$request->stars)/($num_of_ratings+1);
+       
+        $old_rate = $num_of_ratings*$hotel['rate'];
+        $new_rate = ($old_rate+$request->rate)/($num_of_ratings+1);
 
         Hotel::where('id',$request->hotel_id)
             ->update([
@@ -250,6 +250,8 @@ class UserController extends Controller
         return response()->json([
             'status'=>true,
             'message'=>'review has sent successfully',
+            // 'old rate'=>$old_rate,
+            // 'new rate'=>$new_rate
         ]);
     }
     /**

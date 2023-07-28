@@ -109,7 +109,7 @@ class FlightsController extends Controller
 
         return response()->json([
         'message' => "done",
-        'final flights' => $flights,
+        'final_flights' => $flights,
         ]);
     }
 }
