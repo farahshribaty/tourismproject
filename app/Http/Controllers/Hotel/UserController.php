@@ -105,7 +105,8 @@ class UserController extends Controller
 
         if ($request->has('name')) {
             $query->where('name', 'like', '%' . $request->input('name') . '%');
-        } else if ($request->has('location')) {
+        } 
+        else if ($request->has('location')) {
             $query->where('location', 'like', '%' . $request->input('location') . '%');
         }
 

@@ -3,15 +3,12 @@
 namespace App\Http\Controllers\Flight;
 
 use App\Http\Controllers\Controller;
-use App\Models\Airline;
 use App\Models\Country;
 use App\Models\Flights;
 use App\Models\FlightsReservation;
-use App\Models\FlightsTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
-use Nette\Utils\DateTime;
 use Illuminate\Support\Carbon;
 
 class FlightsController extends Controller
