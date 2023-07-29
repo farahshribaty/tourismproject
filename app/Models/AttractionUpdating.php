@@ -36,4 +36,9 @@ class AttractionUpdating extends Model
         'points_added_when_booking',
 
     ];
+
+    public function admin()
+    {
+        return $this->belongsTo(AttractionAdmin::class,'attraction_admin_id');
+    }
 }

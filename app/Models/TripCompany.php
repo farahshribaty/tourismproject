@@ -23,4 +23,9 @@ class TripCompany extends Model
     protected $hidden = [
         'password',
     ];
+
+    public function admin()
+    {
+        return $this->belongsTo(TripAdmin::class,'trip_admin_id');
+    }
 }

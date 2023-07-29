@@ -17,4 +17,16 @@ class TripAdmin extends Authenticatable
         'password',
         'trip_company_id',
     ];
+
+    protected $hidden = [
+        'password',
+        'created_at',
+        'updated_at',
+    ];
+
+    public function tripCompany()
+    {
+        return $this->hasOne(TripCompany::class,'trip_admin_id');
+    }
+
 }

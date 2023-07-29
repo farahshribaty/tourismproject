@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('attraction_updatings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('attraction_admin_id');
+            $table->foreignId('attraction_admin_id')->constrained('attraction_admins')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('attraction_id')->nullable();
             $table->boolean('add_or_update');   // 1 for update, 0 for add.
             $table->boolean('accepted');
@@ -24,11 +24,8 @@ return new class extends Migration
             $table->foreignId('attraction_type_id')->nullable();
             $table->string('name')->nullable();
             $table->string('email')->nullable();
-//            $table->string('password')->nullable();
             $table->string('location')->nullable();
             $table->string('phone_number')->nullable();
-//            $table->integer('rate')->nullable();
-//            $table->integer( 'num_of_ratings')->nullable();
             $table->dateTime('open_at')->nullable();
             $table->dateTime('close_at')->nullable();
             $table->integer('available_days')->nullable();

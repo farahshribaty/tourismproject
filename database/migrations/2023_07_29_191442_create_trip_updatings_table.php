@@ -11,13 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('trip_companies', function (Blueprint $table) {
+        Schema::create('trip_updatings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('trip_admin_id')->constrained('trip_admins')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('country_id');
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->string('phone_number');
+            $table->boolean('add_or_update');   // 1 for update, 0 for add.
+            $table->boolean('accepted');
+            $table->boolean('rejected');
+            $table->boolean('seen');
+
+            $table->foreignId('trip_company_id')->nullable();
+            $table->string('name')->nullable();
+            $table->string('email')->nullable();
+            $table->string('phone_number')->nullable();
             $table->timestamps();
         });
     }
@@ -27,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('trip_companies');
+        Schema::dropIfExists('trip_updatings');
     }
 };

@@ -95,7 +95,9 @@ class TripAdminController extends Controller
         return $this->success(null,'Company edited successfully');
     }
     protected function tripCompanyDetails($id){
-        $company = TripCompany::where('id','=',$id)->first();
+        $company = TripCompany::where('id','=',$id)
+            ->with('admin')
+            ->first();
 
         if(!isset($company)){
             return $this->error('Company not found');

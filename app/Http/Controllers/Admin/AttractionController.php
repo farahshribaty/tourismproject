@@ -62,6 +62,32 @@ class AttractionController extends AttractionAdminController
         return $this->success($updates, 'Updates retrieved successfully');
     }
 
+
+    /**
+     * Show Updates Details
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getUpdatingDetails(Request $request): JsonResponse
+    {
+        $validated_data = Validator::make($request->all(), [
+            'id' => 'required|exists:attraction_updatings',
+        ]);
+        if($validated_data->fails()){
+            return response()->json(['error' => $validated_data->errors()->all()]);
+        }
+
+        $update = AttractionUpdating::where('id','=',$request->id)
+            ->with('admin')
+            ->first();
+
+        AttractionUpdating::where('id','=',$request->id)->update([
+            'seen'=>1,
+        ]);
+
+        return $this->success($update,'Update retrieved successfully');
+    }
+
     /**
      * Accepting An Update (Adding/Editing Attraction)
      * @param Request $request
@@ -72,6 +98,7 @@ class AttractionController extends AttractionAdminController
         $validated_data = Validator::make($request->all(), [
             'id' => 'required|exists:attraction_updatings',
             'accepted' => 'required',
+            'rejected' => 'required',
         ]);
         if($validated_data->fails()){
             return response()->json(['error' => $validated_data->errors()->all()]);
@@ -80,7 +107,7 @@ class AttractionController extends AttractionAdminController
         $updates = AttractionUpdating::where('id','=',$request->id)->first()->toArray();
 
         if($updates['accepted']==1 || $updates['rejected']==1){
-            return $this->error('You can not accept/reject this update');
+            return $this->error('You can not accept/reject this update twice');
         }
 
         if($request->accepted == $request->rejected){
@@ -107,9 +134,9 @@ class AttractionController extends AttractionAdminController
             foreach($updates as $key=>$value){
                 if($value == null) unset($updates[$key]);
             }
-            $user = Attraction::findOrFail($updates['attraction_id']);
-            $user->fill($updates);
-            $user->save();
+            $attraction = Attraction::findOrFail($updates['attraction_id']);
+            $attraction->fill($updates);
+            $attraction->save();
 
             return $this->success(null,'Updates accepted successfully');
         }
@@ -132,7 +159,7 @@ class AttractionController extends AttractionAdminController
     }
 
     /**
-     * Show All Admins With Their Attraction Company
+     * Show All Admins With Their Trip Company
      * @return JsonResponse
      */
     public function getAllAdmins(): JsonResponse
@@ -179,6 +206,12 @@ class AttractionController extends AttractionAdminController
         return $this->editDetails($request,$request->id);
     }
 
+
+    /**
+     * Delete An Admin
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function deleteAdmin(Request $request): JsonResponse
     {
         $validated_data = Validator::make($request->all(), [

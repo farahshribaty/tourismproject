@@ -32,6 +32,12 @@ Route::post('editUserAccount',[UserController::class,'editUserAccount']);
 Route::get('getUserInfo',[UserController::class,'getUserInfo']);
 
 // Trips Operations:
+Route::post('makeNewAdmin',[TripController::class,'makeNewAdmin']);
+Route::get('showTripUpdates',[TripController::class,'getUpdatingList']);
+Route::post('acceptTripCompanyUpdate',[TripController::class,'acceptTripCompanyUpdate']);
+Route::get('getAllTripAdmins',[TripController::Class,'getAllTripAdmins']);
+
+
 Route::get('getAllTripCompanies',[TripController::class,'getAllTripCompanies']);
 Route::get('getTripCompanyDetails',[TripController::class,'getTripCompanyDetails']);
 Route::post('editCompanyDetails',[TripController::class,'editCompanyDetails']);
@@ -39,19 +45,20 @@ Route::get('deleteTheCompany',[TripController::class,'deleteTheCompany']);
 
 
 // Attraction Operations:
+Route::post('makeNewAdmin',[AttractionController::class,'makeNewAdmin']);
+Route::get('showAttractionUpdates',[AttractionController::class,'getUpdatingList']);
+Route::get('getUpdatingDetails',[AttractionController::class,'getUpdatingDetails']);
+Route::post('acceptUpdate',[AttractionController::class,'acceptingAttraction']);
 Route::get('getAllAttractions',[AttractionController::class,'getAllAttractions']);
+Route::get('getAllAdmins',[AttractionController::Class,'getAllAdmins']);
 Route::get('getAttractionDetails',[AttractionController::class,'getAttractionDetails']);
 Route::post('editAttractionDetails',[AttractionController::class,'editAttractionDetails']);
+Route::get('deleteAdmin',[AttractionController::class,'deleteAdmin']);
 Route::get('deleteAttraction',[AttractionController::class,'deleteAttraction']);
 Route::post('uploadMultiplePhotos',[AttractionController::class,'uploadMultiplePhotos']);
 Route::post('uploadOnePhoto',[AttractionController::class,'uploadOnePhoto']);
 Route::post('deleteOnePhoto',[AttractionController::class,'deleteOnePhoto']);
 Route::get('getLatestReservations',[AttractionController::class,'getLatestReservations']);
-Route::get('showUpdates',[AttractionController::class,'getUpdatingList']);
-Route::post('acceptUpdate',[AttractionController::class,'acceptingAttraction']);
-Route::post('makeNewAdmin',[AttractionController::class,'makeNewAdmin']);
-Route::get('getAllAdmins',[AttractionController::Class,'getAllAdmins']);
-Route::get('deleteAdmin',[AttractionController::class,'deleteAdmin']);
 
 
 
