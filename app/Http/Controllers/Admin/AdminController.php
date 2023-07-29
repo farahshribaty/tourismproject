@@ -15,10 +15,15 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
+use App\Models\Airline;
+use App\Models\AirlineAdmin;
+use App\Models\AttractionAdmin;
+use App\Models\HotelAdmin;
+use App\Models\TripAdmin;
 
 class AdminController extends Controller
 {
-    public function CreateAdmin(Request $request) //done
+    public function CreateAdmin1(Request $request) //old
     {
         $request->validate([
             'first_name'=>['required','max:55'],
@@ -50,6 +55,57 @@ class AdminController extends Controller
                    'admin'=> $admin,
                    'access_token'=>$accessToken
             ]);
+    }
+    public function CreateAdmin(Request $request) //new
+    {
+        $request->validate([
+        'user_name',
+        'password'=>[
+            'required',
+           password::min(8)
+            ->letters()
+            ->numbers()
+            ->symbols()
+        ]
+        ]);
+        $type=$request->admin_type;
+        if($type=='Hotel')
+        {
+            $admin = new HotelAdmin();
+            $admin->user_name=$request->user_name;
+            $admin->password=$request->password;
+            $admin->save();
+            $accessToken=$admin->createtoken('MyApp',['admin'])->accessToken;
+        }
+        if($type=='Airline')
+        {
+            $admin = new AirlineAdmin();
+            $admin->user_name=$request->user_name;
+            $admin->password=$request->password;
+            $admin->save();
+            $accessToken=$admin->createtoken('MyApp',['admin'])->accessToken;
+        }
+        if($type=='Trips')
+        {
+            $admin = new TripAdmin();
+            $admin->user_name=$request->user_name;
+            $admin->password=$request->password;
+            $admin->save();
+            $accessToken=$admin->createtoken('MyApp',['admin'])->accessToken;
+        }
+        if($type=='Attraction')
+        {
+            $admin = new AttractionAdmin();
+            $admin->user_name=$request->user_name;
+            $admin->password=$request->password;
+            $admin->save();
+            $accessToken=$admin->createtoken('MyApp',['admin'])->accessToken;
+        }
+        return response()->json([
+            'admin'=> $admin,
+            'access_token'=>$accessToken
+        ]);
+
     }
     public function AdminLogin(Request $request) //MAin Admin Login
     {

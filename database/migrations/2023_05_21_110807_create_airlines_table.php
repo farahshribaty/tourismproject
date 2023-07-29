@@ -22,6 +22,7 @@ return new class extends Migration
             $table->integer('num_of_ratings')->nullable();
             $table->string('path');
             $table->foreignId('country_id')->constrained('countries');
+            $table->foreignId('admin_id')->constrained('airline_admins');
             $table->timestamps();
         });
     }

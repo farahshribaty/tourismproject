@@ -3,12 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\Hotel;
+use App\Models\HotelAdmin;
 use App\Models\HotelPhoto;
-use App\Models\HotelResevation;
 use App\Models\HotelReview;
-use App\Models\Room;
-use Illuminate\Support\Carbon;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
 
 class HotelSeeder extends Seeder
@@ -18,6 +16,14 @@ class HotelSeeder extends Seeder
      */
     public function run(): void
     {
+        for($i = 0 ; $i<17 ; $i++)
+        {
+            HotelAdmin::create([
+                'user_name'=>fake()->unique()->name(),
+                'password'=>fake()->password()
+            ]);
+        }
+        
         $names = [
             'Hilton', 'Sheraton', 'Westin',' Four Seasons','Ritz-Carlton','Hyatt','Renaissance','Embassy Suites','blueTour',' InterContinental',
             'Hyatt Regency',' Shangri-La',' Grand Hyatt',' Wyndham',' JW Marriott',' Fairmont','Sofitel',
@@ -42,6 +48,7 @@ class HotelSeeder extends Seeder
                 'website_url'=>'https://hotel.com',
                 'city_id'=>random_int(1,9),
                 'type_id'=>random_int(1,5),
+                'admin_id'=>$i+1
             ]);
         }
 

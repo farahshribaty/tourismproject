@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('website_url')->nullable();
             $table->foreignId('city_id')->constrained('cities');
             $table->foreignId('type_id')->constrained('types');
+            $table->foreignId('admin_id')->constrained('hotel_admins');
             $table->timestamps();
 
         });

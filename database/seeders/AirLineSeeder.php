@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Airline;
+use App\Models\AirlineAdmin;
+use Illuminate\Validation\Rules\Unique;
 
 class AirLineSeeder extends Seeder
 {
@@ -13,6 +15,15 @@ class AirLineSeeder extends Seeder
      */
     public function run(): void
     {
+
+        for($i = 0 ; $i<30 ; $i++)
+        {
+            AirlineAdmin::create([
+                'user_name'=>fake()->unique()->name(),
+                'password'=>fake()->password()
+            ]);
+        }
+
         $names = [
             'Emirates Airline', 'Qatar Airways', 'Saudi Arabian Airlines','China Airlines','Turkish Airlines'
             ,'American Airlines','WestJet','Air France KLM','Aeroflot Russian Airlines'
@@ -35,7 +46,8 @@ class AirLineSeeder extends Seeder
                 'rate'=> random_int(1,5),
                 'num_of_ratings'=> random_int(10,3000),
                 'path'=>'http://127.0.0.1:8000/images/airline/'.'0000.jpg',
-                'country_id'=>random_int(1,9)
+                'country_id'=>random_int(1,9),
+                'admin_id'=>$i+1
             ]);
         }
 

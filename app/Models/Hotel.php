@@ -27,7 +27,8 @@ class Hotel extends Authenticatable
         'price_start_from',
         'website_url',
         'city_id',
-        'type_id'
+        'type_id',
+        'admin_id'
     ];
 
     protected $hidden = [
@@ -60,6 +61,11 @@ class Hotel extends Authenticatable
     public function reviews()
     {
         return $this->hasMany(HotelReview::class,'hotel_id');
+    }
+
+    public function Admin()
+    {
+       return $this->hasOne(HotelAdmin::class,'hotel_admins_id');
     }
 
 }

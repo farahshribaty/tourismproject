@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('hotel_admins', function (Blueprint $table) {
+        Schema::create('airline_admins', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('hotel_id');
             $table->string('user_name')->unique();
             $table->string('password');
             $table->timestamps();
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('hotel_admins');
+        Schema::dropIfExists('airline_admins');
     }
 };
