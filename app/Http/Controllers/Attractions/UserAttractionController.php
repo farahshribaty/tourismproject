@@ -141,6 +141,8 @@ class UserAttractionController extends UserController
             ->with(['city','type','photos'])
             ->first();
 
+        $attraction['available_days'] = $this->convertBitmasktoWeekArray($attraction['available_days']);
+
         $reviews = AttractionReview::where('attraction_id',$request->attraction_id)
 //            ->with('user',function($q){
 //                $q->select(['first_name','last_name',]);

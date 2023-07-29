@@ -36,13 +36,14 @@ class Controller extends BaseController
             if($week[$i] == $day) return $i;
             if($i == $day) return $week[$i];
         }
+        return -1;
     }
 
     public function convertWeekArrayToBitmask($week)
     {
         $bit = 0;
         foreach($week as $key=>$value){
-            if($value){
+            if($this->dayNumber($key)!=-1) if($value){
                 $bit = $bit|(1<<($this->dayNumber($key)));
             }
         }

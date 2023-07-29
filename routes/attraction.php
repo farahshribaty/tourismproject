@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Attractions\AttractionAdminController;
 use App\Http\Controllers\Attractions\UserAttractionController;
+use App\Http\Middleware\RegisteredAttractionCompanies;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 /*
@@ -32,13 +33,15 @@ Route::group( ['middleware' => ['auth:user-api'] ],function(){
 // Attraction Admin Operation
 
 Route::group( ['middleware' => ['auth:attraction_admin-api'] ],function(){
-    Route::get('getAttractionDetails',[AttractionAdminController::class,'getAttractionDetails']);
-    Route::post('editAttractionDetails',[AttractionAdminController::class,'editAttractionDetails']);
-    Route::post('uploadMultiplePhotos',[AttractionAdminController::class,'uploadMultiplePhotos']);
-    Route::post('uploadOnePhoto',[AttractionAdminController::class,'uploadOnePhoto']);
-    Route::post('deleteOnePhoto',[AttractionAdminController::class,'deleteOnePhoto']);
-    Route::get('getLatestReservations',[AttractionAdminController::class,'getLatestReservations']);
     Route::post('addAttractionCompany',[AttractionAdminController::class,'addAttractionCompany']);
+    Route::group( ['middleware' => ['just registered companies'] ],function(){
+        Route::get('getAttractionDetails',[AttractionAdminController::class,'getAttractionDetails']);
+        Route::post('editAttractionDetails',[AttractionAdminController::class,'editAttractionDetails']);
+        Route::post('uploadMultiplePhotos',[AttractionAdminController::class,'uploadMultiplePhotos']);
+        Route::post('uploadOnePhoto',[AttractionAdminController::class,'uploadOnePhoto']);
+        Route::post('deleteOnePhoto',[AttractionAdminController::class,'deleteOnePhoto']);
+        Route::get('getLatestReservations',[AttractionAdminController::class,'getLatestReservations']);
+    });
 });
 Route::post('adminRegister',[AttractionAdminController::class,'adminRegister']);  // not official
 

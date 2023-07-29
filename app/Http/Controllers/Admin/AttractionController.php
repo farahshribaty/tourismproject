@@ -49,7 +49,16 @@ class AttractionController extends AttractionAdminController
      */
     public function getUpdatingList(Request $request): JsonResponse
     {
-        $updates = AttractionUpdating::where('accepted', '=', 0)->get();
+        $updates = AttractionUpdating::when($request->accepted == 1, function($q){
+                $q->where('accepted','=',1);
+            })
+            ->when($request->rejected == 1,function($q){
+                $q->where('rejected','=',1);
+            })
+            ->when($request->unseen_only == 1,function($q){
+                $q->where('seen','=',0);
+            })
+            ->get();
         return $this->success($updates, 'Updates retrieved successfully');
     }
 
@@ -68,7 +77,18 @@ class AttractionController extends AttractionAdminController
             return response()->json(['error' => $validated_data->errors()->all()]);
         }
 
-        if($request->rejected == 1){
+        $updates = AttractionUpdating::where('id','=',$request->id)->first()->toArray();
+
+        if($updates['accepted']==1 || $updates['rejected']==1){
+            return $this->error('You can not accept/reject this update');
+        }
+
+        if($request->accepted == $request->rejected){
+            return $this->error('Select one: accept or reject');
+        }
+
+
+        if($request->rejected == 1){            // if the updates/adds rejected
             AttractionUpdating::where('id','=',$request->id)->update([
                 'rejected'=> 1,
             ]);
@@ -76,7 +96,6 @@ class AttractionController extends AttractionAdminController
             return $this->success(null,'Updates rejected successfully');
         }
 
-        $updates = AttractionUpdating::where('id','=',$request->id)->first()->toArray();
 
         if(!isset($updates)){
             return $this->error('Updates not found');
