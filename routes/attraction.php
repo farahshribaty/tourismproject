@@ -17,31 +17,33 @@ use Illuminate\Support\Facades\Route;
 
 // User Operations
 
-Route::post('register',[AttractionAdminController::class,'register']);
-Route::post('addPhoto',[AttractionAdminController::class,'addPhotos'])->middleware('auth:attraction-api');
-Route::get('index',[UserAttractionController::class,'index']);
-Route::post('rateAttraction',[UserAttractionController::class,'addReview'])->middleware('auth:user-api');
-Route::post('search',[UserAttractionController::class,'searchForAttractions']);
-Route::post('sendReview',[UserAttractionController::class,'addReview'])->middleware('auth:user-api');
-Route::post('viewAttractionDetails',[UserAttractionController::class,'viewAttractionDetails']);
-Route::post('bookingTicket',[UserAttractionController::class,'bookingTicket'])->middleware('auth:user-api');
+Route::group( [],function(){
+    Route::get('index',[UserAttractionController::class,'index']);
+    Route::post('search',[UserAttractionController::class,'searchForAttractions']);
+    Route::post('viewAttractionDetails',[UserAttractionController::class,'viewAttractionDetails']);
+});
 
+Route::group( ['middleware' => ['auth:user-api'] ],function(){
+    Route::post('rateAttraction',[UserAttractionController::class,'addReview']);
+    Route::post('sendReview',[UserAttractionController::class,'addReview']);
+    Route::post('bookingTicket',[UserAttractionController::class,'bookingTicket']);
+});
 
 // Attraction Admin Operation
 
-Route::get('getAttractionDetails',[AttractionAdminController::class,'getAttractionDetails'])->middleware('auth:attraction_admin-api');
-Route::post('editAttractionDetails',[AttractionAdminController::class,'editAttractionDetails'])->middleware('auth:attraction_admin-api');
-Route::post('uploadMultiplePhotos',[AttractionAdminController::class,'uploadMultiplePhotos'])->middleware('auth:attraction_admin-api');
-Route::post('uploadOnePhoto',[AttractionAdminController::class,'uploadOnePhoto'])->middleware('auth:attraction_admin-api');
-Route::post('deleteOnePhoto',[AttractionAdminController::class,'deleteOnePhoto'])->middleware('auth:attraction_admin-api');
-Route::get('getLatestReservations',[AttractionAdminController::class,'getLatestReservations'])->middleware('auth:attraction_admin-api');
-
-
+Route::group( ['middleware' => ['auth:attraction_admin-api'] ],function(){
+    Route::get('getAttractionDetails',[AttractionAdminController::class,'getAttractionDetails']);
+    Route::post('editAttractionDetails',[AttractionAdminController::class,'editAttractionDetails']);
+    Route::post('uploadMultiplePhotos',[AttractionAdminController::class,'uploadMultiplePhotos']);
+    Route::post('uploadOnePhoto',[AttractionAdminController::class,'uploadOnePhoto']);
+    Route::post('deleteOnePhoto',[AttractionAdminController::class,'deleteOnePhoto']);
+    Route::get('getLatestReservations',[AttractionAdminController::class,'getLatestReservations']);
+    Route::post('addAttractionCompany',[AttractionAdminController::class,'addAttractionCompany']);
+});
 Route::post('adminRegister',[AttractionAdminController::class,'adminRegister']);  // not official
 
 
 Route::group( ['prefix' => 'attraction','middleware' => ['auth:attraction-api'] ],function(){
-
     Route::post('dashboard',[AttractionAdminController::class, 'dashboard'])->name('attraction.dashboard');
 });
 

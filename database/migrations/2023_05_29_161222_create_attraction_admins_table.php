@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('attraction_admins', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('attraction_id')->constrained('attractions')->cascadeOnUpdate()->cascadeOnDelete();
+//            $table->foreignId('attraction_id')->constrained('attractions')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('user_name')->unique();
             $table->string('password');
             $table->timestamps();

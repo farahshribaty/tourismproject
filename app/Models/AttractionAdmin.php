@@ -15,7 +15,6 @@ class AttractionAdmin extends Authenticatable
     protected $fillable = [
         'user_name',
         'password',
-        'attraction_id',
     ];
 
     protected $hidden = [

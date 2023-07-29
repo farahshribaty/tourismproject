@@ -15,9 +15,7 @@ class TripCompany extends Model
     protected $fillable = [
         'name',
         'email',
-        'password',
         'phone_number',
-        'rate',
         'country_id',
     ];
 

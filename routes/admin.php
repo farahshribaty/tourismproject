@@ -33,7 +33,9 @@ Route::get('getUserInfo',[UserController::class,'getUserInfo']);
 
 // Trips Operations:
 Route::get('getAllTripCompanies',[TripController::class,'getAllTripCompanies']);
-
+Route::get('getTripCompanyDetails',[TripController::class,'getTripCompanyDetails']);
+Route::post('editCompanyDetails',[TripController::class,'editCompanyDetails']);
+Route::get('deleteTheCompany',[TripController::class,'deleteTheCompany']);
 
 
 // Attraction Operations:
@@ -45,6 +47,9 @@ Route::post('uploadMultiplePhotos',[AttractionController::class,'uploadMultipleP
 Route::post('uploadOnePhoto',[AttractionController::class,'uploadOnePhoto']);
 Route::post('deleteOnePhoto',[AttractionController::class,'deleteOnePhoto']);
 Route::get('getLatestReservations',[AttractionController::class,'getLatestReservations']);
+Route::get('showUpdates',[AttractionController::class,'getUpdatingList']);
+Route::post('acceptUpdate',[AttractionController::class,'acceptingAttraction']);
+Route::post('makeNewAdmin',[AttractionController::class,'makeNewAdmin']);
 
 
 

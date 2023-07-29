@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('trip_admins', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('trip_company_id');
+            $table->foreignId('trip_company_id')->constrained('trip_companies')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('user_name')->unique();
             $table->string('password');
             $table->timestamps();

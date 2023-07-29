@@ -7,79 +7,86 @@ use App\Models\Attraction;
 use App\Models\AttractionAdmin;
 use App\Models\AttractionPhoto;
 use App\Models\AttractionReservation;
+use App\Models\AttractionUpdating;
+use App\Models\UpdateAcceptance;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Nette\Utils\DateTime;
 
 class AttractionAdminController extends Controller
 {
-    //
+    // This controller contains all operations that the attraction admin can do on the attraction he's responsible for.
 
-    public function adminRegister(Request $request)
+    /**
+     * Add Attraction Company For The First Time
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function addAttractionCompany(Request $request): JsonResponse
     {
-        AttractionAdmin::create([
-            'user_name'=>$request->user_name,
-            'password'=>$request->password,
-            'attraction_id'=>2,
-        ]);
+        $attraction = Attraction::where('attraction_admin_id','=',$request->user()->id)->first();
 
-        $attraction = AttractionAdmin::where('user_name','=',$request->user_name)->first();
-        $attraction['token'] = $attraction->createToken('MyApp')->accessToken;
-        return response()->json([
-            'data'=>$attraction,
+        if(isset($attraction)){
+            return $this->error('You no longer have the ability to add your company');
+        }
+
+        $validated_data = Validator::make($request->all(), [
+            'city_id'=> 'required',
+            'attraction_type_id'=> 'required',
+            'name'=> 'required',
+            'email'=> 'required',
+//            'password'=> 'required',
+            'location'=> 'required',
+            'phone_number'=> 'required',
+            'details'=> 'required',
+            'open_at'=> 'required',
+            'close_at'=> 'required',
+            'available_days'=> 'required',
+            'website_url'=> 'required',
+            'adult_price'=> 'required',
+            'child_price'=> 'required',
+            'child_ability_per_day'=> 'required',
+            'adult_ability_per_day'=> 'required',
+            'points_added_when_booking'=> 'required',
         ]);
+        if($validated_data->fails()){
+            return response()->json(['error' => $validated_data->errors()->all()]);
+        }
+
+        $data = $request;
+        $data['attraction_admin_id'] = $request->user()->id;
+        $data['add_or_update'] = 0;
+        $data['accepted'] = 0;
+        $data['rejected'] = 0;
+        $data['seen'] = 0;
+
+        AttractionUpdating::create($data->all());
+        return $this->success(null,'Form sent successfully, pending approval.');
     }
 
-    public function dashboard(Request $request)
+    /**
+     * Edit Attraction Details
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function editAttractionDetails(Request $request): JsonResponse
     {
-        return $request->user();
+        $attraction = Attraction::where('attraction_admin_id','=',$request->user()->id)->first();
+
+        $data = $request;
+        $data['attraction_admin_id'] = $request->user()->id;
+        $data['attraction_id'] = $attraction['id'];
+        $data['add_or_update'] = 1;
+        $data['accepted'] = 0;
+        $data['rejected'] = 0;
+        $data['seen'] = 0;
+
+        AttractionUpdating::create($data->all());
+
+        return $this->success(null,'Updates sent successfully, pending approval.');
+        //return $this->editDetails($request,$id);
     }
-
-    public function addAttraction(Request $request)
-    {
-
-        $request->validate([
-            'open_at'=>'required',
-            'close_at'=>'required',
-            'email'=>'required|unique:attractions',
-        ]);
-
-        $att = Attraction::create([
-            'city_id'=>1,
-            'attraction_type_id'=>1,
-            'name'=>'hello',
-            'email'=>$request->email,
-            'password'=>'helloh',
-            'location'=>'damascus',
-            'phone_number'=>324354,
-            'rate'=>3,
-            'num_of_ratings'=>23,
-            'open_at'=> $request->open_at,
-            'close_at'=> $request->open_at,
-            'available_days'=>1010101,
-            'child_ability_per_day'=>34,
-            'adult_ability_per_day'=>34,
-            'details'=>'hello',
-            'website_url'=>'ejlksjf',
-            'adult_price'=>354,
-            'child_price'=>343,
-            'points_added_when_booking'=>43,
-        ]);
-
-        $date = $att['open_at'];
-
-        $new_date = DateTime::createfromformat('Y-m-d H:i:s',$date);
-        $att['open_at'] = $new_date->format('H:i');
-
-        //      $att['open_at']=$att['open_at']->format('H:i:s');
-
-        return response()->json([
-            $att,
-        ]);
-    }
-
-
-
 
     /**
      * Shows Attraction Details
@@ -90,17 +97,6 @@ class AttractionAdminController extends Controller
     {
         $id = $request->user()->attraction_id;
         return $this->attractionDetails($id);
-    }
-
-    /**
-     * Edit Attraction Details
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function editAttractionDetails(Request $request): JsonResponse
-    {
-        $id = $request->user()->attraction_id;
-        return $this->editDetails($request,$id);
     }
 
     /**
@@ -143,10 +139,14 @@ class AttractionAdminController extends Controller
             return $this->error('Unauthorized to delete this photo');
         }
 
-        return $this->deletePHoto($request->id);
+        return $this->deletePhoto($request->id);
     }
 
-
+    /**
+     * Getting The Latest Reservations
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function getLatestReservations(Request $request): JsonResponse
     {
         $id = $request->user()->attraction_id;
@@ -211,7 +211,7 @@ class AttractionAdminController extends Controller
 
         return $this->success(null,'Photos added successfully');
     }
-    public function addPhoto($request,$id)
+    protected function addPhoto($request,$id)
     {
         if($request->hasFile('photo')) {
             $file_extension = $request->photo->getClientOriginalExtension();
@@ -225,7 +225,7 @@ class AttractionAdminController extends Controller
         }
         return $this->success(null,'Photo added successfully');
     }
-    public function deletePhoto($id){
+    protected function deletePhoto($id){
         AttractionPhoto::where('id','=',$id)->delete();
         return $this->success(null,'Photo deleted successfully');
     }

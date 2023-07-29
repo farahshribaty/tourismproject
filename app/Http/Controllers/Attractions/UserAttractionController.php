@@ -31,6 +31,7 @@ class UserAttractionController extends UserController
             ->orderBy('rate','desc')
             ->with(['photo','city'])
             ->take(6)
+            ->acceptedTrips()
             ->get();
 
 

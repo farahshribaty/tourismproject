@@ -14,8 +14,8 @@ return new class extends Migration
     {
         Schema::create('trips_reservations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('date_id');
-            $table->foreignId('user_id');
+            $table->foreignId('date_id')->constrained('trip_dates')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnUpdate()->cascadeOnDelete();
             $table->integer('child');
             $table->integer('adult');
             $table->integer('points_added');

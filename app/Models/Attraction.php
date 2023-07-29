@@ -15,6 +15,7 @@ class Attraction extends Model
     protected $fillable = [
         'city_id',
         'attraction_type_id',
+        'attraction_admin_id',
         'name',
         'email',
         'password',
@@ -36,6 +37,7 @@ class Attraction extends Model
 
     protected $hidden = [
         'password',
+        'attraction_admin_id',
         'created_at',
         'updated_at',
     ];
@@ -64,5 +66,18 @@ class Attraction extends Model
     public function reviews()
     {
         return $this->belongsToMany(User::class,AttractionReview::class,'attraction_id','user_id');
+    }
+
+    public function updates()
+    {
+        return $this->morphMany(UpdateAcceptance::class,'updatable');
+    }
+
+    public function scopeAcceptedTrips($query)     // Just attractions that doesn't have any updates, or have an accepted updated information
+    {
+        return $this->whereHas('updates',function($q){
+            $q->where('accepted','=',1);
+        })
+            ->orWhereDoesntHave('updates');
     }
 }
