@@ -6,6 +6,7 @@ use App\Models\Attraction;
 use App\Models\AttractionAdmin;
 use App\Models\AttractionPhoto;
 use App\Models\AttractionType;
+use App\Models\AttractionUpdating;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -40,6 +41,8 @@ class AttractionSeeder extends Seeder
             'These are attractions that offer adventure activities such as bungee jumping, zip-lining, and rock climbing.',
             'These are attractions that are designed to promote sustainable tourism and preserve natural environments, such as wildlife reserves and eco-lodges.',
         ];
+
+        // adding types
 
         for($i=0 ; $i<8 ; $i++){
             AttractionType::create([
@@ -94,15 +97,32 @@ class AttractionSeeder extends Seeder
             ]);
         }
 
+        // adding some updates
+
+        for($i=0 ; $i<10 ; $i++){
+            AttractionUpdating::create([
+                'attraction_id'=> ($i+1),
+                'attraction_admin_id'=> ($i+1),
+                'add_or_update'=> 1,
+                'accepted'=> 0,
+                'rejected'=> 0,
+                'seen'=> 0,
+                'name'=> 'firas zalameh mfakas'
+            ]);
+        }
+
         //adding photo for each attraction
 
         $attrs = Attraction::get();
+        $photos = ['1685138340.jpg','posx.jpg','1690407857.wallpaper.jpg','1690408944.jpg','1690409198.jpg'];
 
         foreach($attrs as $attr){
-            AttractionPhoto::create([
-                'attraction_id'=>$attr['id'],
-                'path'=>'http://127.0.0.1:8000/images/attraction/'.'1685138340.jpg',
-            ]);
+            for($i=0 ; $i<5 ; $i++){
+                AttractionPhoto::create([
+                    'attraction_id'=> $attr['id'],
+                    'path'=> 'http://127.0.0.1:8000/images/attraction/'.$photos[$i],
+                ]);
+            }
         }
     }
 }

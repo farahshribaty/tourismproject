@@ -108,11 +108,22 @@ class AttractionController extends AttractionAdminController
      */
     public function getAllAttractions(): JsonResponse
     {
-        $attractions = Attraction::paginate(10);
-        return response()->json([
-            'success'=>true,
-            'data'=>$attractions,
-        ]);
+        $attractions = Attraction::with('admin')->paginate(10);
+        return $this->success($attractions,'Attractions retrieved successfully');
+    }
+
+    /**
+     * Show All Admins With Their Attraction Company
+     * @return JsonResponse
+     */
+    public function getAllAdmins(): JsonResponse
+    {
+        $admins = AttractionAdmin::with([
+            'attraction'=>function($q){
+                $q->select('id','name','attraction_admin_id');
+            }
+        ])->paginate(10);
+        return $this->success($admins,'Admins retrieved successfully');
     }
 
     /**
@@ -147,6 +158,20 @@ class AttractionController extends AttractionAdminController
         }
 
         return $this->editDetails($request,$request->id);
+    }
+
+    public function deleteAdmin(Request $request): JsonResponse
+    {
+        $validated_data = Validator::make($request->all(), [
+            'id' => 'required|exists:attraction_admins',
+        ]);
+        if($validated_data->fails()){
+            return response()->json(['error' => $validated_data->errors()->all()]);
+        }
+
+        AttractionAdmin::where('id','=',$request->id)->delete();
+
+        return $this->success(null,'Admin deleted successfully with his company');
     }
 
     /**

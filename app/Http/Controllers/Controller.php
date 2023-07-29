@@ -33,8 +33,32 @@ class Controller extends BaseController
     {
         $week = ['Saturday','Sunday','Monday','Tuesday','Wednesday','Thursday','Friday'];
         for($i = 0 ; $i < 7 ; $i++){
-            if($week[$i]==$day) return $i;
+            if($week[$i] == $day) return $i;
+            if($i == $day) return $week[$i];
         }
+    }
+
+    public function convertWeekArrayToBitmask($week)
+    {
+        $bit = 0;
+        foreach($week as $key=>$value){
+            if($value){
+                $bit = $bit|(1<<($this->dayNumber($key)));
+            }
+        }
+        return $bit;
+    }
+
+    public function convertBitmaskToWeekArray($bitmask)
+    {
+        $week = [];
+        for($i=0 ; $i<7 ; $i++){
+            if($bitmask&(1<<$i)){
+                $week[$this->dayNumber($i)] = 1;
+            }
+            $week[$this->dayNumber($i)] = (($bitmask&(1<<$i))>0);
+        }
+        return $week;
     }
 
 

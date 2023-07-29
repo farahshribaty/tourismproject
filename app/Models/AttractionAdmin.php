@@ -18,6 +18,13 @@ class AttractionAdmin extends Authenticatable
     ];
 
     protected $hidden = [
-        'password'
+        'password',
+        'created_at',
+        'updated_at',
     ];
+
+    public function attraction()
+    {
+        return $this->hasOne(Attraction::class,'attraction_admin_id');
+    }
 }

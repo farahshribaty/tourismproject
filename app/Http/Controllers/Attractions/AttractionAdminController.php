@@ -175,7 +175,8 @@ class AttractionAdminController extends Controller
                 'type',
                 'city',
                 'city.country',
-                'reviews'
+                'reviews',
+                'admin',
             ])
             ->first();
 

@@ -68,16 +68,8 @@ class Attraction extends Model
         return $this->belongsToMany(User::class,AttractionReview::class,'attraction_id','user_id');
     }
 
-    public function updates()
+    public function admin()
     {
-        return $this->morphMany(UpdateAcceptance::class,'updatable');
-    }
-
-    public function scopeAcceptedTrips($query)     // Just attractions that doesn't have any updates, or have an accepted updated information
-    {
-        return $this->whereHas('updates',function($q){
-            $q->where('accepted','=',1);
-        })
-            ->orWhereDoesntHave('updates');
+        return $this->belongsTo(AttractionAdmin::class,'attraction_admin_id');
     }
 }

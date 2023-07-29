@@ -50,7 +50,8 @@ Route::get('getLatestReservations',[AttractionController::class,'getLatestReserv
 Route::get('showUpdates',[AttractionController::class,'getUpdatingList']);
 Route::post('acceptUpdate',[AttractionController::class,'acceptingAttraction']);
 Route::post('makeNewAdmin',[AttractionController::class,'makeNewAdmin']);
-
+Route::get('getAllAdmins',[AttractionController::Class,'getAllAdmins']);
+Route::get('deleteAdmin',[AttractionController::class,'deleteAdmin']);
 
 
 
