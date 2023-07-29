@@ -13,6 +13,7 @@ class TripCompany extends Model
     use HasFactory;
 
     protected $fillable = [
+        'trip_admin_id',
         'name',
         'email',
         'phone_number',

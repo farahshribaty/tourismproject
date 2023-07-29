@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Attraction;
 use App\Models\AttractionAdmin;
 use App\Models\AttractionPhoto;
+use App\Models\AttractionReview;
 use App\Models\AttractionType;
 use App\Models\AttractionUpdating;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -55,8 +56,8 @@ class AttractionSeeder extends Seeder
 
         for($i=0 ; $i<17 ; $i++){
             AttractionAdmin::create([
-                'user_name'=> 'admin'.$i.'@gmail.com',
-                'password'=> 'mohamadm',
+                'user_name'=> 'attractionAdmin'.($i+1).'@gmail.com',
+                'password'=> 'admin',
             ]);
         }
 
@@ -121,6 +122,18 @@ class AttractionSeeder extends Seeder
                 AttractionPhoto::create([
                     'attraction_id'=> $attr['id'],
                     'path'=> 'http://127.0.0.1:8000/images/attraction/'.$photos[$i],
+                ]);
+            }
+        }
+
+        // adding some reviews
+        foreach($attrs as $attr){
+            for($i=0;$i<3;$i++){
+                AttractionReview::create([
+                    'user_id'=> ($i+1),
+                    'attraction_id'=> $attr['id'],
+                    'comment'=> ($i==0 ? 'Very good trip! I loved the most the fountains in the city.':'what a fucking trip!'),
+                    'stars'=> ($i==0 ? 5:1),
                 ]);
             }
         }

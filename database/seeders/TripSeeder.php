@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use App\Models\Trip;
 use App\Models\TripActivitiesIncluded;
 use App\Models\TripActivity;
+use App\Models\TripAdmin;
+use App\Models\TripCompany;
 use App\Models\TripDate;
 use App\Models\TripDay;
 use App\Models\TripDeparture;
@@ -43,11 +45,32 @@ class TripSeeder extends Seeder
             ]);
         }
 
+        // adding admins for trips
+
+        for($i=0 ; $i<17 ; $i++){
+            TripAdmin::create([
+                'user_name'=> 'tripAdmin'.($i+1).'@gmail.com',
+                'password'=> 'admin',
+            ]);
+        }
+
+        // adding companies for trips
+
+        for($i=0 ; $i<17 ; $i++){
+            TripCompany::create([
+                'trip_admin_id'=> ($i+1),
+                'name'=> 'company'.($i+1),
+                'email'=> 'company'.($i+1).'@gmail.com',
+                'phone_number'=> 435435,
+                'country_id'=> (($i%3)+1),
+            ]);
+        }
+
         // adding trips
 
         for($i = 0; $i<17; $i++){
             Trip::create([
-                'trip_company_id'=> $i%6+1,
+                'trip_company_id'=> ($i+1),
                 'destination'=> ($i%3)+1,
                 'description'=>'river cruise',
                 'rate'=> random_int(1,5),
@@ -160,7 +183,7 @@ class TripSeeder extends Seeder
         foreach($trips as $trip){
             for($i=0;$i<3;$i++){
                 TripReview::create([
-                    'user_id'=> ($i%2)+1,
+                    'user_id'=> ($i+1),
                     'trip_id'=> $trip['id'],
                     'comment'=> ($i==0 ? 'Very good trip! I loved the most the fountains in the city.':'what a fucking trip!'),
                     'stars'=> ($i==0 ? 5:1),

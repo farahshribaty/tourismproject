@@ -144,10 +144,10 @@ class UserAttractionController extends UserController
         $attraction['available_days'] = $this->convertBitmasktoWeekArray($attraction['available_days']);
 
         $reviews = AttractionReview::where('attraction_id',$request->attraction_id)
-//            ->with('user',function($q){
-//                $q->select(['first_name','last_name',]);
-//            })
-                ->with('user')
+            ->with('user',function($q){
+                $q->select(['first_name','last_name','id']);
+            })
+//                ->with('user')
                 ->paginate(6);
 
         return response()->json([
