@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('trip_reviews', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id');
-            $table->foreignId('trip_id');
+            $table->foreignId('user_id')->constrained('users')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('trip_id')->constrained('trips')->cascadeOnUpdate()->cascadeOnDelete();
             $table->float('stars')->default(0.0);
             $table->text('comment');
             $table->timestamps();

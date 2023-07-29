@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Trips\TripAdminController;
 use App\Http\Controllers\Trips\UserTripsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -14,19 +15,30 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// User Operations
+
 Route::group( [],function(){
-    Route::get('trip/index',[UserTripsController::class,'index']);
-    Route::post('trip/search',[UserTripsController::class,'searchForTrip']);
-    Route::get('trip/viewTripDetails',[UserTripsController::class,'viewTripDetails']);
-    Route::get('trip/viewDeparturesAndDates',[UserTripsController::class,'viewDeparturesAndDatesForSomeTrip']);
+    Route::get('index',[UserTripsController::class,'index']);
+    Route::post('search',[UserTripsController::class,'searchForTrip']);
+    Route::get('viewTripDetails',[UserTripsController::class,'viewTripDetails']);
 });
 
-// authentication needed
 Route::group( ['middleware' => ['auth:user-api'] ],function(){
-    Route::post('trip/makeReservation',[UserTripsController::class,'makeReservation']);
-    Route::post('trip/sendReview',[UserTripsController::class,'addReview']);
-    Route::post('trip/cancellingReservation',[UserTripsController::class,'cancellingReservation']);
-    Route::post('trip/addToFavourites',[UserTripsController::class,'addToFavourites']);
-    Route::post('trip/removeFromFavourites',[UserTripsController::class,'removeFromFavourites']);
+    Route::post('makeReservation',[UserTripsController::class,'makeReservation']);
+    Route::post('sendReview',[UserTripsController::class,'addReview']);
+    Route::post('cancellingReservation',[UserTripsController::class,'cancellingReservation']);
+    Route::post('addToFavourites',[UserTripsController::class,'addToFavourites']);
+    Route::post('removeFromFavourites',[UserTripsController::class,'removeFromFavourites']);
 });
+
+// Trip Admin Operations
+
+Route::group( ['middleware' => ['auth:trip_admin-api'] ],function(){
+    Route::get('getTripCompanyDetails',[TripAdminController::class,'getTripCompanyDetails']);
+    Route::post('editCompanyDetails',[TripAdminController::class,'editCompanyDetails']);
+    Route::get('deleteTheCompany',[TripAdminController::class,'deleteTheCompany']);
+});
+
+
+Route::post('adminRegister',[TripAdminController::class,'adminRegister']);
 

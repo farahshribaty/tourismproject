@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Auth;
 
 class AdminLoginController extends Controller
 {
-    public function adminLogin(Request $request)
-    {
+//    public function adminLogin(Request $request)
+//    {
 //        $validator = Validator::make($request->all(), [
 //            'email' => 'required|email',
 //            'password' => 'required',
@@ -19,7 +19,7 @@ class AdminLoginController extends Controller
 //
 //            return response()->json(['error' => $validator->errors()->all()]);
 //        }
-
+//
 //        if(Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password])){
 //
 //            config(['auth.guards.api.provider' => 'admin']);
@@ -33,7 +33,7 @@ class AdminLoginController extends Controller
 //        }else{
 //            return response()->json(['error' => ['Email and Password are Wrong.']], 200);
 //        }
-    }
+//    }
 
     public function CreateHotel()
     {

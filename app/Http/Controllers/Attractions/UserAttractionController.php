@@ -22,6 +22,7 @@ class UserAttractionController extends UserController
     /**
      * Main Page For Attractions
      *
+     * @param Request $request
      * @return JsonResponse
      */
     public function index(Request $request): JsonResponse             //wrong!

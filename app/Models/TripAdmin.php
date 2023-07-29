@@ -11,4 +11,10 @@ use Laravel\Passport\HasApiTokens;
 class TripAdmin extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
+
+    protected $fillable = [
+        'user_name',
+        'password',
+        'trip_company_id',
+    ];
 }

@@ -3,15 +3,21 @@
 namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
+use App\Models\AirlineAdmin;
 use App\Models\Attraction;
+use App\Models\AttractionAdmin;
 use App\Models\Country;
 use App\Models\City;
 use App\Models\Hotel;
+use App\Models\HotelAdmin;
+use App\Models\TripAdmin;
 use App\Models\TripCompany;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
-use Dotenv\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
@@ -23,12 +29,24 @@ use App\Models\TripAdmin;
 
 class AdminController extends Controller
 {
+<<<<<<< HEAD
     public function CreateAdmin1(Request $request) //old
+=======
+    // This controller contains all operations that the Main Admin can do, which are dependent of any section.
+
+
+    /**
+     * Creating new Admin
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function CreateAdmin(Request $request) //done
+>>>>>>> 534d3fc7c033d259b91c6ed752d515fb3ecc1fa1
     {
         $request->validate([
             'first_name'=>['required','max:55'],
             'last_name'=>['required','max:55'],
-            'email'=>['email','required','unique:hotels'],
+            'user_name'=>['email','required','unique:hotels'],
             'password'=>[
                 'required',
                'confirmed',
@@ -43,7 +61,7 @@ class AdminController extends Controller
         $admin = new Admin();
         $admin->first_name = $request->first_name;
         $admin->last_name = $request->last_name;
-        $admin->email = $request->email;
+        $admin->user_name = $request->user_name;
         $admin->password =$request->password;  //should add bcrypt() but it didn;t eork on the login bcuz of it
         $admin->phone_number = $request->phone_number;
 
@@ -56,6 +74,7 @@ class AdminController extends Controller
                    'access_token'=>$accessToken
             ]);
     }
+<<<<<<< HEAD
     public function CreateAdmin(Request $request) //new
     {
         $request->validate([
@@ -107,6 +126,10 @@ class AdminController extends Controller
         ]);
 
     }
+=======
+
+
+>>>>>>> 534d3fc7c033d259b91c6ed752d515fb3ecc1fa1
     public function AdminLogin(Request $request) //MAin Admin Login
     {
         $request->validate([
@@ -136,6 +159,8 @@ class AdminController extends Controller
         }
 
     }
+
+
     public function AddCountry(Request $request)
     {
         $request->validate([
@@ -151,6 +176,8 @@ class AdminController extends Controller
             'message'=>"country added successfuly"
         ]);
     }
+
+
     public function AddCity(Request $request) //done
     {
         // Find a country by its ID
@@ -175,6 +202,8 @@ class AdminController extends Controller
             'message' => 'City added to country'], 200);
 
     }
+
+
     //this should work for users..:
     public function ShowCities(Request $request)
     {
@@ -193,31 +222,46 @@ class AdminController extends Controller
         return response()->json(['cities' => $cities], 200);
     }
 
-    public function getAllUsers()
-    {
-        $users = User::paginate(10);
-        return response()->json([
-            'success'=>true,
-            'data'=>$users,
-        ]);
-    }
 
-    public function getAllTripCompanies()
-    {
-        $companies = TripCompany::paginate(10);
-        return response()->json([
-            'success'=>true,
-            'data'=>$companies,
-        ]);
-    }
 
-    public function getAllAttractions()
+    function login(Request $request)     // this login is for all admins
     {
-        $attractions = Attraction::paginate(10);
-        return response()->json([
-            'success'=>true,
-            'data'=>$attractions,
+        $validated_data = Validator::make($request->all(), [
+            'user_name' => 'required',
+            'password' => 'required',
         ]);
+
+        if($validated_data->fails()){
+            return response()->json(['error' => $validated_data->errors()->all()]);
+        }
+
+        $tables = ['main_admin','airline_admin','hotel_admin','attraction_admin','trip_admin'];
+        $admins[0] = Admin::where('user_name','=',$request->user_name)->first();
+        $admins[1] = AirlineAdmin::where('user_name','=',$request->user_name)->first();
+        $admins[2] = HotelAdmin::where('user_name','=',$request->user_name)->first();
+        $admins[3] = AttractionAdmin::where('user_name','=',$request->user_name)->first();
+        $admins[4] = TripAdmin::where('user_name','=',$request->user_name)->first();
+
+        $i=0;
+        foreach($admins as $admin){
+            if(isset($admin)){
+//                if(Hash::check($request->password,$admin->password)){
+                  if($request->password == $admin['password']){
+                      $admin['admin_type'] = $tables[$i];
+                      $admin['token'] = $admin->createToken('MyApp')->accessToken;
+                      return response()->json([
+                          'success'=>true,
+                          'admin'=>$admin,
+                      ],200);
+                  }
+            }
+            $i++;
+        }
+
+        return response()->json([
+            'success'=>false,
+            'message'=>'Incorrect email or password',
+        ],400);
     }
 
 

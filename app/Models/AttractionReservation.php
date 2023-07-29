@@ -18,4 +18,9 @@ class AttractionReservation extends Model
         'payment',
         'points_added',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class,'user_id');
+    }
 }

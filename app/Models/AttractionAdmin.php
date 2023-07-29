@@ -13,12 +13,18 @@ class AttractionAdmin extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
-        'email',
+        'user_name',
         'password',
-        'attraction_id',
     ];
 
     protected $hidden = [
-        'password'
+        'password',
+        'created_at',
+        'updated_at',
     ];
+
+    public function attraction()
+    {
+        return $this->hasOne(Attraction::class,'attraction_admin_id');
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
+use Carbon\Carbon;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Laravel\Passport\Passport;
 
@@ -35,5 +36,8 @@ class AuthServiceProvider extends ServiceProvider
             'trip_admin'=>'TripAdmin',
             'attraction_admin'=>'AttractionAdmin',
         ]);
+
+        Passport::tokensExpireIn(Carbon::now()->addDays(1));
+        Passport::refreshTokensExpireIn(Carbon::now()->addDays(10));
     }
 }

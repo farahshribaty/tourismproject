@@ -12,6 +12,7 @@ use App\Models\Trip;
 use App\Models\User;
 use Carbon\Carbon;
 use http\Message;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -30,40 +31,29 @@ class UserController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
 
-    public function register(Request $request)
+    public function register(Request $request): JsonResponse
     {
-
-        try {
-            $validator = Validator::make($request->all(), [
-                'first_name'=>'required',
-                'last_name'=>'required',
-                'email'=>'required|unique:users|email',
-                'password'=>'required|confirmed',
-                'phone_number'=>'required',
-            ]);
-
-            if ($validator->fails()) {
-                throw new ValidationException($validator);
-            }
-            $info = $request->validated();
-
-            $info['points']=0;
-            $info['wallet']=100000;
-            User::create($info);
-            // Create a new user with the input data
-        } catch (ValidationException $e) {
-            return response()->json([
-                'success'=>'true',
-                'data'=>$e->getMessage(),
-            ],200);
-
-        } catch (\Exception $e) {
-            // Handle other exceptions
+        $validated_data = Validator::make($request->all(), [
+            'first_name'=>'required',
+            'last_name'=>'required',
+            'email'=>'required|unique:users|email',
+            'password'=>'required|confirmed',
+            'phone_number'=>'required',
+        ]);
+        if($validated_data->fails()){
+            return response()->json(['error' => $validated_data->errors()->all()]);
         }
 
-        $info['points']=0;
-        $info['wallet']=100000;
-        $user = User::where('email','=',$info['email'])->first();
+        $user = User::create([
+            'first_name'=>$request->first_name,
+            'last_name'=>$request->last_name,
+            'email'=>$request->email,
+            'password'=>$request->password,
+            'phone_number'=>$request->phone_number,
+            'points'=>0,
+            'wallet'=>100000,
+        ]);
+
         $user['token'] = $user->createToken('MyApp')->accessToken;
 
         return response()->json([
@@ -72,7 +62,7 @@ class UserController extends Controller
         ],200);
     }
 
-    public function register1(UserRegistrationRequest $request)
+    public function register1(UserRegistrationRequest $request): JsonResponse
     {
         $info = $request->validated();
         $info['points']=0;
@@ -97,7 +87,7 @@ class UserController extends Controller
      * @param UserLoginRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function login(UserLoginRequest $request)
+    public function login(UserLoginRequest $request): JsonResponse
     {
         $data = $request->validated();
 
@@ -127,7 +117,7 @@ class UserController extends Controller
         }
     }
 
-    public function logout(Request $request)
+    public function logout(Request $request): JsonResponse
     {
         $request->user()->token()->revoke();
         return response()->json([
@@ -136,7 +126,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $top_trips = Trip::select(['id','destination','description','days_number','rate','num_of_ratings','max_persons','start_age','end_age'])
             ->with(['photo',
@@ -190,7 +180,7 @@ class UserController extends Controller
         ->join('countries', 'flights.distination', '=', 'countries.id')
         ->groupBy('countries.id', 'countries.name','countries.path')
         ->orderByDesc('total')
-        ->take(6) // Get top 5 popular countries
+        ->take(5) // Get top 5 popular countries
         ->get();
 
         return response()->json([
@@ -203,7 +193,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function searchForAll(Request $request)
+    public function searchForAll(Request $request): JsonResponse
     {
         $word = $request->word;
 
@@ -216,24 +206,47 @@ class UserController extends Controller
                     });
             })
             ->with(['City',
-                'City.country'=>function($q){
-                $q->select(['id','name']);
+                'City.country'=>function($q) {
+                    $q->select(['id', 'name']);
                 },
-                'onePhoto'])
+                'photo'])
             ->take(6)->get();
 
 
-        $attractions = Attraction::where('name','like','%'.$word.'%')
+        $attractions = Attraction::select(['id','name','location','rate','num_of_ratings','adult_price','city_id'])
+            ->where('name','like','%'.$word.'%')
             ->orWhereHas('city',function($q)use($word){
-                $q->where('name','like','%'.$word.'%');
-            })->take(6)->get();
+                $q->where('name','like','%'.$word.'%')
+                    ->orWhereHas('country',function($que)use($word){
+                        $que->where('name','like','%'.$word.'%');
+                    });
+            })
+            ->with(['city',
+                'city.country'=>function($q) {
+                    $q->select(['id', 'name']);
+                },
+                'photo'])
+            ->take(6)->get();
 
 
 
-        $trips = Trip::where('description','like','%'.$word.'%')
+        $trips = Trip::select(['id','destination','description','days_number','rate','num_of_ratings'])
+            ->where('description','like','%'.$word.'%')
             ->orWhereHas('destination',function($q)use($word){
-                $q->where('name','like','%'.$word.'%');
-            })->take(6)->get();
+                $q->where('name','like','%'.$word.'%')
+                    ->orWhereHas('country',function($que)use($word){
+                        $que->where('name','like','%'.$word.'%');
+                    });
+            })
+            ->with([
+                'destination',
+                'destination.country'=>function($q) {
+                    $q->select(['id', 'name']);
+                },
+                'photo'
+            ])
+            ->availableTrips()
+            ->take(6)->get();
 
         return response()->json([
             'success'=>true,

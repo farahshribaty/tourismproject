@@ -14,6 +14,11 @@ class AttractionType extends Model
         'details',
     ];
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+
     public function attraction()
     {
         return $this->hasMany(Attraction::class,'attraction_type_id');

@@ -15,6 +15,7 @@ class Attraction extends Model
     protected $fillable = [
         'city_id',
         'attraction_type_id',
+        'attraction_admin_id',
         'name',
         'email',
         'password',
@@ -36,6 +37,7 @@ class Attraction extends Model
 
     protected $hidden = [
         'password',
+        'attraction_admin_id',
         'created_at',
         'updated_at',
     ];
@@ -64,5 +66,10 @@ class Attraction extends Model
     public function reviews()
     {
         return $this->belongsToMany(User::class,AttractionReview::class,'attraction_id','user_id');
+    }
+
+    public function admin()
+    {
+        return $this->belongsTo(AttractionAdmin::class,'attraction_admin_id');
     }
 }

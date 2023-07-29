@@ -15,9 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('city_id');
             $table->foreignId('attraction_type_id');
+            $table->foreignId('attraction_admin_id')->constrained('attraction_admins')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('name');
             $table->string('email')->unique();
-            $table->string('password');
+//            $table->string('password');
             $table->string('location');
             $table->string('phone_number');
             $table->integer('rate')->nullable();

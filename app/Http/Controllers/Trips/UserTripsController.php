@@ -161,70 +161,37 @@ class UserTripsController extends UserController
         ]);
 
 
-        $trips = Trip::select(['id','destination','description','days_number','rate','num_of_ratings','max_persons','start_age','end_age'])
-
+        $trips = Trip::select(['id','destination','description','details','days_number','rate','num_of_ratings','max_persons','start_age','end_age'])
             ->whereHas('destination',function($q)use($request){         // to city (mandatory)
                 $q->where('name','like','%'.$request->to.'%');
             })
-//
-//            ->whereHas('departure',function($query)use($request){        // form city (mandatory)
-//                $query->whereHas('city',function($q)use($request){
-//                    $q->where('name','like','%'.$request->from.'%');
-//                });
-//            })
-
-//            ->when($request->min_price,function($query)use($request){        // start price (filter, not mandatory)
-//                $query->whereHas('departure',function($que)use($request){
-//                    $que->whereHas('dates',function($q)use($request){
-//                        $q->where('price','>=',$request->min_price);
-//                    });
-//                });
-//            })
-
             ->when($request->max_price,function($query)use($request){         // start price (filter, not mandatory)
                 $query->whereHas('dates',function($q)use($request){
                     $q->where('price','<=',$request->max_price);
                 });
             })
-
             ->when($request->min_price,function($query)use($request){         // start price (filter, not mandatory)
                 $query->whereHas('dates',function($q)use($request){
                     $q->where('price','>=',$request->min_price);
                 });
             })
-
-//            ->when($request->max_price,function($query)use($request){        // end price (filter, not mandatory)
-//                $query->whereHas('departure',function($que)use($request){
-//                    $que->whereHas('dates',function($q)use($request){
-//                        $q->where('price','<=',$request->max_price);
-//                    });
-//                });
-//            })
-
-//            ->when($request->max_price,function($query)use($request){          // end price (filter, not mandatory)
-//                $query->whereHas('dates',function($q)use($request){
-//                    $q->where('price','<=',$request->max_price);
-//                });
-//            })
-
             ->when($request->start_age,function($query)use($request){        // start age (filter, not mandatory)
                 $query->where('start_age','<=',$request->start_age);
             })
-
             ->when($request->end_age,function($query)use($request){        // end age (filter, not mandatory)
                 $query->where('end_age','>=',$request->end_age);
             })
-
             ->when($request->min_length,function($query)use($request){       // minimum length (filter, not mandatory)
                 $query->where('days_number','>=',$request->min_length);
             })
-
             ->when($request->max_length,function($query)use($request){        // maximum length (filter, not mandatory)
                 $query->where('days_number','<=',$request->max_length);
             })
-
+            ->with(['photo',
+                'destination',
+                'destination.country'
+            ])
             ->availableTrips()
-
             ->paginate(10);
 
         return response()->json([
@@ -267,37 +234,6 @@ class UserTripsController extends UserController
     }
 
     // todo: send prices after discount!
-
-//    public function viewDeparturesAndDatesForSomeTrip(Request $request): JsonResponse
-//    {
-//        $request->validate([
-//            'trip_id'=>'required',
-//        ]);
-//
-//        $trip = Trip::where('id',$request->trip_id)->first();
-//        if($trip == null){
-//            return response()->json([
-//                'success'=>false,
-//                'message'=>'Trip not found',
-//            ]);
-//        }
-//
-//        $departures = TripDeparture::select(['trip_departures.id','trip_departures.flight_id','trip_departures.departure_details','cities.name as from_city'])
-//            ->join('cities','cities.id','=','trip_departures.city_id')
-//            ->where('trip_departures.trip_id',$request->trip_id)
-//            ->with(['dates' => function($q)use($trip){
-//                $date = Carbon::now()->addDay();
-//                $q->select([DB::raw($trip['max_persons'].' - current_reserved_people as available_seats'),'id','departure_id','departure_date','price'])
-//                    ->where('departure_date','>=',$date)                              // just dates form now on, and that have available seats
-//                    ->where('current_reserved_people','<',$trip['max_persons']);
-//            }])
-//            ->get();
-//
-//        return response()->json([
-//            'success'=>true,
-//            'departures'=>$departures,
-//        ]);
-//    }
 
     // todo: add points to user account
     public function makeReservation(Request $request): JsonResponse

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('flights_reservations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('flights_times_id')->constrained('flights_times');
             $table->string('flight_class');
             $table->integer('num_of_adults');
