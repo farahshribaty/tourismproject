@@ -17,6 +17,8 @@ class Trip extends Model
         'details',
         'days_number',
         'max_persons',
+        'rate',
+        'num_of_ratings',
         'start_age',
         'end_age',
     ];

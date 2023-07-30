@@ -79,6 +79,7 @@ class UserController extends Controller
      */
     public function deleteUserAccount(Request $request): JsonResponse
     {
+
         $validated_data = Validator::make($request->all(), [
             'id' => 'required|exists:users',
         ]);

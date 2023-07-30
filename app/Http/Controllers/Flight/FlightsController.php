@@ -101,15 +101,18 @@ class FlightsController extends Controller
             $flight = ['return flights' => $flight];
         }
         $flights = Arr::crossJoin($outboundFlights,$returnFlights);
-        
+
         }
         else{
-        $flights = $outboundFlights;
+            $returnFlights = [[]];
+            $flights = Arr::crossJoin($outboundFlights,$returnFlights);
+
+//            $flights = $outboundFlights;
         }
 
         return response()->json([
         'message' => "done",
-        'final flights' => $flights,
+        'final_flights' => $flights,
         ]);
     }
 }

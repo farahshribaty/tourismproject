@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class ForgotPasswordController extends Controller
@@ -23,9 +24,12 @@ class ForgotPasswordController extends Controller
     // this function gets email address and send a link to enable reset password
     public function submitForgetPasswordForm(Request $request)
     {
-        $request->validate([
+        $validated_data = Validator::make($request->all(), [
             'email' => 'required|email|exists:users',
         ]);
+        if($validated_data->fails()){
+            return response()->json(['error' => $validated_data->errors()->all()]);
+        }
 
         $token = Str::random(64);
 
@@ -62,6 +66,7 @@ class ForgotPasswordController extends Controller
     public function submitResetPasswordForm(Request $request)
     {
         $request->validate([
+            'token' => 'required',
             'email' => 'required|email|exists:users',
             'password' => 'required|string|min:6|confirmed',
             'password_confirmation' => 'required'
@@ -75,13 +80,15 @@ class ForgotPasswordController extends Controller
             ->first();
 
         if(!$updatePassword){
-            return back()->withInput()->with('error', 'Invalid token!');
+            return $this->error('An error occurred');
         }
 
         $user = User::where('email', $request->email)
             ->update(['password' => Hash::make($request->password)]);
 
         DB::table('password_resets')->where(['email'=> $request->email])->delete();
+
+        return $this->success('Password resat successfully');
 
 //        return redirect('/login')->with('message', 'Your password has been changed!');
     }

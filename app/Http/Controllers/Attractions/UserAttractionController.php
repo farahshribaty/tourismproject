@@ -143,6 +143,8 @@ class UserAttractionController extends UserController
 
         $attraction['available_days'] = $this->convertBitmasktoWeekArray($attraction['available_days']);
 
+        $city_id = $attraction['city_id'];
+
         $reviews = AttractionReview::where('attraction_id',$request->attraction_id)
             ->with('user',function($q){
                 $q->select(['first_name','last_name','id']);
@@ -150,10 +152,17 @@ class UserAttractionController extends UserController
 //                ->with('user')
                 ->paginate(6);
 
+        $you_may_also_like = Attraction::select(['id','city_id','name','rate','num_of_ratings','adult_price','child_price'])
+            ->where('city_id','=',$city_id)
+            ->with(['photo','city'])
+            ->take(6)
+            ->get();
+
         return response()->json([
             'success'=>true,
             'attraction'=>$attraction,
             'reviews'=>$reviews,
+            'you_may_also_like'=>$you_may_also_like,
         ]);
     }
 

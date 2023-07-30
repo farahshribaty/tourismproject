@@ -21,4 +21,9 @@ class TripUpdating extends Model
         'name',
         'trip_company_id'
     ];
+
+    public function admin()
+    {
+        return $this->belognsTo(TripAdmin::class,'trip_admin_id');
+    }
 }

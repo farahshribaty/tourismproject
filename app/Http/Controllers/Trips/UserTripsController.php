@@ -204,10 +204,6 @@ class UserTripsController extends UserController
     {
         $trip = Trip::where('id',$request->id)
             ->with(['photos','destination','services','activities','days',
-//                'departure'=>function($query){
-//                    $query->select(['id','trip_id','flight_id','departure_details','city_id'])
-//                    ->with(['city','dates']);
-//                },
                 'dates'=>function($query){
 //                    $query->select(['id','departure_date','current_reserved_people','price',DB::raw('max_persons-current_reserved_people as remaining_seats')]);
                     $query->selectRaw('id, departure_date, trip_id, price');

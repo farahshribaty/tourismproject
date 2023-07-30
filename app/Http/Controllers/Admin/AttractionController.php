@@ -149,7 +149,7 @@ class AttractionController extends AttractionAdminController
     }
 
     /**
-     * Shows All Attractions
+     * Show all attractions
      * @return JsonResponse
      */
     public function getAllAttractions(): JsonResponse

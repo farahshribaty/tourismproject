@@ -195,7 +195,6 @@ class AttractionAdminController extends Controller
     // todo: get reservations using real time !!!!!
 
 
-
     // helpful functions
 
     protected function attractionDetails($id)

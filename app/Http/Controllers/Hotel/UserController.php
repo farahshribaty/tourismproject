@@ -181,7 +181,7 @@ class UserController extends Controller
 
         return response()->json([
             'message' => "done",
-            'All hotels' => $hotels,
+            'All_hotels' => $hotels,
         ]);
     }
 
