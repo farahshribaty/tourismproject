@@ -21,27 +21,11 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
-use App\Models\Airline;
-use App\Models\AirlineAdmin;
-use App\Models\AttractionAdmin;
-use App\Models\HotelAdmin;
-use App\Models\TripAdmin;
+
 
 class AdminController extends Controller
 {
-<<<<<<< HEAD
-    public function CreateAdmin1(Request $request) //old
-=======
-    // This controller contains all operations that the Main Admin can do, which are dependent of any section.
-
-
-    /**
-     * Creating new Admin
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function CreateAdmin(Request $request) //done
->>>>>>> 534d3fc7c033d259b91c6ed752d515fb3ecc1fa1
+    public function CreateAdmin1(Request $request) //done
     {
         $request->validate([
             'first_name'=>['required','max:55'],
@@ -74,7 +58,7 @@ class AdminController extends Controller
                    'access_token'=>$accessToken
             ]);
     }
-<<<<<<< HEAD
+
     public function CreateAdmin(Request $request) //new
     {
         $request->validate([
@@ -126,10 +110,7 @@ class AdminController extends Controller
         ]);
 
     }
-=======
 
-
->>>>>>> 534d3fc7c033d259b91c6ed752d515fb3ecc1fa1
     public function AdminLogin(Request $request) //MAin Admin Login
     {
         $request->validate([
@@ -160,7 +141,6 @@ class AdminController extends Controller
 
     }
 
-
     public function AddCountry(Request $request)
     {
         $request->validate([
@@ -176,7 +156,6 @@ class AdminController extends Controller
             'message'=>"country added successfuly"
         ]);
     }
-
 
     public function AddCity(Request $request) //done
     {
@@ -202,8 +181,6 @@ class AdminController extends Controller
             'message' => 'City added to country'], 200);
 
     }
-
-
     //this should work for users..:
     public function ShowCities(Request $request)
     {
@@ -221,8 +198,6 @@ class AdminController extends Controller
         // Return the list of cities as a JSON response
         return response()->json(['cities' => $cities], 200);
     }
-
-
 
     function login(Request $request)     // this login is for all admins
     {
@@ -245,7 +220,7 @@ class AdminController extends Controller
         $i=0;
         foreach($admins as $admin){
             if(isset($admin)){
-//                if(Hash::check($request->password,$admin->password)){
+        //if(Hash::check($request->password,$admin->password)){
                   if($request->password == $admin['password']){
                       $admin['admin_type'] = $tables[$i];
                       $admin['token'] = $admin->createToken('MyApp')->accessToken;

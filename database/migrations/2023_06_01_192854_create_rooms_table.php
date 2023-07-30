@@ -19,6 +19,8 @@ return new class extends Migration
             $table->integer('Price_for_night');
             $table->integer('rate')->nullable();
             $table->integer('num_of_ratings')->nullable();
+            $table->integer('Sleeps');
+            $table->integer('Beds');
             $table->timestamps();
         });
     }

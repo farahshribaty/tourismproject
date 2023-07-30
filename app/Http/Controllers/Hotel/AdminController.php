@@ -134,5 +134,33 @@ class AdminController extends Controller
              ]);
         }
     }
+    public function SeeAllRooms(Request $request)
+    {
+        $hotel_id = $request->hotel_id;
+
+        $rooms = Room::select('rooms.*', 'hotels.location','hotels.city_id')
+        ->join('hotels', 'rooms.hotel_id', '=', 'hotels.id')
+        ->where('rooms.hotel_id', '=', $hotel_id)
+        ->with(['photo','features'])
+        ->get();
+
+        $rooms = $rooms->makeHidden(['details','created_at','updated_at']);
+
+        return response()->json([
+        'message'=>"done",
+        'Room:'=>$rooms
+        ]);
+    }
+    public function DeleteRoom(Request $request)
+    {
+        $room_id = $request->room_id;
+        $room = Room::find($room_id);
+        if(!isset($photo)){
+            return $this->error('Photo not found');
+        }
+        $room->delete();
+        return response()->json([
+        'message' => 'Room deleted successfully'], 200);
+    }
     
 }

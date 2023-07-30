@@ -125,6 +125,18 @@ class UserController extends Controller
                 });
             });
         }
+    
+        if ($request->has('num_of_adults') && $request->has('num_of_children')) {
+            $num_of_adults = $request->input('num_of_adults');
+            $num_of_children = $request->input('num_of_children');
+
+            $query->whereHas('Room',function ($query) use ($num_of_adults,$num_of_children) {
+                $query->where(function ($query) use ($num_of_adults,$num_of_children) {
+                    $query->where('Sleeps', '>=', $num_of_adults)
+                          ->where('Beds', '>=', ($num_of_adults + $num_of_children));
+                });
+            });
+        }
 
         // Rate Filters
 
@@ -173,7 +185,7 @@ class UserController extends Controller
         }
 
         $hotels = $query
-            ->with(['photo', 'city', 'city.country', 'type','facilities'])
+            ->with(['photo', 'city', 'city.country', 'type','facilities','room'])
             ->paginate(10);
 
         return response()->json([
