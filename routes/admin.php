@@ -32,7 +32,7 @@ Route::post('editUserAccount',[UserController::class,'editUserAccount']);
 Route::get('getUserInfo',[UserController::class,'getUserInfo']);
 
 // Trips Operations:
-Route::post('makeNewAdmin',[TripController::class,'makeNewAdmin']);
+Route::post('makeNewTripAdmin',[TripController::class,'makeNewAdmin']);
 Route::get('showTripUpdates',[TripController::class,'getUpdatingList']);
 Route::get('getTripUpdatingDetails',[TripController::class,'getUpdatingDetails']);
 Route::post('acceptTripCompanyUpdate',[TripController::class,'acceptTripCompanyUpdate']);
