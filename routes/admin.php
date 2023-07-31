@@ -47,7 +47,7 @@ Route::post('editDayDetails',[TripController::class,'editDayDetails']);
 Route::post('editOfferDetails',[TripController::class,'editOfferDetails']);
 Route::post('addNewTrip',[TripController::class,'addNewTrip']);
 
-
+Route::get('deleteTripAdmin',[TripController::class,'deleteAdmin']);
 Route::get('deleteTheCompany',[TripController::class,'deleteTheCompany']);
 
 
