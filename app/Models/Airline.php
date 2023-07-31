@@ -21,6 +21,7 @@ class Airline extends Authenticatable
         'rate',
         'path',
         'country_id',
+        'admin_id'
     ];
 
     public function flights()
@@ -30,5 +31,9 @@ class Airline extends Authenticatable
     public function country()
     {
         return $this->belongsTo(Country::class,'country_id');
+    }
+    public function Admin()
+    {
+       return $this->hasOne(AirlineAdmin::class,'airline_admins_id');
     }
 }

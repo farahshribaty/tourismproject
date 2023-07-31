@@ -22,17 +22,10 @@ use Illuminate\Validation\Rules\Password;
 use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
 
+
 class AdminController extends Controller
 {
-    // This controller contains all operations that the Main Admin can do, which are dependent of any section.
-
-
-    /**
-     * Creating new Admin
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function CreateAdmin(Request $request) //done
+    public function CreateAdmin1(Request $request) //done
     {
         $request->validate([
             'first_name'=>['required','max:55'],
@@ -66,6 +59,57 @@ class AdminController extends Controller
             ]);
     }
 
+    public function CreateAdmin(Request $request) //new
+    {
+        $request->validate([
+        'user_name',
+        'password'=>[
+            'required',
+           password::min(8)
+            ->letters()
+            ->numbers()
+            ->symbols()
+        ]
+        ]);
+        $type=$request->admin_type;
+        if($type=='Hotel')
+        {
+            $admin = new HotelAdmin();
+            $admin->user_name=$request->user_name;
+            $admin->password=$request->password;
+            $admin->save();
+            $accessToken=$admin->createtoken('MyApp',['admin'])->accessToken;
+        }
+        if($type=='Airline')
+        {
+            $admin = new AirlineAdmin();
+            $admin->user_name=$request->user_name;
+            $admin->password=$request->password;
+            $admin->save();
+            $accessToken=$admin->createtoken('MyApp',['admin'])->accessToken;
+        }
+        if($type=='Trips')
+        {
+            $admin = new TripAdmin();
+            $admin->user_name=$request->user_name;
+            $admin->password=$request->password;
+            $admin->save();
+            $accessToken=$admin->createtoken('MyApp',['admin'])->accessToken;
+        }
+        if($type=='Attraction')
+        {
+            $admin = new AttractionAdmin();
+            $admin->user_name=$request->user_name;
+            $admin->password=$request->password;
+            $admin->save();
+            $accessToken=$admin->createtoken('MyApp',['admin'])->accessToken;
+        }
+        return response()->json([
+            'admin'=> $admin,
+            'access_token'=>$accessToken
+        ]);
+
+    }
 
     public function AdminLogin(Request $request) //MAin Admin Login
     {
@@ -97,7 +141,6 @@ class AdminController extends Controller
 
     }
 
-
     public function AddCountry(Request $request)
     {
         $request->validate([
@@ -113,7 +156,6 @@ class AdminController extends Controller
             'message'=>"country added successfuly"
         ]);
     }
-
 
     public function AddCity(Request $request) //done
     {
@@ -139,8 +181,6 @@ class AdminController extends Controller
             'message' => 'City added to country'], 200);
 
     }
-
-
     //this should work for users..:
     public function ShowCities(Request $request)
     {
@@ -158,8 +198,6 @@ class AdminController extends Controller
         // Return the list of cities as a JSON response
         return response()->json(['cities' => $cities], 200);
     }
-
-
 
     function login(Request $request)     // this login is for all admins
     {
@@ -182,7 +220,7 @@ class AdminController extends Controller
         $i=0;
         foreach($admins as $admin){
             if(isset($admin)){
-//                if(Hash::check($request->password,$admin->password)){
+        //if(Hash::check($request->password,$admin->password)){
                   if($request->password == $admin['password']){
                       $admin['admin_type'] = $tables[$i];
                       $admin['token'] = $admin->createToken('MyApp')->accessToken;

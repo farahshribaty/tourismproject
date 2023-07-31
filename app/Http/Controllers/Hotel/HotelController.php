@@ -4,11 +4,8 @@ namespace App\Http\Controllers\Hotel;
 
 use App\Http\Controllers\Controller;
 use App\Models\Hotel;
-use App\Models\HotelReview;
 use App\Models\Room;
-use App\Models\RoomType;
 use Illuminate\Http\Request;
-
 use Illuminate\Support\Facades\Auth;
 
 
@@ -31,7 +28,7 @@ class HotelController extends Controller
        ]);
     }
 
-    public function ShowHotelTypes() //done
+    public function ShowHotelTypes() //done //not used
     {
 
         $hotel = Hotel::orderBy('type_id','asc')

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('hotel_id')->constrained('hotels');
+            $table->integer('rate')->nullable();
             $table->text('comment')->nullable();
             $table->timestamps();
         });

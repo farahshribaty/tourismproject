@@ -12,6 +12,7 @@ class HotelReview extends Model
     protected $fillable = [
         'user_id',
         'hotel_id',
+        'rate',
         'comment',
     ];
 

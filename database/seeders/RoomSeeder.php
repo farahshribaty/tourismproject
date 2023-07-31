@@ -27,6 +27,8 @@ class RoomSeeder extends Seeder
         'price_for_night'=>random_int(100,500),
         'rate'=>random_int(1,5),
         'num_of_ratings'=> random_int(10,3000),
+        'Sleeps'=>random_int(1,5),
+        'Beds'=>random_int(1,5)
         ]);
         }
 

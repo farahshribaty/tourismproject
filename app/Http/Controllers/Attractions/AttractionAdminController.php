@@ -38,7 +38,7 @@ class AttractionAdminController extends Controller
             'attraction_type_id'=> 'required',
             'name'=> 'required',
             'email'=> 'required',
-//            'password'=> 'required',
+        //            'password'=> 'required',
             'location'=> 'required',
             'phone_number'=> 'required',
             'details'=> 'required',
