@@ -95,20 +95,20 @@ class TripSeeder extends Seeder
             ]);
         }
 
-        // adding offers for the first 5 trips
-        $cnt=0;
-        foreach($trips as $trip){
-            if($cnt == 5) break;
-
-            TripOffer::create([
-                'trip_id'=> $trip['id'],
-                'percentage_off'=> (($cnt+1)*10),
-                'active'=> true,
-                'offer_end'=> Carbon::now()->addDays(3),
-            ]);
-
-            $cnt++;
-        }
+//        // adding offers for the first 5 trips
+//        $cnt=0;
+//        foreach($trips as $trip){
+//            if($cnt == 5) break;
+//
+//            TripOffer::create([
+//                'trip_id'=> $trip['id'],
+//                'percentage_off'=> (($cnt+1)*10),
+//                'active'=> true,
+//                'offer_end'=> Carbon::now()->addDays(3),
+//            ]);
+//
+//            $cnt++;
+//        }
 
         // adding departures for each trip
 
@@ -189,6 +189,17 @@ class TripSeeder extends Seeder
                     'stars'=> ($i==0 ? 5:1),
                 ]);
             }
+        }
+
+        // adding an offer for each trip
+
+        foreach($trips as $trip){
+            TripOffer::create([
+                'trip_id'=> $trip['id'],
+                'percentage_off'=> 20,
+                'active'=> 1,
+                'offer_end'=> '2023-09-05',
+            ]);
         }
 
 

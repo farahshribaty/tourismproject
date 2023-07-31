@@ -7,6 +7,7 @@ use App\Http\Controllers\Trips\TripAdminController;
 use App\Models\Trip;
 use App\Models\TripAdmin;
 use App\Models\TripCompany;
+use App\Models\TripOffer;
 use App\Models\TripUpdating;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -220,6 +221,11 @@ class TripController extends TripAdminController
         return $this->tripDetails($request->id);
     }
 
+    public function getTripDates()
+    {
+
+    }
+
     /**
      * Edit Company Details
      * @param Request $request
@@ -255,7 +261,7 @@ class TripController extends TripAdminController
     }
 
     /**
-     * Edit Day Details
+     * Edit Day Details   (not mandatory)
      * @param Request $request
      * @return JsonResponse
      */
@@ -314,37 +320,133 @@ class TripController extends TripAdminController
             return $this->error('Company not found');
         }
 
-        return $this->addTrip($request,$request->id);
+        $trip = $this->addTrip($request,$request->id);
+
+        // adding days:
+
+        $data = $request;
+        for($i=0 ; $i<$request->days_number ; $i++){
+            $idx = $i+1;
+//            return $trip['id'];
+            $this->addDay($data,$idx,$trip['id']);
+        }
+
+        return $this->success(null,'Trip added successfully');
     }
 
-    public function addNewDay(Request $request)
+    /**
+     * Adding New Offer
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function addNewOffer(Request $request): JsonResponse
+    {
+        $validated_data = Validator::make($request->all(), [
+            'trip_id'=>'required',
+            'percentage_off'=>'required',
+//            'active'=>'required',
+            'offer_end'=>'required',
+        ]);
+        if ($validated_data->fails()) {
+            return response()->json(['error' => $validated_data->errors()->all()]);
+        }
+
+        TripOffer::create([
+            'trip_id'=> $request->trip_id,
+            'percentage_off'=> $request->percentage_off,
+            'active'=> 1,
+            'offer_end'=> $request->offer_end,
+        ]);
+
+        return $this->success(null,'Offer added successfully');
+    }
+
+    /**
+     * Adding New Date
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function addNewDate(Request $request): JsonResponse
+    {
+        $validated_data = Validator::make($request->all(), [
+            'trip_id' => 'required',
+            'departure_date' => 'required',
+            'price' => 'required',
+        ]);
+        if ($validated_data->fails()) {
+            return response()->json(['error' => $validated_data->errors()->all()]);
+        }
+
+        return $this->addDate($request);
+    }
+
+    /**
+     * Deleting Some Company
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function deleteSomeCompany(Request $request): JsonResponse
+    {
+        $validated_data = Validator::make($request->all(), [
+            'company_id'=>'required',
+        ]);
+        if ($validated_data->fails()) {
+            return response()->json(['error' => $validated_data->errors()->all()]);
+        }
+
+        return $this->deleteCompany($request->company_id);
+    }
+
+    /**
+     * Deleting Some Trip
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function deleteSomeTrip(Request $request): JsonResponse
+    {
+        $validated_data = Validator::make($request->all(), [
+            'trip_id'=>'required',
+        ]);
+        if ($validated_data->fails()) {
+            return response()->json(['error' => $validated_data->errors()->all()]);
+        }
+
+        return $this->deleteTrip($request->trip_id);
+    }
+
+
+    public function deleteSomeDay(Request $request)   // not mandatory
     {
 
     }
 
-    public function addNewOffer(Request $request)
+    /**
+     * Deleting Some Offer
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function deleteSomeOffer(Request $request): JsonResponse
     {
+        $validated_data = Validator::make($request->all(), [
+            'offer_id'=>'required',
+        ]);
+        if ($validated_data->fails()) {
+            return response()->json(['error' => $validated_data->errors()->all()]);
+        }
 
+        return $this->deleteOffer($request->offer_id);
     }
 
-    public function deleteSomeCompany()
+    public function deleteSomeDate(Request $request)
     {
+        $validated_data = Validator::make($request->all(), [
+            'date_id'=>'required',
+        ]);
+        if ($validated_data->fails()) {
+            return response()->json(['error' => $validated_data->errors()->all()]);
+        }
 
-    }
-
-    public function deleteSomeTrip(Request $request)
-    {
-
-    }
-
-    public function deleteSomeDay(Request $request)
-    {
-
-    }
-
-    public function deleteSomeOffer(Request $request)
-    {
-
+        return $this->deleteDate($request->date_id);
     }
 
     public function uploadOnePhoto()

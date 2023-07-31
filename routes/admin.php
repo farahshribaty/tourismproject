@@ -46,9 +46,14 @@ Route::post('editTripDetails',[TripController::class,'editTripDetails']);
 Route::post('editDayDetails',[TripController::class,'editDayDetails']);
 Route::post('editOfferDetails',[TripController::class,'editOfferDetails']);
 Route::post('addNewTrip',[TripController::class,'addNewTrip']);
+Route::post('addNewOffer',[TripController::class,'addNewOffer']);
+Route::post('addNewDate',[TripController::class,'addNewDate']);
+Route::get('deleteSomeCompany',[TripController::class,'deleteSomeCompany']);
+Route::get('deleteSomeTrip',[TripController::class,'deleteSomeTrip']);
+Route::get('deleteSomeOffer',[TripController::class,'deleteSomeOffer']);
+Route::get('deleteSomeDate',[TripController::class,'deleteSomeDate']);
 
 
-Route::get('deleteTheCompany',[TripController::class,'deleteTheCompany']);
 
 
 // Attraction Operations:

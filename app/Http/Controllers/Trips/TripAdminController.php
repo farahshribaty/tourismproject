@@ -7,6 +7,7 @@ use App\Models\AttractionPhoto;
 use App\Models\Trip;
 use App\Models\TripAdmin;
 use App\Models\TripCompany;
+use App\Models\TripDate;
 use App\Models\TripDay;
 use App\Models\TripOffer;
 use Carbon\Carbon;
@@ -98,11 +99,7 @@ class TripAdminController extends Controller
     }
 
 
-    protected function deleteCompany($id)
-    {
-        TripCompany::where('id','=',$id)->delete();
-        return $this->success(null,'Company deleted successfully');
-    }
+
     protected function tripCompanyDetails($id){
         $company = TripCompany::where('id','=',$id)
             ->with('admin')
@@ -172,8 +169,42 @@ class TripAdminController extends Controller
     {
         $request['rate']=0;
         $request['num_of_ratings']=0;
-        Trip::create($request->all());
+        $trip = Trip::create($request->all());
 
-        return $this->success(null,'Trip created successfully');
+        return $trip;
+    }
+    protected function addDay($data,$idx,$trip_id){
+        TripDay::create([
+            'trip_id'=> $trip_id,
+            'day_number'=> $idx,
+            'title'=> $data['title_'.$idx],
+            'details'=> $data['details_'.$idx],
+        ]);
+    }
+    protected function addDate($request)
+    {
+        $request['current_reserved_people'] = 0;
+        TripDate::create($request->all());
+        return $this->success(null,'Date added successfully');
+    }
+    protected function deleteCompany($id)
+    {
+        TripCompany::where('id','=',$id)->delete();
+        return $this->success(null,'Company deleted successfully');
+    }
+    protected function deleteTrip($id)
+    {
+        Trip::where('id','=',$id)->delete();
+        return $this->success(null,'Trip deleted successfully');
+    }
+    protected function deleteOffer($id)
+    {
+        TripOffer::where('id','=',$id)->delete();
+        return $this->success(null,'Offer deleted successfully');
+    }
+    protected function deleteDate($id)
+    {
+        TripDate::where('id','=',$id)->delete();
+        return $this->success(null,'Date deleted successfully');
     }
 }
