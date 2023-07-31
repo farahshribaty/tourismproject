@@ -47,7 +47,7 @@ class TripAdminController extends Controller
      */
     public function getTripCompanyDetails(Request $request): JsonResponse
     {
-        $id = $request->user()->trip_company_id;
+        $id = $request->user()->id;
         return $this->tripCompanyDetails($id);
     }
 
@@ -58,7 +58,7 @@ class TripAdminController extends Controller
      */
     public function editCompanyDetails(Request $request): JsonResponse
     {
-        $id = $request->user()->trip_company_id;
+        $id = $request->user()->id;
         return $this->editCompany($request,$id);
     }
 
