@@ -35,7 +35,7 @@ Route::group( ['middleware' => ['auth:user-api'] ],function(){
 Route::group( ['middleware' => ['auth:attraction_admin-api'] ],function(){
     Route::post('addAttractionCompany',[AttractionAdminController::class,'addAttractionCompany']);
     Route::get('getUpdatingList',[AttractionAdminController::class,'getUpdatingList']);
-    Route::group( ['middleware' => ['just registered companies'] ],function(){
+    Route::group( ['middleware' => ['just registered attraction companies'] ],function(){
         Route::get('getAttractionDetails',[AttractionAdminController::class,'getAttractionDetails']);
         Route::post('editAttractionDetails',[AttractionAdminController::class,'editAttractionDetails']);
         Route::post('uploadMultiplePhotos',[AttractionAdminController::class,'uploadMultiplePhotos']);

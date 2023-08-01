@@ -49,51 +49,6 @@ class TripController extends TripAdminController
     }
 
     /**
-     * Getting Updating List
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function getUpdatingList(Request $request): JsonResponse
-    {
-        $updates = TripUpdating::when($request->accepted == 1, function ($q) {
-            $q->where('accepted', '=', 1);
-        })
-            ->when($request->rejected == 1, function ($q) {
-                $q->where('rejected', '=', 1);
-            })
-            ->when($request->unseen_only == 1, function ($q) {
-                $q->where('seen', '=', 0);
-            })
-            ->get();
-        return $this->success($updates, 'Updates retrieved successfully');
-    }
-
-    /**
-     * Show Updates Details
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function getUpdatingDetails(Request $request): JsonResponse
-    {
-        $validated_data = Validator::make($request->all(), [
-            'id' => 'required|exists:trip_updatings',
-        ]);
-        if ($validated_data->fails()) {
-            return response()->json(['error' => $validated_data->errors()->all()]);
-        }
-
-        $update = TripUpdating::where('id', '=', $request->id)
-            ->with('admin')
-            ->first();
-
-        TripUpdating::where('id', '=', $request->id)->update([
-            'seen' => 1,
-        ]);
-
-        return $this->success($update, 'Update retrieved successfully');
-    }
-
-    /**
      * Accepting An Update (Adding/Editing Trip)
      * @param Request $request
      * @return JsonResponse
@@ -144,10 +99,66 @@ class TripController extends TripAdminController
             $trip_company->save();
 
             return $this->success(null, 'Updates accepted successfully');
-        } else {       // adding new attraction
-            Tripcompany::create($updates);
-            return $this->success(null, 'Tripp company accepted successfully');
         }
+//        else {       // adding new attraction
+//            Tripcompany::create($updates);
+//            return $this->success(null, 'Tripp company accepted successfully');
+//        }
+        else{
+            try {
+                Tripcompany::create($updates);
+                return $this->success(null, 'Tripp company accepted successfully');
+            } catch (\Exception $e) {
+                TripUpdating::where('id', '=', $request->id)->update(['accepted' => 0]);
+//                return response()->json(['error' => $e->getMessage()], 500);
+                return $this->error('This email is used, try another one.');
+            }
+        }
+    }
+
+    /**
+     * Getting Updating List
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getUpdatingList(Request $request): JsonResponse
+    {
+        $updates = TripUpdating::when($request->accepted == 1, function ($q) {
+            $q->where('accepted', '=', 1);
+        })
+            ->when($request->rejected == 1, function ($q) {
+                $q->where('rejected', '=', 1);
+            })
+            ->when($request->unseen_only == 1, function ($q) {
+                $q->where('seen', '=', 0);
+            })
+            ->get();
+        return $this->success($updates, 'Updates retrieved successfully');
+    }
+
+    /**
+     * Show Updates Details
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getUpdatingDetails(Request $request): JsonResponse
+    {
+        $validated_data = Validator::make($request->all(), [
+            'id' => 'required|exists:trip_updatings',
+        ]);
+        if ($validated_data->fails()) {
+            return response()->json(['error' => $validated_data->errors()->all()]);
+        }
+
+        $update = TripUpdating::where('id', '=', $request->id)
+            ->with('admin')
+            ->first();
+
+        TripUpdating::where('id', '=', $request->id)->update([
+            'seen' => 1,
+        ]);
+
+        return $this->success($update, 'Update retrieved successfully');
     }
 
     /**
@@ -360,7 +371,6 @@ class TripController extends TripAdminController
         $data = $request;
         for ($i = 0; $i < $request->days_number; $i++) {
             $idx = $i + 1;
-//            return $trip['id'];
             $this->addDay($data, $idx, $trip['id']);
         }
 
@@ -377,7 +387,6 @@ class TripController extends TripAdminController
         $validated_data = Validator::make($request->all(), [
             'trip_id' => 'required',
             'percentage_off' => 'required',
-//            'active'=>'required',
             'offer_end' => 'required',
         ]);
         if ($validated_data->fails()) {
@@ -486,7 +495,7 @@ class TripController extends TripAdminController
      * @param Request $request
      * @return JsonResponse
      */
-    public function deleteSomeDay(Request $request)   // not mandatory
+    public function deleteSomeDay(Request $request): JsonResponse   // not mandatory
     {
         $validated_data = Validator::make($request->all(), [
             'day_id'=>'required',
