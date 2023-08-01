@@ -32,6 +32,8 @@ class TripController extends TripAdminController
         $validated_data = Validator::make($request->all(), [
             'user_name' => 'required|unique:attraction_admins',
             'password' => 'required',
+            'full_name'=> 'required',
+            'phone_number'=> 'required',
         ]);
         if ($validated_data->fails()) {
             return response()->json(['error' => $validated_data->errors()->all()]);
@@ -40,6 +42,8 @@ class TripController extends TripAdminController
         TripAdmin::create([
             'user_name' => $request->user_name,
             'password' => $request->password,
+            'phone_number'=> $request->phone_number,
+            'full_name'=> $request->full_name,
         ]);
 
         $attraction = TripAdmin::where('user_name', '=', $request->user_name)->first();

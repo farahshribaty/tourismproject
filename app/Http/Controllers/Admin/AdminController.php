@@ -250,9 +250,13 @@ class AdminController extends Controller
      */
     public function getUpdatingList(Request $request): JsonResponse
     {
-        $attractions = AttractionUpdating::select(['attraction_admin_id', 'add_or_update', 'accepted', 'rejected', 'seen', 'created_at'])->get()->toArray();
+        $attractions = AttractionUpdating::select(['id','attraction_admin_id', 'add_or_update', 'accepted', 'rejected', 'seen', 'created_at'])
+            ->with('admin')
+            ->get()->toArray();
 
-        $trips = TripUpdating::select(['trip_admin_id', 'add_or_update', 'accepted', 'rejected', 'seen', 'created_at'])->get()->toArray();
+        $trips = TripUpdating::select(['id','trip_admin_id', 'add_or_update', 'accepted', 'rejected', 'seen', 'created_at'])
+            ->with('admin')
+            ->get()->toArray();
 
         $is_all_seen = 1;    // Initially, we suppose that all updates are seen.
 

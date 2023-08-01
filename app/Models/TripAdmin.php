@@ -15,7 +15,8 @@ class TripAdmin extends Authenticatable
     protected $fillable = [
         'user_name',
         'password',
-        'trip_company_id',
+        'full_name',
+        'phone_number',
     ];
 
     protected $hidden = [

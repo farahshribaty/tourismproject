@@ -53,6 +53,8 @@ class TripSeeder extends Seeder
             TripAdmin::create([
                 'user_name'=> 'tripAdmin'.($i+1).'@gmail.com',
                 'password'=> 'admin',
+                'full_name'=> 'admin_'.($i+1),
+                'phone_number'=> random_int(1111111,9999999),
             ]);
         }
 

@@ -58,6 +58,8 @@ class AttractionSeeder extends Seeder
             AttractionAdmin::create([
                 'user_name'=> 'attractionAdmin'.($i+1).'@gmail.com',
                 'password'=> 'admin',
+                'full_name'=> 'admin_'.($i+1),
+                'phone_number'=> random_int(1111111,9999999),
             ]);
         }
 
