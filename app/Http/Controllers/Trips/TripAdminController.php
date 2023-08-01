@@ -101,6 +101,7 @@ class TripAdminController extends Controller
         }
 
         return $this->latestReservations($request->trip_id);
+
     }
 
     /**
@@ -162,6 +163,7 @@ class TripAdminController extends Controller
         }
 
         return $this->editOffer($request, $request->id);
+
     }
 
     /**
