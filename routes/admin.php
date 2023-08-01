@@ -19,6 +19,7 @@ Route::get('showcity',[AdminController::class, 'ShowCities']);
 
 // Admin Operations:
 Route::post('login',[AdminController::class,'login']);
+Route::get('getUpdatesList',[AdminController::class,'getUpdatingList']);
 Route::group( ['prefix' => 'admin','middleware' => ['auth:admin-api'] ],function(){
 
 });
@@ -41,6 +42,8 @@ Route::get('getTripCompanyDetails',[TripController::class,'getTripCompanyDetails
 Route::get('getAllTripAdmins',[TripController::Class,'getAllTripAdmins']);
 Route::get('getTripsForCompany',[TripController::class,'getTripsForCompany']);
 Route::get('getTripDetails',[TripController::class,'getTripDetails']);
+Route::get('getTripDates',[TripController::class,'getTripDates']);
+Route::get('getLatestTripReservations',[TripController::class,'getLatestReservations']);
 Route::post('editCompanyDetails',[TripController::class,'editCompanyDetails']);
 Route::post('editTripDetails',[TripController::class,'editTripDetails']);
 Route::post('editDayDetails',[TripController::class,'editDayDetails']);
@@ -48,10 +51,14 @@ Route::post('editOfferDetails',[TripController::class,'editOfferDetails']);
 Route::post('addNewTrip',[TripController::class,'addNewTrip']);
 Route::post('addNewOffer',[TripController::class,'addNewOffer']);
 Route::post('addNewDate',[TripController::class,'addNewDate']);
+Route::post('uploadOneTripPhoto',[TripController::class,'uploadOnePhoto']);
+Route::post('uploadMultipleTripPhotos',[TripController::class,'uploadMultiplePhotos']);
 Route::get('deleteSomeCompany',[TripController::class,'deleteSomeCompany']);
 Route::get('deleteSomeTrip',[TripController::class,'deleteSomeTrip']);
 Route::get('deleteSomeOffer',[TripController::class,'deleteSomeOffer']);
 Route::get('deleteSomeDate',[TripController::class,'deleteSomeDate']);
+Route::get('deleteOneTripPhoto',[TripController::class,'deleteOnePhoto']);
+
 
 
 

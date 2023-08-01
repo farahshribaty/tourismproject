@@ -8,10 +8,14 @@ use App\Models\Trip;
 use App\Models\TripAdmin;
 use App\Models\TripCompany;
 use App\Models\TripOffer;
+use App\Models\TripPhoto;
+use App\Models\TripsReservation;
 use App\Models\TripUpdating;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 class TripController extends TripAdminController
 {
@@ -94,7 +98,7 @@ class TripController extends TripAdminController
      * @param Request $request
      * @return JsonResponse
      */
-    public function acceptTripCompanyUpdate(Request $request): JsonResponse  // both adding or updating an attraction
+    public function acceptTripCompanyUpdate(Request $request): JsonResponse  // both adding or updating a trip company
     {
         $validated_data = Validator::make($request->all(), [
             'id' => 'required|exists:trip_updatings',
@@ -221,9 +225,38 @@ class TripController extends TripAdminController
         return $this->tripDetails($request->id);
     }
 
-    public function getTripDates()
+    /**
+     * Show Trip Dates
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getTripDates(Request $request): JsonResponse
     {
+        $validated_data = Validator::make($request->all(), [
+            'trip_id' => 'required',
+        ]);
+        if ($validated_data->fails()) {
+            return response()->json(['error' => $validated_data->errors()->all()]);
+        }
 
+        return $this->tripDates($request->trip_id);
+    }
+
+    /**
+     * Show Latest Reservations
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getLatestReservations(Request $request): JsonResponse
+    {
+        $validated_data = Validator::make($request->all(), [
+            'trip_id' => 'required',
+        ]);
+        if ($validated_data->fails()) {
+            return response()->json(['error' => $validated_data->errors()->all()]);
+        }
+
+        return $this->latestReservations($request->trip_id);
     }
 
     /**
@@ -303,35 +336,35 @@ class TripController extends TripAdminController
     {
         $validated_data = Validator::make($request->all(), [
             'trip_company_id' => 'required',
-            'destination'=>'required',
-            'description'=>'required',
-            'details'=>'required',
-            'days_number'=>'required',
-            'max_persons'=>'required',
-            'start_age'=>'required',
-            'end_age'=>'required',
+            'destination' => 'required',
+            'description' => 'required',
+            'details' => 'required',
+            'days_number' => 'required',
+            'max_persons' => 'required',
+            'start_age' => 'required',
+            'end_age' => 'required',
         ]);
         if ($validated_data->fails()) {
             return response()->json(['error' => $validated_data->errors()->all()]);
         }
 
-        $company = TripCompany::where('id','=',$request->trip_company_id)->first();
-        if(!isset($company)){
+        $company = TripCompany::where('id', '=', $request->trip_company_id)->first();
+        if (!isset($company)) {
             return $this->error('Company not found');
         }
 
-        $trip = $this->addTrip($request,$request->id);
+        $trip = $this->addTrip($request, $request->id);
 
         // adding days:
 
         $data = $request;
-        for($i=0 ; $i<$request->days_number ; $i++){
-            $idx = $i+1;
+        for ($i = 0; $i < $request->days_number; $i++) {
+            $idx = $i + 1;
 //            return $trip['id'];
-            $this->addDay($data,$idx,$trip['id']);
+            $this->addDay($data, $idx, $trip['id']);
         }
 
-        return $this->success(null,'Trip added successfully');
+        return $this->success(null, 'Trip added successfully');
     }
 
     /**
@@ -342,23 +375,23 @@ class TripController extends TripAdminController
     public function addNewOffer(Request $request): JsonResponse
     {
         $validated_data = Validator::make($request->all(), [
-            'trip_id'=>'required',
-            'percentage_off'=>'required',
+            'trip_id' => 'required',
+            'percentage_off' => 'required',
 //            'active'=>'required',
-            'offer_end'=>'required',
+            'offer_end' => 'required',
         ]);
         if ($validated_data->fails()) {
             return response()->json(['error' => $validated_data->errors()->all()]);
         }
 
         TripOffer::create([
-            'trip_id'=> $request->trip_id,
-            'percentage_off'=> $request->percentage_off,
-            'active'=> 1,
-            'offer_end'=> $request->offer_end,
+            'trip_id' => $request->trip_id,
+            'percentage_off' => $request->percentage_off,
+            'active' => 1,
+            'offer_end' => $request->offer_end,
         ]);
 
-        return $this->success(null,'Offer added successfully');
+        return $this->success(null, 'Offer added successfully');
     }
 
     /**
@@ -378,6 +411,40 @@ class TripController extends TripAdminController
         }
 
         return $this->addDate($request);
+    }
+
+    /**
+     * Uploading One Photo
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function uploadOnePhoto(Request $request): JsonResponse
+    {
+        $validated_data = Validator::make($request->all(), [
+            'trip_id' => 'required',
+        ]);
+        if ($validated_data->fails()) {
+            return response()->json(['error' => $validated_data->errors()->all()]);
+        }
+
+        return $this->addOnePhoto($request, $request->trip_id);
+    }
+
+    /**
+     * Uploading Multiple Photos
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function uploadMultiplePhotos(Request $request): JsonResponse
+    {
+        $validated_data = Validator::make($request->all(), [
+            'trip_id' => 'required',
+        ]);
+        if ($validated_data->fails()) {
+            return response()->json(['error' => $validated_data->errors()->all()]);
+        }
+
+        return $this->addMultiplePhotos($request, $request->trip_id);
     }
 
     /**
@@ -414,10 +481,21 @@ class TripController extends TripAdminController
         return $this->deleteTrip($request->trip_id);
     }
 
-
+    /**
+     * Deleting Some Day (not mandatory)
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function deleteSomeDay(Request $request)   // not mandatory
     {
+        $validated_data = Validator::make($request->all(), [
+            'day_id'=>'required',
+        ]);
+        if ($validated_data->fails()) {
+            return response()->json(['error' => $validated_data->errors()->all()]);
+        }
 
+        return $this->deleteDay($request->day_id);
     }
 
     /**
@@ -437,7 +515,12 @@ class TripController extends TripAdminController
         return $this->deleteOffer($request->offer_id);
     }
 
-    public function deleteSomeDate(Request $request)
+    /**
+     * Deleting Some Date
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function deleteSomeDate(Request $request): JsonResponse
     {
         $validated_data = Validator::make($request->all(), [
             'date_id'=>'required',
@@ -449,43 +532,22 @@ class TripController extends TripAdminController
         return $this->deleteDate($request->date_id);
     }
 
-    public function uploadOnePhoto()
-    {
-
-    }
-
-    public function uploadMultiplePhotos()
-    {
-
-    }
-
-    public function deleteOnePhoto()
-    {
-
-    }
-
-    public function getLatestReservations()
-    {
-
-    }
-
-
-
     /**
-     * Delete Some Company
+     * Deleting One Photo
      * @param Request $request
      * @return JsonResponse
      */
-    public function deleteTheCompany(Request $request): JsonResponse
+    public function deleteOnePhoto(Request $request): JsonResponse
     {
         $validated_data = Validator::make($request->all(), [
-            'id' => 'required|exists:trip_companies',
+            'photo_id'=>'required',
         ]);
         if ($validated_data->fails()) {
             return response()->json(['error' => $validated_data->errors()->all()]);
         }
 
-        return $this->deleteCompany($request->id);
+        return $this->deletePhoto($request->photo_id);
     }
+
 
 }

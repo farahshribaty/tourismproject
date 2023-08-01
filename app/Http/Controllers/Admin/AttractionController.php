@@ -62,7 +62,6 @@ class AttractionController extends AttractionAdminController
         return $this->success($updates, 'Updates retrieved successfully');
     }
 
-
     /**
      * Show Updates Details
      * @param Request $request
@@ -205,7 +204,6 @@ class AttractionController extends AttractionAdminController
 
         return $this->editDetails($request,$request->id);
     }
-
 
     /**
      * Delete An Admin

@@ -11,19 +11,20 @@ class TripUpdating extends Model
 
     protected $fillable = [
         'trip_admin_id',
-        'country_id',
+        'trip_company_id',
         'add_or_update',
         'accepted',
         'rejected',
         'seen',
+
+        'country_id',
         'phone_number',
         'email',
         'name',
-        'trip_company_id'
     ];
 
     public function admin()
     {
-        return $this->belognsTo(TripAdmin::class,'trip_admin_id');
+        return $this->belongsTo(TripAdmin::class,'trip_admin_id');
     }
 }

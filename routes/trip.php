@@ -37,6 +37,14 @@ Route::group( ['middleware' => ['auth:trip_admin-api'] ],function(){
     Route::get('getTripCompanyDetails',[TripAdminController::class,'getTripCompanyDetails']);
     Route::post('editCompanyDetails',[TripAdminController::class,'editCompanyDetails']);
     Route::get('deleteTheCompany',[TripAdminController::class,'deleteTheCompany']);
+    Route::get('getUpdatingList',[TripAdminController::class,'getUpdatingList']);
+    Route::get('getAllTrips',[TripAdminController::class,'getAllTrips']);
+    Route::get('getTripDetails',[TripAdminController::class,'getTripDetails']);
+    Route::get('getTripDates',[TripAdminController::class,'getTripDates']);
+    Route::get('getLatestReservations',[TripAdminController::class,'getLatestReservations']);
+    Route::post('editCompanyDetails',[TripAdminController::class,'editCompanyDetails']);
+    Route::post('editTripDetails',[TripAdminController::class,'editTripDetails']);
+
 });
 
 
