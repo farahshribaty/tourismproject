@@ -109,8 +109,6 @@ class FlightsController extends Controller
         else{
             $returnFlights = [[]];
             $flights = Arr::crossJoin($outboundFlights,$returnFlights);
-
-//            $flights = $outboundFlights;
         }
 
         // foreach ($flights as &$pair) {

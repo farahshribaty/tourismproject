@@ -25,7 +25,7 @@ class AttractionAdminController extends Controller
      */
     public function addAttractionCompany(Request $request): JsonResponse
     {
-//        $attraction = Attraction::where('attraction_admin_id','=',$request->user()->id)->first();
+        //        $attraction = Attraction::where('attraction_admin_id','=',$request->user()->id)->first();
         $add_request = AttractionUpdating::where('attraction_admin_id',$request->user()->id)
             ->where('rejected',0)->first();
 

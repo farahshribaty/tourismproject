@@ -4,13 +4,14 @@
 use App\Http\Controllers\Admin\AdminController;
 //use App\Http\Controllers\Hotel\AdminController;
 use App\Http\Controllers\Admin\AttractionController;
+use App\Http\Controllers\Admin\HotelController;
 use App\Http\Controllers\Admin\TripController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 
-Route::post('createadmin',[AdminController::class, 'CreateAdmin']);
+Route::post('createadmin',[AdminController::class, 'CreateAdmin1']);
 Route::post('adminLogin',[AdminController::class, 'AdminLogin']);
 Route::post('country',[AdminController::class, 'AddCountry']);
 Route::post('city',[AdminController::class, 'AddCity']);
@@ -57,7 +58,7 @@ Route::get('showAttractionUpdates',[AttractionController::class,'getUpdatingList
 Route::get('getUpdatingDetails',[AttractionController::class,'getUpdatingDetails']);
 Route::post('acceptUpdate',[AttractionController::class,'acceptingAttraction']);
 Route::get('getAllAttractions',[AttractionController::class,'getAllAttractions']);
-Route::get('getAllAdmins',[AttractionController::Class,'getAllAdmins']);
+Route::get('getAllAdmins',[AttractionController::class,'getAllAdmins']);
 Route::get('getAttractionDetails',[AttractionController::class,'getAttractionDetails']);
 Route::post('editAttractionDetails',[AttractionController::class,'editAttractionDetails']);
 Route::get('deleteAdmin',[AttractionController::class,'deleteAdmin']);
@@ -73,6 +74,8 @@ Route::get('getLatestReservations',[AttractionController::class,'getLatestReserv
 
 
 // Hotel Operations:
+Route::post('acceptUpdate',[HotelController::class,'acceptingHotel']);
+
 
 
 

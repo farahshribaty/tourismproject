@@ -65,7 +65,7 @@ class Hotel extends Authenticatable
 
     public function Admin()
     {
-       return $this->hasOne(HotelAdmin::class,'hotel_admins_id');
+       return $this->belongsTo(HotelAdmin::class,'hotel_admins_id');
     }
 
 }

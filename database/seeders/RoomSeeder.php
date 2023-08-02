@@ -15,8 +15,24 @@ class RoomSeeder extends Seeder
     /**
      * Run the database seeds.
      */
+    
     public function run(): void
     {
+        $bedsPerType = [
+            1 => 1, // Room type ID 1 has 1 bed
+            2 => 2, // Room type ID 2 has 2 beds
+            3 => 2, // Room type ID 3 has 2 beds
+            4 => 3, // Room type ID 4 has 3 beds
+            5 => 3, // Room type ID 5 has 3 beds
+            6 => 4, // Room type ID 6 has 4 beds
+            7 => 4, // Room type ID 7 has 4 beds
+            8 => 5, // Room type ID 8 has 5 beds
+            9 => 5, // Room type ID 9 has 5 beds
+        ];
+
+        $roomType = random_int(1, 9);
+        $numBeds = $bedsPerType[$roomType];
+        
         for($i = 0 ; $i<100 ; $i++){
 
         Room::create([
@@ -28,7 +44,7 @@ class RoomSeeder extends Seeder
         'rate'=>random_int(1,5),
         'num_of_ratings'=> random_int(10,3000),
         'Sleeps'=>random_int(1,5),
-        'Beds'=>random_int(1,5)
+        'Beds'=>$numBeds
         ]);
         }
 

@@ -25,7 +25,7 @@ class Room extends Model
     ];
 
     public function Type(){
-        return $this->belongsTo(RoomType::class, 'room_types_id');
+        return $this->belongsTo(RoomType::class, 'room_type');
     }
 
     public function Hotel(){

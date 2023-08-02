@@ -8,12 +8,11 @@ use App\Models\Facilities;
 use App\Models\Hotel;
 use App\Models\City;
 use App\Models\HotelReview;
-use App\Models\Types;
+use App\Models\Room;
+use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Password;
-
-use function PHPSTORM_META\type;
 
 class UserController extends Controller
 {
@@ -268,11 +267,34 @@ class UserController extends Controller
         ]);
     }
     /**
-     * Show the form for creating a new resource.
+     * getting all the hotel info
      */
-    public function create()
+    public function getAllHotelInfo(Request $request)
     {
-        //
+        $hotel = Hotel::with(['type', 'city'=> function ($query) {
+            $query->select('id','name','country_id')
+            ->with(['country' => function ($que) {
+                $que->select('id','name'); }]);
+                } , 'photo', 'facilities','reviews'=> function($qu){
+                $qu->select('id','hotel_id','rate','comment','user_id')
+                ->with(['user' => function ($q) {
+                $q->select('id','first_name','last_name'); 
+                }]);
+            }])
+        ->where('id',$request->id)
+        ->get();
+
+        $roomsByType = DB::table('rooms')
+        ->join('room_types', 'rooms.room_type', '=', 'room_types.id')
+        ->select('name as room_type','rooms.beds', DB::raw('COUNT(*) as room_count'))
+        ->groupBy('room_types.name','rooms.beds')
+        ->where('hotel_id', $request->id)
+        ->get();
+
+        return response([
+            'Hotel_info'=>$hotel,
+            'Rooms'=>$roomsByType
+        ]);
     }
 
     /**

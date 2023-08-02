@@ -15,17 +15,22 @@ class HotelAdmin extends Authenticatable
     protected $primaryKey='id';
 
     protected $fillable = [
-    'user_name',
-    'password'
+        'first_name',
+        'last_name',
+        'user_name',
+        'email',
+        'password',
+        'phone_number',
     ];
 
     protected $hidden = [
         'created_at',
         'updated_at',
+        'password',
     ];
 
     public function Hotel()
     {
-        return $this->belongsTo(Hotel::class,'hotel_id');
+        return $this->hasOne(Hotel::class,'hotel_id');
     }
 }

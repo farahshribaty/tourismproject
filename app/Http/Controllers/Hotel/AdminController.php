@@ -3,28 +3,28 @@
 namespace App\Http\Controllers\Hotel;
 
 use App\Http\Controllers\Controller;
-use App\Models\Admin;
 use Illuminate\Http\Request;
 use App\Models\Hotel;
+use App\Models\HotelAdmin;
 use App\Models\HotelPhoto;
+use App\Models\HotelUpdating;
 use App\Models\Room;
 use App\Models\RoomPhotos;
-use App\Models\Types;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rules\Password;
+use Illuminate\Support\Facades\Validator;
+
 
 class AdminController extends Controller
 {
-
-    public function AdminLogin(Request $request) //Hotel admin log in
+    public function AdminLogin(Request $request) 
     {
         $request->validate([
 
-            'email'=>'required|email',
+            'user_name'=>'required',
             'password'=>'required',
         ]);
-        $admin=Admin::where('email',$request->email)->first();
+        $admin=HotelAdmin::where('user_name',$request->user_name)->first();
 
         if(!$admin)
         {
@@ -36,7 +36,8 @@ class AdminController extends Controller
             $hotel['token']=$admin->createtoken('MyApp')->accessToken;
             return response([
                 'message'=>'admin loged in',
-                'admin'=>$admin
+                'admin'=>$admin,
+                'token:'=>$hotel['token']
             ]);
 
         }
@@ -46,28 +47,79 @@ class AdminController extends Controller
         }
         
     }
-    public function CreateHotel(Request $request) //done
+    /**
+     * Adding My Hotel info
+     */
+    public function CreateHotel(Request $request)
     {
-        Hotel::create([
-            'name'=>$request->name,
-            'email'=>$request->email,
-            'location'=>$request->location,
-            'phone_number'=>$request->phone_number,
-            'details'=>$request->details,
-            'rate'=>$request->rate ,
-            'num_of_ratings'=> $request->num_of_ratings,
-            'website_url'=>$request->website_url,
-            'city_id'=>$request->city_id,
-            'type_id'=>$request->type_id
-        ]);
+        $add_request = HotelUpdating::where('hotel_admins_id',$request->user()->id)
+        ->where('rejected',0)->first();
 
-        $hotel = Hotel::where('email','=',$request->email)->first();
-        $hotel['token'] = $hotel->createToken('MyApp')->accessToken;
+         if(isset($add_request)){
+        return $this->error('You no longer have the ability to add your company');
+        }
+        $validated_data = Validator::make($request->all(), [
+            'name',
+            'email',
+            'location',
+            'phone_number',
+            'details',
+            'num_of_rooms',
+            'rate',
+            'stars',
+            'num_of_ratings',
+            'price_start_from',
+            'website_url',
+            'city_id',
+            'type_id',
+            // 'admin_id'
+        ]);
+        if($validated_data->fails()){
+            return response()->json(['error' => $validated_data->errors()->all()]);
+        }
+    
+        $data = $request;
+        $data['hotel_admins_id'] = $request->user()->id;
+        $data['add_or_update'] = 0;
+        $data['accepted'] = 0;
+        $data['rejected'] = 0;
+        $data['seen'] = 0;
+    
+        HotelUpdating::create($data->all());
+        return $this->success(null,'Form sent successfully, pending approval.');
+    }   
+    /**
+     * Getting all hotels with main info
+     */
+    public function getAllHotelsWithMainInfo()
+    {
+        $hotels = DB::table('hotels')->select('id', 'name','email', 'location','phone_number','details')->get();
+
+        return $hotels;
+    }
+    /**
+     * Getting one hotel with all info
+     */
+    public function getHotelWithAllInfo(Request $request)
+    {
+        $hotel = DB::table('hotels')->where('id', $request->id)->get();
+
+        return $hotel;
+    }
+    public function addRooms(Request $request) //done
+    {
+        $room=Room::create([
+            'room_type'=>$request->room_type,
+            'hotel_id'=>$request->hotel_id,
+            'details'=>$request->details,
+            'price_for_night'=>$request->price_for_night,
+            'rate'=>$request->rate,
+            'num_of_ratings'=>$request->rate
+        ]);
         
         return response()->json([
-            'data'=>$hotel,
+            'data'=>$room,
         ]);
-
     }
     public function addPhotos(Request $request) //done
     {
@@ -94,21 +146,7 @@ class AdminController extends Controller
              ]);
         }
     }
-    public function addRooms(Request $request) //done
-    {
-        $room=Room::create([
-            'room_type'=>$request->room_type,
-            'hotel_id'=>$request->hotel_id,
-            'details'=>$request->details,
-            'price_for_night'=>$request->price_for_night,
-            'rate'=>$request->rate,
-            'num_of_ratings'=>$request->rate
-        ]);
-        
-        return response()->json([
-            'data'=>$room,
-        ]);
-    }
+   
     public function addRoomPhotos(Request $request) //done
     {
         if($request->hasFile('photo')) {
@@ -141,7 +179,7 @@ class AdminController extends Controller
         $rooms = Room::select('rooms.*', 'hotels.location','hotels.city_id')
         ->join('hotels', 'rooms.hotel_id', '=', 'hotels.id')
         ->where('rooms.hotel_id', '=', $hotel_id)
-        ->with(['photo','features'])
+        ->with(['photo','features','type'])
         ->get();
 
         $rooms = $rooms->makeHidden(['details','created_at','updated_at']);

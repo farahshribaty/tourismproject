@@ -15,13 +15,18 @@ class AirlineAdmin extends Authenticatable
     protected $primaryKey='id';
 
     protected $fillable = [
-    'user_name',
-    'password'
+        'first_name',
+        'last_name',
+        'user_name',
+        'email',
+        'password',
+        'phone_number',
     ];
 
     protected $hidden = [
         'created_at',
         'updated_at',
+        'password',
     ];
 
     public function Airline()
