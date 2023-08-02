@@ -6,13 +6,16 @@ use App\Models\Admin;
 use App\Models\AirlineAdmin;
 use App\Models\Attraction;
 use App\Models\AttractionAdmin;
+use App\Models\AttractionUpdating;
 use App\Models\Country;
 use App\Models\City;
 use App\Models\Hotel;
 use App\Models\HotelAdmin;
 use App\Models\TripAdmin;
 use App\Models\TripCompany;
+use App\Models\TripUpdating;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -237,6 +240,51 @@ class AdminController extends Controller
             'success'=>false,
             'message'=>'Incorrect email or password',
         ],400);
+    }
+
+
+    /**
+     * Show Updating List For All Sections, With 'is_all_seen' Boolean Which Determines If All Updates Are Seen Or Not.
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getUpdatingList(Request $request): JsonResponse
+    {
+        $attractions = AttractionUpdating::select(['id','attraction_admin_id', 'add_or_update', 'accepted', 'rejected', 'seen', 'created_at'])
+            ->with('admin')
+            ->get()->toArray();
+
+        $trips = TripUpdating::select(['id','trip_admin_id', 'add_or_update', 'accepted', 'rejected', 'seen', 'created_at'])
+            ->with('admin')
+            ->get()->toArray();
+
+        $is_all_seen = 1;    // Initially, we suppose that all updates are seen.
+
+        $all = [];
+        foreach($trips as $trip){
+            $trip['type'] = 'trip_company';
+            $is_all_seen &= $trip['seen'];
+            array_push($all,$trip);
+        }
+        foreach($attractions as $attraction){
+            $attraction['type'] = 'attraction_company';
+            $is_all_seen &= $attraction['seen'];
+            array_push($all,$attraction);
+        }
+
+        // Sorting updates by created time.
+        usort($all, function($a,$b)
+        {
+            $a_time = strtotime($a['created_at']);
+            $b_time = strtotime($b['created_at']);
+            return $a_time > $b_time;
+        });
+
+        return response()->json([
+            'success'=> true,
+            'is_all_seen'=> $is_all_seen,
+            'data'=> $all,
+        ]);
     }
 
 

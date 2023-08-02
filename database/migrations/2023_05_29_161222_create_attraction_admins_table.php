@@ -16,6 +16,8 @@ return new class extends Migration
 //            $table->foreignId('attraction_id')->constrained('attractions')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('user_name')->unique();
             $table->string('password');
+            $table->string('full_name');
+            $table->integer('phone_number');
             $table->timestamps();
         });
     }

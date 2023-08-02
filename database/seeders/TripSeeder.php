@@ -14,6 +14,8 @@ use App\Models\TripOffer;
 use App\Models\TripPhoto;
 use App\Models\TripReview;
 use App\Models\TripService;
+use App\Models\TripsReservation;
+use App\Models\TripUpdating;
 use App\Models\WhatIsIncluded;
 use Carbon\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -51,6 +53,8 @@ class TripSeeder extends Seeder
             TripAdmin::create([
                 'user_name'=> 'tripAdmin'.($i+1).'@gmail.com',
                 'password'=> 'admin',
+                'full_name'=> 'admin_'.($i+1),
+                'phone_number'=> random_int(1111111,9999999),
             ]);
         }
 
@@ -95,41 +99,14 @@ class TripSeeder extends Seeder
             ]);
         }
 
-        // adding offers for the first 5 trips
-        $cnt=0;
-        foreach($trips as $trip){
-            if($cnt == 5) break;
-
-            TripOffer::create([
-                'trip_id'=> $trip['id'],
-                'percentage_off'=> (($cnt+1)*10),
-                'active'=> true,
-                'offer_end'=> Carbon::now()->addDays(3),
-            ]);
-
-            $cnt++;
-        }
-
-        // adding departures for each trip
-
-//        foreach($trips as $trip){
-//            for($i=0;$i<3;$i++){
-//                TripDeparture::create([
-//                    'trip_id'=>$trip['id'],
-//                    'flight_id'=>0,
-//                    'city_id'=>$i+1,
-//                    'departure_details'=>($i==$trip['destination'] ? 'You are already in the target city! there is no further fees!':'The trip will start from this city with the following flight')
-//                ]);
-//            }
-//        }
 
         // adding some services for each trip
 
         foreach($trips as $trip){
-            for($i=0;$i<=4;$i++){
+            for($i=0;$i<4;$i++){
                 WhatIsIncluded::create([
                     'trip_id'=>$trip['id'],
-                    'service_id'=>$i,
+                    'service_id'=> $i+1,
                 ]);
             }
         }
@@ -137,7 +114,7 @@ class TripSeeder extends Seeder
         // adding some activities for each trip
 
         foreach($trips as $trip){
-            for($i=0;$i<=4;$i++){
+            for($i=0;$i<4;$i++){
                 TripActivitiesIncluded::create([
                     'trip_id'=>$trip['id'],
                     'activity_id'=>$i+1,
@@ -164,7 +141,7 @@ class TripSeeder extends Seeder
             }
         }
 
-        // adding dates for each departure (date of trip)
+        // adding dates for each trip (date of trip)
 
         $trips = Trip::get();
 
@@ -173,7 +150,26 @@ class TripSeeder extends Seeder
                 TripDate::create([
                     'trip_id'=>$trip['id'],
                     'departure_date'=> Carbon::now()->addMonths($i),
+                    'current_reserved_people'=> 2,
                     'price'=> ($trip['id']*100),
+                ]);
+            }
+        }
+
+        // adding reservations for each date
+
+        $dates = TripDate::get();
+
+        foreach($dates as $date){
+            for($i=0 ; $i<3 ; $i++){
+                TripsReservation::create([
+                    'date_id'=> $date['id'],
+                    'user_id'=> random_int(1,17),
+                    'child'=> 2,
+                    'adult'=> 2,
+                    'points_added'=> 10,
+                    'money_spent'=> 4*$date['price'],
+                    'active'=> 1,
                 ]);
             }
         }
@@ -189,6 +185,30 @@ class TripSeeder extends Seeder
                     'stars'=> ($i==0 ? 5:1),
                 ]);
             }
+        }
+
+        // adding an offer for each trip
+
+        foreach($trips as $trip){
+            TripOffer::create([
+                'trip_id'=> $trip['id'],
+                'percentage_off'=> 20,
+                'active'=> 1,
+                'offer_end'=> '2023-09-05',
+            ]);
+        }
+
+        // adding updates for some trips
+
+        $admins = TripAdmin::get();
+        foreach($admins as $admin){
+            TripUpdating::create([
+                'trip_admin_id'=> $admin['id'],
+                'add_or_update'=> 1,
+                'accepted'=> 0,
+                'rejected'=> 0,
+                'seen'=> 0,
+            ]);
         }
 
 

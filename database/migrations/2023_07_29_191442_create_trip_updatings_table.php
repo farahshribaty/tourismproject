@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('trip_updatings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('trip_admin_id')->constrained('trip_admins')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->foreignId('country_id');
             $table->boolean('add_or_update');   // 1 for update, 0 for add.
             $table->boolean('accepted');
             $table->boolean('rejected');
             $table->boolean('seen');
 
+            $table->foreignId('country_id')->nullable();
             $table->foreignId('trip_company_id')->nullable();
             $table->string('name')->nullable();
             $table->string('email')->nullable();

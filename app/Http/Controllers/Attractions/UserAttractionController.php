@@ -65,25 +65,6 @@ class UserAttractionController extends UserController
      */
     public function searchForAttractions(Request $request): JsonResponse
     {
-//        $attraction = Attraction::whereHas('city',function($query) use($request){
-//                $query->where('name',$request->word);
-//            })
-//            ->orWhereHas('city.country',function($query) use($request){
-//                $query->where('name',$request->word);
-//            })
-//            ->orWhere('name','like','%'.$request->word.'%')                      // this is just working
-//            ->when(isset($request->price),function($query) use($request){
-//                $query->where('adult_price','<=',$request->price);
-//            })
-//            ->when($request->attraction_type_id,function($query) use($request){
-//                $query->where('attraction_type_id','=',$request->attraction_type_id);
-//            });
-//
-//        $attraction = $attraction
-//            ->with(['photo','city'])
-//            ->paginate(10);
-
-
         $attractions = Attraction::with(['photo', 'city'])
             ->where(function ($query) use ($request) {
                 $query->where('name', 'like', '%' . $request->word . '%')

@@ -18,7 +18,6 @@ class TripPhoto extends Model
         'created_at',
         'updated_at',
         'trip_id',
-        'id',
     ];
 
 }

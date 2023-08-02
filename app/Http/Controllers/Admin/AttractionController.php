@@ -26,6 +26,8 @@ class AttractionController extends AttractionAdminController
         $validated_data = Validator::make($request->all(), [
             'user_name' => 'required|unique:attraction_admins',
             'password' => 'required',
+            'full_name' => 'required',
+            'phone_number' => 'required',
         ]);
         if($validated_data->fails()){
             return response()->json(['error' => $validated_data->errors()->all()]);
@@ -34,6 +36,8 @@ class AttractionController extends AttractionAdminController
         AttractionAdmin::create([
             'user_name'=>$request->user_name,
             'password'=>$request->password,
+            'phone_number'=> $request->phone_number,
+            'full_name'=> $request->full_name,
         ]);
 
         $attraction = AttractionAdmin::where('user_name','=',$request->user_name)->first();
@@ -61,7 +65,6 @@ class AttractionController extends AttractionAdminController
             ->get();
         return $this->success($updates, 'Updates retrieved successfully');
     }
-
 
     /**
      * Show Updates Details
@@ -140,12 +143,18 @@ class AttractionController extends AttractionAdminController
 
             return $this->success(null,'Updates accepted successfully');
         }
-        else{       // adding new attraction
-            $updates['rate'] = 0;
-            $updates['num_of_ratings'] = 0;
-            Attraction::create($updates);
-            return $this->success(null,'Attraction company accepted successfully');
-        }
+          else{
+              try {
+                  $updates['rate'] = 0;
+                  $updates['num_of_ratings'] = 0;
+                  Attraction::create($updates);
+                  return $this->success(null, 'Attraction company accepted successfully');
+              } catch (\Exception $e) {
+                  AttractionUpdating::where('id', '=', $request->id)->update(['accepted' => 0]);
+//                return response()->json(['error' => $e->getMessage()], 500);
+                  return $this->error('This email is used, try another one.');
+              }
+          }
     }
 
     /**
@@ -205,7 +214,6 @@ class AttractionController extends AttractionAdminController
 
         return $this->editDetails($request,$request->id);
     }
-
 
     /**
      * Delete An Admin

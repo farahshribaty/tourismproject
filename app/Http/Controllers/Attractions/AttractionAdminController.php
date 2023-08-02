@@ -25,40 +25,40 @@ class AttractionAdminController extends Controller
      */
     public function addAttractionCompany(Request $request): JsonResponse
     {
-        //        $attraction = Attraction::where('attraction_admin_id','=',$request->user()->id)->first();
-        $add_request = AttractionUpdating::where('attraction_admin_id',$request->user()->id)
-            ->where('rejected',0)->first();
+//        $attraction = Attraction::where('attraction_admin_id','=',$request->user()->id)->first();
+        $add_request = AttractionUpdating::where('attraction_admin_id', $request->user()->id)
+            ->where('rejected', 0)->first();
 
-        if(isset($add_request)){
+        if (isset($add_request)) {
             return $this->error('You no longer have the ability to add your company');
         }
 
         $validated_data = Validator::make($request->all(), [
-            'city_id'=> 'required',
-            'attraction_type_id'=> 'required',
-            'name'=> 'required',
-            'email'=> 'required',
-        //            'password'=> 'required',
-            'location'=> 'required',
-            'phone_number'=> 'required',
-            'details'=> 'required',
-            'open_at'=> 'required',
-            'close_at'=> 'required',
-            'Saturday'=> 'required',
-            'Sunday'=> 'required',
-            'Monday'=> 'required',
-            'Tuesday'=> 'required',
-            'Wednesday'=> 'required',
-            'Thursday'=> 'required',
-            'Friday'=> 'required',
-            'website_url'=> 'required',
-            'adult_price'=> 'required',
-            'child_price'=> 'required',
-            'child_ability_per_day'=> 'required',
-            'adult_ability_per_day'=> 'required',
-            'points_added_when_booking'=> 'required',
+            'city_id' => 'required',
+            'attraction_type_id' => 'required',
+            'name' => 'required',
+            'email' => 'required',
+            //            'password'=> 'required',
+            'location' => 'required',
+            'phone_number' => 'required',
+            'details' => 'required',
+            'open_at' => 'required',
+            'close_at' => 'required',
+            'Saturday' => 'required',
+            'Sunday' => 'required',
+            'Monday' => 'required',
+            'Tuesday' => 'required',
+            'Wednesday' => 'required',
+            'Thursday' => 'required',
+            'Friday' => 'required',
+            'website_url' => 'required',
+            'adult_price' => 'required',
+            'child_price' => 'required',
+            'child_ability_per_day' => 'required',
+            'adult_ability_per_day' => 'required',
+            'points_added_when_booking' => 'required',
         ]);
-        if($validated_data->fails()){
+        if ($validated_data->fails()) {
             return response()->json(['error' => $validated_data->errors()->all()]);
         }
 
@@ -69,16 +69,16 @@ class AttractionAdminController extends Controller
         $data['rejected'] = 0;
         $data['seen'] = 0;
 
-        if(isset($request->Saturday)){
-            $week = ['Saturday'=>$data['Saturday'], 'Sunday'=>$data['Sunday'],'Monday'=>$data['Monday'],
-                'Tuesday'=>$data['Tuesday'],'Wednesday'=>$data['Wednesday'],'Thursday'=>$data['Thursday'],
-                'Friday'=>$data['Friday'],];
+        if (isset($request->Saturday)) {
+            $week = ['Saturday' => $data['Saturday'], 'Sunday' => $data['Sunday'], 'Monday' => $data['Monday'],
+                'Tuesday' => $data['Tuesday'], 'Wednesday' => $data['Wednesday'], 'Thursday' => $data['Thursday'],
+                'Friday' => $data['Friday'],];
 
             $data['available_days'] = $this->convertWeekArrayToBitmask($week);
         }
 
         AttractionUpdating::create($data->all());
-        return $this->success(null,'Form sent successfully, pending approval.');
+        return $this->success(null, 'Form sent successfully, pending approval.');
     }
 
     /**
@@ -88,7 +88,7 @@ class AttractionAdminController extends Controller
      */
     public function editAttractionDetails(Request $request): JsonResponse
     {
-        $attraction = Attraction::where('attraction_admin_id','=',$request->user()->id)->first();
+        $attraction = Attraction::where('attraction_admin_id', '=', $request->user()->id)->first();
 
         $data = $request;
         $data['attraction_admin_id'] = $request->user()->id;
@@ -99,17 +99,17 @@ class AttractionAdminController extends Controller
         $data['seen'] = 0;
 
 
-        if(isset($request->Saturday)){
-            $week = ['Saturday'=>$data['Saturday'], 'Sunday'=>$data['Sunday'],'Monday'=>$data['Monday'],
-                'Tuesday'=>$data['Tuesday'],'Wednesday'=>$data['Wednesday'],'Thursday'=>$data['Thursday'],
-                'Friday'=>$data['Friday'],];
+        if (isset($request->Saturday)) {
+            $week = ['Saturday' => $data['Saturday'], 'Sunday' => $data['Sunday'], 'Monday' => $data['Monday'],
+                'Tuesday' => $data['Tuesday'], 'Wednesday' => $data['Wednesday'], 'Thursday' => $data['Thursday'],
+                'Friday' => $data['Friday'],];
 
             $data['available_days'] = $this->convertWeekArrayToBitmask($week);
         }
 
         AttractionUpdating::create($data->all());
 
-        return $this->success(null,'Updates sent successfully, pending approval.');
+        return $this->success(null, 'Updates sent successfully, pending approval.');
         //return $this->editDetails($request,$id);
     }
 
@@ -120,7 +120,7 @@ class AttractionAdminController extends Controller
      */
     public function getAttractionDetails(Request $request): JsonResponse
     {
-        $attraction = Attraction::where('attraction_admin_id','=',$request->user()->id)->first();
+        $attraction = Attraction::where('attraction_admin_id', '=', $request->user()->id)->first();
         return $this->attractionDetails($attraction['id']);
     }
 
@@ -131,8 +131,8 @@ class AttractionAdminController extends Controller
      */
     public function uploadMultiplePhotos(Request $request): JsonResponse
     {
-        $attraction = Attraction::where('attraction_admin_id','=',$request->user()->id)->first();
-        return $this->addMultiplePhotos($request,$attraction['id']);
+        $attraction = Attraction::where('attraction_admin_id', '=', $request->user()->id)->first();
+        return $this->addMultiplePhotos($request, $attraction['id']);
     }
 
     /**
@@ -142,8 +142,8 @@ class AttractionAdminController extends Controller
      */
     public function uploadOnePhoto(Request $request): JsonResponse
     {
-        $attraction = Attraction::where('attraction_admin_id','=',$request->user()->id)->first();
-        return $this->addPhoto($request,$attraction['id']);
+        $attraction = Attraction::where('attraction_admin_id', '=', $request->user()->id)->first();
+        return $this->addPhoto($request, $attraction['id']);
     }
 
     /**
@@ -153,19 +153,19 @@ class AttractionAdminController extends Controller
      */
     public function deleteOnePhoto(Request $request): JsonResponse
     {
-        $attraction = Attraction::where('attraction_admin_id','=',$request->user()->id)->first();
+        $attraction = Attraction::where('attraction_admin_id', '=', $request->user()->id)->first();
 
         $validated_data = Validator::make($request->all(), [
             'id' => 'required|exists:attraction_photos',
         ]);
-        if($validated_data->fails()){
+        if ($validated_data->fails()) {
             return response()->json(['error' => $validated_data->errors()->all()]);
         }
 
-        $photo = AttractionPhoto::where('id','=',$request->id)->first();
+        $photo = AttractionPhoto::where('id', '=', $request->id)->first();
 
         // checking if this photo belongs to the desired attraction
-        if($attraction['id'] != $photo['attraction_id']){
+        if ($attraction['id'] != $photo['attraction_id']) {
             return $this->error('Unauthorized to delete this photo');
         }
 
@@ -179,19 +179,29 @@ class AttractionAdminController extends Controller
      */
     public function getLatestReservations(Request $request): JsonResponse
     {
-        $attraction = Attraction::where('attraction_admin_id','=',$request->user()->id)->first();
+        $attraction = Attraction::where('attraction_admin_id', '=', $request->user()->id)->first();
 
-        $reservations = AttractionReservation::where('attraction_id','=',$attraction['id'])
+        $reservations = AttractionReservation::where('attraction_id', '=', $attraction['id'])
             ->with([
-                'user'=>function($q){
-                     $q->select('id','first_name','last_name','email','phone_number');
+                'user' => function ($q) {
+                    $q->select('id', 'first_name', 'last_name', 'email', 'phone_number');
                 }
             ])
-            ->orderBy('id','desc')
+            ->orderBy('id', 'desc')
             ->paginate(10);
-        return $this->success($reservations,'Reservations returned successfully');
+        return $this->success($reservations, 'Reservations returned successfully');
     }
 
+    /**
+     * Show Updating List
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getUpdatingList(Request $request): JsonResponse
+    {
+        $updates = AttractionUpdating::where('attraction_admin_id','=',$request->user()->id)->get();
+        return $this->success($updates,'Updates retrieved successfully');
+    }
     // todo: get reservations using real time !!!!!
 
 

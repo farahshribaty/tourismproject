@@ -10,6 +10,7 @@ class TripOffer extends Model
     use HasFactory;
 
     protected $fillable = [
+        'trip_id',
         'percentage_off',
         'active',
         'offer_end',

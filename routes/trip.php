@@ -34,9 +34,28 @@ Route::group( ['middleware' => ['auth:user-api'] ],function(){
 // Trip Admin Operations
 
 Route::group( ['middleware' => ['auth:trip_admin-api'] ],function(){
-    Route::get('getTripCompanyDetails',[TripAdminController::class,'getTripCompanyDetails']);
-    Route::post('editCompanyDetails',[TripAdminController::class,'editCompanyDetails']);
-    Route::get('deleteTheCompany',[TripAdminController::class,'deleteTheCompany']);
+
+    Route::post('addTripCompany',[TripAdminController::class,'addTripCompany']);
+
+    Route::group( ['middleware' => ['just registered trip companies'] ],function(){
+        Route::get('getTripCompanyDetails',[TripAdminController::class,'getTripCompanyDetails']);
+        Route::post('editCompanyDetails',[TripAdminController::class,'editCompanyDetails']);
+        Route::get('getUpdatingList',[TripAdminController::class,'getUpdatingList']);
+        Route::get('getAllTrips',[TripAdminController::class,'getAllTrips']);
+        Route::get('getTripDetails',[TripAdminController::class,'getTripDetails']);
+        Route::get('getTripDates',[TripAdminController::class,'getTripDates']);
+        Route::get('getLatestReservations',[TripAdminController::class,'getLatestReservations']);
+        Route::post('editCompanyDetails',[TripAdminController::class,'editCompanyDetails']);
+        Route::post('editTripDetails',[TripAdminController::class,'editTripDetails']);
+        Route::post('editOfferDetails',[TripAdminController::class,'editOfferDetails']);
+        Route::post('addNewTrip',[TripAdminController::class,'addNewTrip']);
+        Route::post('addNewOffer',[TripAdminController::class,'addNewOffer']);
+        Route::post('addNewDate',[TripAdminController::class,'addNewDate']);
+        Route::get('deleteTheCompany',[TripAdminController::class,'deleteTheCompany']);
+        Route::get('deleteSomeTrip',[TripAdminController::class,'deleteSomeTrip']);
+        Route::get('deleteSomeOffer',[TripAdminController::class,'deleteSomeOffer']);
+        Route::get('deleteSomeDate',[TripAdminController::class,'deleteSomeDate']);
+    });
 });
 
 

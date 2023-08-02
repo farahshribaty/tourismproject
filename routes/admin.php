@@ -20,6 +20,7 @@ Route::get('showcity',[AdminController::class, 'ShowCities']);
 
 // Admin Operations:
 Route::post('login',[AdminController::class,'login']);
+Route::get('getUpdatesList',[AdminController::class,'getUpdatingList']);
 Route::group( ['prefix' => 'admin','middleware' => ['auth:admin-api'] ],function(){
 
 });
@@ -33,7 +34,7 @@ Route::post('editUserAccount',[UserController::class,'editUserAccount']);
 Route::get('getUserInfo',[UserController::class,'getUserInfo']);
 
 // Trips Operations:
-Route::post('makeNewAdmin',[TripController::class,'makeNewAdmin']);
+Route::post('makeNewTripAdmin',[TripController::class,'makeNewAdmin']);
 Route::get('showTripUpdates',[TripController::class,'getUpdatingList']);
 Route::get('getTripUpdatingDetails',[TripController::class,'getUpdatingDetails']);
 Route::post('acceptTripCompanyUpdate',[TripController::class,'acceptTripCompanyUpdate']);
@@ -42,14 +43,23 @@ Route::get('getTripCompanyDetails',[TripController::class,'getTripCompanyDetails
 Route::get('getAllTripAdmins',[TripController::Class,'getAllTripAdmins']);
 Route::get('getTripsForCompany',[TripController::class,'getTripsForCompany']);
 Route::get('getTripDetails',[TripController::class,'getTripDetails']);
+Route::get('getTripDates',[TripController::class,'getTripDates']);
+Route::get('getLatestTripReservations',[TripController::class,'getLatestReservations']);
 Route::post('editCompanyDetails',[TripController::class,'editCompanyDetails']);
 Route::post('editTripDetails',[TripController::class,'editTripDetails']);
 Route::post('editDayDetails',[TripController::class,'editDayDetails']);
 Route::post('editOfferDetails',[TripController::class,'editOfferDetails']);
 Route::post('addNewTrip',[TripController::class,'addNewTrip']);
+Route::post('addNewOffer',[TripController::class,'addNewOffer']);
+Route::post('addNewDate',[TripController::class,'addNewDate']);
+Route::post('uploadOneTripPhoto',[TripController::class,'uploadOnePhoto']);
+Route::post('uploadMultipleTripPhotos',[TripController::class,'uploadMultiplePhotos']);
+Route::get('deleteSomeCompany',[TripController::class,'deleteSomeCompany']);
+Route::get('deleteSomeTrip',[TripController::class,'deleteSomeTrip']);
+Route::get('deleteSomeOffer',[TripController::class,'deleteSomeOffer']);
+Route::get('deleteSomeDate',[TripController::class,'deleteSomeDate']);
+Route::get('deleteOneTripPhoto',[TripController::class,'deleteOnePhoto']);
 
-
-Route::get('deleteTheCompany',[TripController::class,'deleteTheCompany']);
 
 
 // Attraction Operations:

@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use Nette\Utils\DateTime;
 use PhpParser\Error;
 
 class UserController extends Controller
@@ -197,40 +198,41 @@ class UserController extends Controller
     {
         $word = $request->word;
 
-        $hotels = Hotel::select(['id','name','location','rate','num_of_ratings','city_id'])
-            ->where('name','like','%'.$word.'%')
+        $hotels = Hotel::where('name','like','%'.$word.'%')
             ->orWhereHas('City',function($q)use($word){
                 $q->where('name','like','%'.$word.'%')
                     ->orWhereHas('country',function($que)use($word){
                         $que->where('name','like','%'.$word.'%');
                     });
             })
-            ->with(['City',
-                'City.country'=>function($q) {
-                    $q->select(['id', 'name']);
-                },
-                'photo'])
+            ->with(['photo', 'city', 'city.country', 'type','facilities'])
             ->take(6)->get();
 
 
-        $attractions = Attraction::select(['id','name','location','rate','num_of_ratings','adult_price','city_id'])
-            ->where('name','like','%'.$word.'%')
+        $attractions = Attraction::where('name','like','%'.$word.'%')
             ->orWhereHas('city',function($q)use($word){
                 $q->where('name','like','%'.$word.'%')
                     ->orWhereHas('country',function($que)use($word){
                         $que->where('name','like','%'.$word.'%');
                     });
             })
-            ->with(['city',
-                'city.country'=>function($q) {
-                    $q->select(['id', 'name']);
-                },
-                'photo'])
+            ->with(['photo', 'city'])
             ->take(6)->get();
 
+        foreach($attractions as $attraction){
+            $date1 = $attraction['open_at'];
+            $date2 = $attraction['close_at'];
+
+            $new_date1 = DateTime::createfromformat('Y-m-d H:i:s',$date1);
+            $new_date2 = DateTime::createfromformat('Y-m-d H:i:s',$date2);
+
+            $attraction['open_at'] = $new_date1->format('H:i');
+            $attraction['close_at'] = $new_date2->format('H:i');
+        }
 
 
-        $trips = Trip::select(['id','destination','description','days_number','rate','num_of_ratings'])
+
+        $trips = Trip::select(['id','destination','description','details','days_number','rate','num_of_ratings','max_persons','start_age','end_age'])
             ->where('description','like','%'.$word.'%')
             ->orWhereHas('destination',function($q)use($word){
                 $q->where('name','like','%'.$word.'%')
@@ -238,12 +240,9 @@ class UserController extends Controller
                         $que->where('name','like','%'.$word.'%');
                     });
             })
-            ->with([
+            ->with(['photo',
                 'destination',
-                'destination.country'=>function($q) {
-                    $q->select(['id', 'name']);
-                },
-                'photo'
+                'destination.country'
             ])
             ->availableTrips()
             ->take(6)->get();
