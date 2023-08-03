@@ -200,10 +200,12 @@ class TripSeeder extends Seeder
 
         // adding updates for some trips
 
-        $admins = TripAdmin::get();
-        foreach($admins as $admin){
+//        $admins = TripAdmin::get();
+        $trip_companies = TripCompany::get();
+        foreach($trip_companies as $trip_company){
             TripUpdating::create([
-                'trip_admin_id'=> $admin['id'],
+                'trip_admin_id'=> $trip_company['trip_admin_id'],
+                'trip_company_id'=> $trip_company['id'],
                 'add_or_update'=> 1,
                 'accepted'=> 0,
                 'rejected'=> 0,
