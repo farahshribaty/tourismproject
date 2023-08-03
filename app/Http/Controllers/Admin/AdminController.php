@@ -277,7 +277,7 @@ class AdminController extends Controller
         {
             $a_time = strtotime($a['created_at']);
             $b_time = strtotime($b['created_at']);
-            return $a_time > $b_time;
+            return $a_time < $b_time;
         });
 
         return response()->json([
