@@ -16,9 +16,9 @@ class RegisteredTripCompanies
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $attraction = TripCompany::where('attraction_admin_id','=',$request->user()->id)->first();
+        $trip_company = TripCompany::where('trip_admin_id','=',$request->user()->id)->first();
 
-        if(!isset($attraction)){
+        if(!isset($trip_company)){
             return response()->json([
                 'success'=> false,
                 'message'=> 'You should register your company before doing this operation!',

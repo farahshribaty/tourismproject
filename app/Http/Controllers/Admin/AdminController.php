@@ -252,10 +252,14 @@ class AdminController extends Controller
     {
         $attractions = AttractionUpdating::select(['id','attraction_admin_id', 'add_or_update', 'accepted', 'rejected', 'seen', 'created_at'])
             ->with('admin')
+            ->where('accepted',0)
+            ->where('rejected',0)
             ->get()->toArray();
 
         $trips = TripUpdating::select(['id','trip_admin_id', 'add_or_update', 'accepted', 'rejected', 'seen', 'created_at'])
             ->with('admin')
+            ->where('accepted',0)
+            ->where('rejected',0)
             ->get()->toArray();
 
         $is_all_seen = 1;    // Initially, we suppose that all updates are seen.
