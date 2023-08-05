@@ -21,6 +21,11 @@ use Stevebauman\Location\Facades\Location;
 
 class UserTripsController extends UserController
 {
+    /**
+     * Showing Main Page
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function index(Request $request): JsonResponse
     {
         // top-rated trips
@@ -154,6 +159,11 @@ class UserTripsController extends UserController
         ]);
     }
 
+    /**
+     * Search For Some Trip
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function searchForTrip(Request $request): JsonResponse
     {
         $request->validate([
@@ -200,6 +210,11 @@ class UserTripsController extends UserController
         ],200);
     }
 
+    /**
+     * View Trip Details
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function viewTripDetails(Request $request): JsonResponse
     {
         $trip = Trip::where('id',$request->id)
@@ -217,7 +232,7 @@ class UserTripsController extends UserController
         $reviews = TripReview::select(['id','stars','comment','user_id'])
             ->where('trip_id',$request->id)
             ->with('user',function($q){
-                $q->select(['id','first_name','last_name']);
+                $q->select(['id','first_name','last_name','photo']);
             })
             ->take(3)
             ->get();
@@ -232,6 +247,12 @@ class UserTripsController extends UserController
     // todo: send prices after discount!
 
     // todo: add points to user account
+
+    /**
+     * Making Reservation
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function makeReservation(Request $request): JsonResponse
     {
         $request->validate([
@@ -341,6 +362,11 @@ class UserTripsController extends UserController
         return $this->success($reservation,'Trip has been reserved with the last information');
     }
 
+    /**
+     * Cancelling Reservation
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function cancellingReservation(Request $request): JsonResponse
     {
         $request->validate([
@@ -410,6 +436,11 @@ class UserTripsController extends UserController
 
     }
 
+    /**
+     * Add Review
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function addReview(Request $request): JsonResponse
     {
         $request->validate([
@@ -462,6 +493,11 @@ class UserTripsController extends UserController
         ]);
     }
 
+    /**
+     * Add To Favourites
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function addToFavourites(Request $request): JsonResponse
     {
         $request->validate([
@@ -479,6 +515,11 @@ class UserTripsController extends UserController
         ]);
     }
 
+    /**
+     * Remove From Favourites
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function removeFromFavourites(Request $request): JsonResponse
     {
         $request->validate([
@@ -495,6 +536,7 @@ class UserTripsController extends UserController
         ]);
     }
 
+    // helpful functions
     private function checkSeatAvailability($request,$trip,$date): bool
     {
         return ($date['current_reserved_people']+$request['children']+$request['adults'] <= $trip['max_persons']);

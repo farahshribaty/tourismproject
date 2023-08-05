@@ -45,15 +45,18 @@ class UserController extends Controller
             return response()->json(['error' => $validated_data->errors()->all()]);
         }
 
-        $user = User::create([
-            'first_name'=>$request->first_name,
-            'last_name'=>$request->last_name,
-            'email'=>$request->email,
-            'password'=>$request->password,
-            'phone_number'=>$request->phone_number,
-            'points'=>0,
-            'wallet'=>100000,
-        ]);
+        if ($request->hasFile('image')) {
+            $file_extension = $request->image->getClientOriginalExtension();
+            $file_name = time() . '.' . $file_extension;
+            $path = 'images/user';
+            $request->image->move($path, $file_name);
+            $request['photo'] = 'http://127.0.0.1:8000/images/user/' . $file_name;
+        }
+
+        $request['points'] = 0;
+        $request['wallet'] = 100000;
+
+        $user = User::create($request->all());
 
         $user['token'] = $user->createToken('MyApp')->accessToken;
 

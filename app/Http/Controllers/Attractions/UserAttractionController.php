@@ -83,6 +83,12 @@ class UserAttractionController extends UserController
         if (isset($request->attraction_type_id)) {
             $attractions->where('attraction_type_id', $request->attraction_type_id);
         }
+
+        if(isset($request->country_id)){
+            $attractions->whereHas('city',function($q)use($request){
+                $q->where('country_id',$request->country_id);
+            });
+        }
         $attractions = $attractions->paginate(10);
 
         // converting 'open_at' and 'close_at' to hours and minutes:
@@ -128,7 +134,7 @@ class UserAttractionController extends UserController
 
         $reviews = AttractionReview::where('attraction_id',$request->attraction_id)
             ->with('user',function($q){
-                $q->select(['first_name','last_name','id']);
+                $q->select(['id','first_name','last_name','photo']);
             })
 //                ->with('user')
                 ->paginate(6);
@@ -258,6 +264,7 @@ class UserAttractionController extends UserController
     }
 
 
+    // helpful functions
     private function checkMoneyAvailability($info,$user_id): int
     {
         $attraction = Attraction::where('id','=',$info['attraction_id'])->first();
