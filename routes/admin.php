@@ -40,7 +40,7 @@ Route::get('getTripUpdatingDetails',[TripController::class,'getUpdatingDetails']
 Route::post('acceptTripCompanyUpdate',[TripController::class,'acceptTripCompanyUpdate']);
 Route::get('getAllTripCompanies',[TripController::class,'getAllTripCompanies']);
 Route::get('getTripCompanyDetails',[TripController::class,'getTripCompanyDetails']);
-Route::get('getAllTripAdmins',[TripController::Class,'getAllTripAdmins']);
+Route::get('getAllTripAdmins',[TripController::class,'getAllTripAdmins']);
 Route::get('getTripsForCompany',[TripController::class,'getTripsForCompany']);
 Route::get('getTripDetails',[TripController::class,'getTripDetails']);
 Route::get('getTripDates',[TripController::class,'getTripDates']);
@@ -85,6 +85,12 @@ Route::get('getLatestReservations',[AttractionController::class,'getLatestReserv
 
 // Hotel Operations:
 Route::post('acceptUpdate',[HotelController::class,'acceptingHotel']);
+Route::get('AllHotels',[HotelController::class, 'getAllHotelsWithMainInfo']);
+Route::post('OneHotel',[HotelController::class, 'getHotelWithAllInfo']);
+Route::get('getAllHotelAdmins',[HotelController::class,'getAllHotelAdmins']);
+
+
+
 
 
 

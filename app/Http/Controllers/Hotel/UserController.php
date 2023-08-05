@@ -94,8 +94,10 @@ class UserController extends Controller
         // Return the list of cities as a JSON response
         return response()->json(['cities' => $cities], 200);
     }
-
-
+    
+    /**
+     * Search for Hotels by user
+     */
     public function Hotelsearch(Request $request)
     {
         $query = Hotel::query();
@@ -203,6 +205,9 @@ class UserController extends Controller
         return $data;
     }
 
+    /**
+     *Adding reviews By user
+     */
     public function addReview(Request $request) //done
     {
         $request->validate([
@@ -298,42 +303,24 @@ class UserController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * show all rooms for this type
      */
-    public function store(Request $request)
+    public function ShowOneRoom(Request $request)
     {
-        //
+        $room =Room::join('room_types', 'rooms.room_type', '=', 'room_types.id')
+        ->select('rooms.*', 'room_types.name as room_type')
+        ->with(['features','photo','Hotel' /*=> function($qu) {
+        $qu->select('id','name','email','location');
+        }*/])
+        ->where('hotel_id', $request->id)
+        ->where('room_types.name', $request->selectedRoomType)
+        ->first();
+
+
+        return response([
+            'Room_info'=>$room,
+        ]);
+    
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Hotel $hotel)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Hotel $hotel)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Hotel $hotel)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Hotel $hotel)
-    {
-        //
-    }
 }

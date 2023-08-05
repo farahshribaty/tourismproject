@@ -10,9 +10,9 @@ use Illuminate\Support\Facades\Route;
 
 //Hotel Admin Routes:
 Route::post('hotel/adminlogin',[AdminController::class, 'AdminLogin']);
-Route::get('admin/AllHotels',[AdminController::class, 'getAllHotelsWithMainInfo']);
 Route::post('admin/OneHotel',[AdminController::class, 'getHotelWithAllInfo']);
-Route::post('admin/addRoom',[AdminController::class, 'addRooms']);
+Route::post('admin/addMultiRooms',[AdminController::class, 'addMultiRoomsByType']);
+Route::post('admin/addingFeatures',[AdminController::class, 'addingFeatures']);
 Route::post('admin/addPhoto',[AdminController::class, 'addPhotos']);
 Route::post('admin/addRoomPhoto',[AdminController::class, 'addRoomPhotos']);
 Route::post('admin/SeeAllRooms',[AdminController::class, 'SeeAllRooms']);
@@ -28,6 +28,8 @@ Route::get('ShowAllHotel',[HotelController::class, 'ShowALLHotel']);
 Route::post('ShowHotelRooms',[HotelController::class, 'ShowHotelRooms']);
 Route::post('hotel/Hotelsearch',[UserController::class, 'Hotelsearch']);
 Route::post('AllHotelInfo',[UserController::class, 'GetALLHotelInfo']);
+Route::post('ShowOneRoom',[UserController::class, 'ShowOneRoom']);
+
 
 // trial root:
 Route::post('getReservations',[UserController::class,'Reservations']);

@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class HotelController extends AdminController
 {
@@ -49,9 +50,9 @@ class HotelController extends AdminController
                    'access_token'=>$accessToken
             ]);
     }
-    public function getAllHotelsWithMainInfo2()
+    public function getAllHotelsWithMainInfo()
     {
-        $hotels = $this->getAllHotelsWithMainInfo();
+        $hotels = DB::table('hotels')->select('id', 'name','email', 'location','phone_number','details')->get();
 
         return $hotels;
     }
@@ -122,6 +123,16 @@ class HotelController extends AdminController
             return $this->success(null,'Hotel accepted successfully');
         }
     }
+    public function getAllHotelAdmins()
+    {
+        $admins = HotelAdmin::with([
+            'Hotel'=>function($q){
+                $q->select('id','name','admin_id');
+            }
+        ])->paginate(10);
+        return $this->success($admins,'Admins retrieved successfully');
+    }
+    
     
 
 }

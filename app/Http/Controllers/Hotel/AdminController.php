@@ -3,13 +3,16 @@
 namespace App\Http\Controllers\Hotel;
 
 use App\Http\Controllers\Controller;
+use App\Models\Features;
 use Illuminate\Http\Request;
 use App\Models\Hotel;
 use App\Models\HotelAdmin;
 use App\Models\HotelPhoto;
 use App\Models\HotelUpdating;
 use App\Models\Room;
+use App\Models\RoomFeatures;
 use App\Models\RoomPhotos;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -87,39 +90,101 @@ class AdminController extends Controller
     
         HotelUpdating::create($data->all());
         return $this->success(null,'Form sent successfully, pending approval.');
-    }   
-    /**
-     * Getting all hotels with main info
-     */
-    public function getAllHotelsWithMainInfo()
-    {
-        $hotels = DB::table('hotels')->select('id', 'name','email', 'location','phone_number','details')->get();
-
-        return $hotels;
     }
     /**
      * Getting one hotel with all info
      */
     public function getHotelWithAllInfo(Request $request)
     {
-        $hotel = DB::table('hotels')->where('id', $request->id)->get();
+        $hotel = Hotel::with(['type', 'city'=> function ($query) {
+            $query->select('id','name','country_id')
+            ->with(['country' => function ($que) {
+                $que->select('id','name'); }]);
+                } , 'photo', 'facilities','reviews'=> function($qu){
+                $qu->select('id','hotel_id','rate','comment','user_id')
+                ->with(['user' => function ($q) {
+                $q->select('id','first_name','last_name'); 
+                }]);
+            }])
+        ->where('id',$request->id)
+        ->get();
 
-        return $hotel;
+        $roomsByType = DB::table('rooms')
+        ->join('room_types', 'rooms.room_type', '=', 'room_types.id')
+        ->select('name as room_type','rooms.beds', DB::raw('COUNT(*) as room_count'))
+        ->groupBy('room_types.name','rooms.beds')
+        ->where('hotel_id', $request->id)
+        ->get();
+
+        return response([
+            'Hotel_info'=>$hotel,
+            'Rooms'=>$roomsByType
+        ]);
     }
-    public function addRooms(Request $request) //done
+    /***
+     * Creating rooms from the same type 
+     */
+    public function addMultiRoomsByType(Request $request)
     {
-        $room=Room::create([
-            'room_type'=>$request->room_type,
-            'hotel_id'=>$request->hotel_id,
-            'details'=>$request->details,
-            'price_for_night'=>$request->price_for_night,
-            'rate'=>$request->rate,
-            'num_of_ratings'=>$request->rate
-        ]);
-        
+        $selectedFeatures = $request->selectedFeatures;
+
+        if (!is_array($selectedFeatures)) {
+            return response()->json([
+                'error' => 'Selected features must be provided as an array.'
+            ], 400);
+        }
+
+        $rooms = [];
+
+        for ($i = 0; $i < $request->n; $i++) {
+            $room = Room::create([
+                'room_type' => $request->room_type,
+                'hotel_id' => $request->hotel_id,
+                'details' => $request->details,
+                'price_for_night' => $request->price_for_night,
+                'rate' => 0,
+                'num_of_ratings' => 0,
+                'Sleeps' => $request->Sleeps,
+                'Beds' => $request->Beds
+            ]);
+
+            $rooms[] = $room;
+        }
+
+        $featureRecords = [];
+
+        $now = Carbon::now();
+
+        foreach ($selectedFeatures as $featureId) {
+            foreach ($rooms as $room) {
+                $featureRecords[] = [
+                    'room_id' => $room->id,
+                    'features_id' => $featureId,
+                    'created_at' => $now,
+                    'updated_at' => $now
+                ];
+            }
+        }
+
+        RoomFeatures::insert($featureRecords);
+
         return response()->json([
-            'data'=>$room,
+            'message' => 'Rooms created successfully.',
+            'data' => $rooms,
         ]);
+    }
+    public function addingFeatures(Request $request)
+    {
+      for($i=$request->id;$i<=$request->id2;$i++)
+      {
+        $j=0;
+        foreach ($request->features[$j] as $featureId) {
+            RoomFeatures::create([
+                'room_id' => $i,
+                'features_id' => $featureId
+            ]);
+        }
+      }
     }
     public function addPhotos(Request $request) //done
     {

@@ -23,7 +23,7 @@ class FacilitiesSeeder extends Seeder
         $meals = ['Breakfast','Lunch','Dinner','Other','snack','child meal'];
 
         $facilities = [
-            'Wifi','Parking','Transportation','Formalization','Meals','Activities'
+            'Wifi','Parking','Rent-Cars','Resturant','Swimming-Pools','Gym'
         ];
 
         $features = [
