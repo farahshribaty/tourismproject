@@ -53,7 +53,7 @@ class FlightsController extends Controller
 
         $outboundFlights = Flights::select('flights.id as flight_id',  'flights_times.departe_day', 'flights.available_seats', 'flights.available_weight', 'country_from.name as from', 'country_to.name as to', 'flights_times.adults_price', 'flights_times.children_price','flights_times.From_hour', 'flights_times.To_hour','flights_times.duration'
         ,'airlines.name as airline_name','airlines.path as airline_photo',
-        DB::raw("'outbound flight' as direction"),
+        DB::raw("'outbound_flights' as direction"),
         DB::raw('(flights_times.adults_price  + flights_times.children_price ) as total_price'))
         ->join('flights_times', 'flights_times.flights_id', '=', 'flights.id')
         ->join('countries as country_from','flights.from','=','country_from.id')
@@ -72,7 +72,7 @@ class FlightsController extends Controller
         {
         $returnFlights = Flights::select('flights.id as flight_id',  'flights_times.departe_day', 'flights.available_seats', 'flights.available_weight', 'country_from.name as from', 'country_to.name as to', 'flights_times.adults_price', 'flights_times.children_price','flights_times.From_hour', 'flights_times.To_hour','flights_times.duration'
         ,'airlines.name as airline_name','airlines.path as airline_photo',
-        DB::raw("'return flight' as direction"),
+        DB::raw("'return_flights' as direction"),
         DB::raw('(flights_times.adults_price  + flights_times.children_price ) as total_price'))
         ->join('flights_times', 'flights_times.flights_id', '=', 'flights.id')
         ->join('countries as country_from','flights.from','=','country_from.id')
@@ -97,37 +97,35 @@ class FlightsController extends Controller
 
 
         foreach ($outboundFlights as &$flight) {
-            $flight = ['outbound flights' => $flight];
+            $flight = ['outbound_flights' => $flight];
         }
         foreach ($returnFlights as &$flight) {
-            $flight = ['return flights' => $flight];
+            $flight = ['return_flights' => $flight];
         }
 
         $flights = Arr::crossJoin($outboundFlights,$returnFlights);
 
         }
         else{
+
+            foreach ($outboundFlights as &$flight) {
+                $flight = ['outbound_flights' => $flight];
+            }
+
             $returnFlights = [[]];
             $flights = Arr::crossJoin($outboundFlights,$returnFlights);
-
-//            $flights = $outboundFlights;
         }
 
-        // foreach ($flights as &$pair) {
-        //     $outboundPrice = $pair[0]['outbound flights']['total_price'];
-        //     $returnPrice = isset($pair[1]['return flights']) ? $pair[1]['return flights']['total_price'] : 0;
-        //     $totalPrice = ($outboundPrice + $returnPrice) * ($adults + $children);
-        //     $pair['total_price'] = $totalPrice;
-        // }
         foreach ($flights as &$pair) {
-            $outboundPriceForadults = $pair[0]['outbound flights']['adults_price']*$adults;
-            $outboundPriceForchildren = $pair[0]['outbound flights']['children_price']*$children;
-            $returnPriceForadults = isset($pair[1]['return flights']) ? $pair[1]['return flights']['adults_price']*$adults : 0;
-            $returnPriceForchildren = isset($pair[1]['return flights']) ? $pair[1]['return flights']['children_price']*$children : 0;
+            $outboundPriceForadults = $pair[0]['outbound_flights']['adults_price']*$adults;
+            $outboundPriceForchildren = $pair[0]['outbound_flights']['children_price']*$children;
+            $returnPriceForadults = isset($pair[1]['return_flights']) ? $pair[1]['return_flights']['adults_price']*$adults : 0;
+            $returnPriceForchildren = isset($pair[1]['return_flights']) ? $pair[1]['return_flights']['children_price']*$children : 0;
 
             $totalPrice =$outboundPriceForadults+$outboundPriceForchildren+$returnPriceForadults+$returnPriceForchildren;
             $pair['total_price'] = $totalPrice;
         }
+        
 
         return response()->json([
         'message' => "done",

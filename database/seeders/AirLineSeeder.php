@@ -15,15 +15,17 @@ class AirLineSeeder extends Seeder
      */
     public function run(): void
     {
-
         for($i = 0 ; $i<30 ; $i++)
         {
             AirlineAdmin::create([
+                'first_name'=>fake()->name(),
+                'last_name'=>fake()->name(),
                 'user_name'=>fake()->unique()->name(),
-                'password'=>fake()->password()
+                'email'=>fake()->email(),
+                'password'=>fake()->password(),
+                'phone_number'=>fake()->phoneNumber(),
             ]);
         }
-
         $names = [
             'Emirates Airline', 'Qatar Airways', 'Saudi Arabian Airlines','China Airlines','Turkish Airlines'
             ,'American Airlines','WestJet','Air France KLM','Aeroflot Russian Airlines'

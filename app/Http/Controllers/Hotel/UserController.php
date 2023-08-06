@@ -8,12 +8,11 @@ use App\Models\Facilities;
 use App\Models\Hotel;
 use App\Models\City;
 use App\Models\HotelReview;
-use App\Models\Types;
+use App\Models\Room;
+use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Password;
-
-use function PHPSTORM_META\type;
 
 class UserController extends Controller
 {
@@ -95,8 +94,10 @@ class UserController extends Controller
         // Return the list of cities as a JSON response
         return response()->json(['cities' => $cities], 200);
     }
-
-
+    
+    /**
+     * Search for Hotels by user
+     */
     public function Hotelsearch(Request $request)
     {
         $query = Hotel::query();
@@ -204,6 +205,9 @@ class UserController extends Controller
         return $data;
     }
 
+    /**
+     *Adding reviews By user
+     */
     public function addReview(Request $request) //done
     {
         $request->validate([
@@ -268,50 +272,55 @@ class UserController extends Controller
         ]);
     }
     /**
-     * Show the form for creating a new resource.
+     * getting all the hotel info
      */
-    public function create()
+    public function getAllHotelInfo(Request $request)
     {
-        //
+        $hotel = Hotel::with(['type', 'city'=> function ($query) {
+            $query->select('id','name','country_id')
+            ->with(['country' => function ($que) {
+                $que->select('id','name'); }]);
+                } , 'photo', 'facilities','reviews'=> function($qu){
+                $qu->select('id','hotel_id','rate','comment','user_id')
+                ->with(['user' => function ($q) {
+                $q->select('id','first_name','last_name'); 
+                }]);
+            }])
+        ->where('id',$request->id)
+        ->get();
+
+        $roomsByType = DB::table('rooms')
+        ->join('room_types', 'rooms.room_type', '=', 'room_types.id')
+        ->select('name as room_type','rooms.beds', DB::raw('COUNT(*) as room_count'))
+        ->groupBy('room_types.name','rooms.beds')
+        ->where('hotel_id', $request->id)
+        ->get();
+
+        return response([
+            'Hotel_info'=>$hotel,
+            'Rooms'=>$roomsByType
+        ]);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * show all rooms for this type
      */
-    public function store(Request $request)
+    public function ShowOneRoom(Request $request)
     {
-        //
+        $room =Room::join('room_types', 'rooms.room_type', '=', 'room_types.id')
+        ->select('rooms.*', 'room_types.name as room_type')
+        ->with(['features','photo','Hotel' /*=> function($qu) {
+        $qu->select('id','name','email','location');
+        }*/])
+        ->where('hotel_id', $request->id)
+        ->where('room_types.name', $request->selectedRoomType)
+        ->first();
+
+
+        return response([
+            'Room_info'=>$room,
+        ]);
+    
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Hotel $hotel)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Hotel $hotel)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Hotel $hotel)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Hotel $hotel)
-    {
-        //
-    }
 }

@@ -33,10 +33,10 @@ class AdminController extends Controller
         $request->validate([
             'first_name'=>['required','max:55'],
             'last_name'=>['required','max:55'],
-            'user_name'=>['email','required','unique:hotels'],
+            'user_name'=>['required','unique:hotels'],
+            'email'=>['email','required'],
             'password'=>[
                 'required',
-               'confirmed',
                password::min(8)
                 ->letters()
                 ->numbers()
@@ -62,7 +62,7 @@ class AdminController extends Controller
             ]);
     }
 
-    public function CreateAdmin(Request $request) //new
+    public function CreateAdmin(Request $request) //new 
     {
         $request->validate([
         'user_name',

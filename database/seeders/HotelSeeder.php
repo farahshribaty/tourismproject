@@ -19,8 +19,12 @@ class HotelSeeder extends Seeder
         for($i = 0 ; $i<17 ; $i++)
         {
             HotelAdmin::create([
+                'first_name'=>fake()->name(),
+                'last_name'=>fake()->name(),
                 'user_name'=>fake()->unique()->name(),
-                'password'=>fake()->password()
+                'email'=>fake()->email(),
+                'password'=>fake()->password(),
+                'phone_number'=>fake()->phoneNumber(),
             ]);
         }
         
@@ -53,12 +57,15 @@ class HotelSeeder extends Seeder
         }
 
         $hotels = Hotel::get();
+        $photos = ['1685730895.jpg','1685730895.jpg','1685730895.jpg','1685730895.jpg','1687859851.jpg'];
 
         foreach($hotels as $hotel){
-            HotelPhoto::create([
-                'hotel_id'=>$hotel['id'],
-                'path'=>'http://127.0.0.1:8000/images/hotel/'.'1685730895.jpg',
-            ]);
+            for($i=0 ; $i<5 ; $i++){
+                HotelPhoto::create([
+                    'hotel_id'=> $hotel['id'],
+                    'path'=> 'http://127.0.0.1:8000/images/hotel/'.$photos[$i],
+                ]);
+            }
         }
         for($i = 0 ; $i<17 ; $i++){
             HotelReview::create([

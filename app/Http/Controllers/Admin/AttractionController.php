@@ -151,7 +151,7 @@ class AttractionController extends AttractionAdminController
                   return $this->success(null, 'Attraction company accepted successfully');
               } catch (\Exception $e) {
                   AttractionUpdating::where('id', '=', $request->id)->update(['accepted' => 0]);
-//                return response()->json(['error' => $e->getMessage()], 500);
+                 //return response()->json(['error' => $e->getMessage()], 500);
                   return $this->error('This email is used, try another one.');
               }
           }
