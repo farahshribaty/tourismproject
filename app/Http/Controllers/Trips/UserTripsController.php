@@ -146,6 +146,14 @@ class UserTripsController extends UserController
             ->take(6)
             ->get();
 
+        $topRated = $this->isMyFavourite($topRated,$request);
+        $vip = $this->isMyFavourite($vip,$request);
+        $cheapest = $this->isMyFavourite($cheapest,$request);
+        $shortTrips = $this->isMyFavourite($shortTrips,$request);
+        $longTrips = $this->isMyFavourite($longTrips,$request);
+        $local = $this->isMyFavourite($local,$request);
+        $trip_offers = $this->isMyFavourite($trip_offers,$request);
+
 
         return response()->json([
             'status'=>true,
@@ -172,8 +180,17 @@ class UserTripsController extends UserController
 
 
         $trips = Trip::select(['id','destination','description','details','days_number','rate','num_of_ratings','max_persons','start_age','end_age'])
-            ->whereHas('destination',function($q)use($request){         // to city (mandatory)
-                $q->where('name','like','%'.$request->to.'%');
+//            ->whereHas('destination',function($q)use($request){         // to city (mandatory)
+//                $q->where('name','like','%'.$request->to.'%');
+//            })
+            ->where(function ($query) use ($request) {                           // specify destination: country, city or trip name.
+                $query->where('description', 'like', '%' . $request->to . '%')
+                    ->orWhereHas('destination', function ($query) use ($request) {
+                        $query->where('name', 'like', '%'.$request->to.'%');
+                    })
+                    ->orWhereHas('destination.country', function ($query) use ($request) {
+                        $query->where('name', 'like', '%'.$request->to.'%');
+                    });
             })
             ->when($request->max_price,function($query)use($request){         // start price (filter, not mandatory)
                 $query->whereHas('dates',function($q)use($request){
@@ -204,6 +221,8 @@ class UserTripsController extends UserController
             ->availableTrips()
             ->paginate(10);
 
+        $trips = $this->isMyFavourite($trips,$request);
+
         return response()->json([
             'success'=>true,
             'data'=> $trips,
@@ -229,13 +248,22 @@ class UserTripsController extends UserController
                 }])
             ->first();
 
+        // checking if it is in user's favourites list
+        if($request->hasHeader('Authorization')){
+            $user = auth('user-api')->user();
+            $favourite = TripFavourite::where('user_id',$user['id'])->where('trip_id',$trip['id'])->first();
+            $trip['is_my_favourite'] = ( isset($favourite) ? 1:0);
+        }
+        else{
+            $trip['is_my_favourite'] = 0;
+        }
+
         $reviews = TripReview::select(['id','stars','comment','user_id'])
             ->where('trip_id',$request->id)
             ->with('user',function($q){
                 $q->select(['id','first_name','last_name','photo']);
             })
-            ->take(3)
-            ->get();
+            ->paginate(6);
 
         return response()->json([
             'success'=>true,
@@ -493,48 +521,6 @@ class UserTripsController extends UserController
         ]);
     }
 
-    /**
-     * Add To Favourites
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function addToFavourites(Request $request): JsonResponse
-    {
-        $request->validate([
-            'trip_id'=>'required',
-        ]);
-
-        TripFavourite::create([
-            'user_id'=> $request->user()->id,
-            'trip_id'=> $request->trip_id,
-        ]);
-
-        return response()->json([
-            'success'=>true,
-            'message'=>'Trip added to favourites successfully',
-        ]);
-    }
-
-    /**
-     * Remove From Favourites
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function removeFromFavourites(Request $request): JsonResponse
-    {
-        $request->validate([
-            'trip_id'=>'required',
-        ]);
-
-        TripFavourite::where('user_id','=',$request->user()->id)
-            ->where('trip_id','=',$request->trip_id)
-            ->delete();
-
-        return response()->json([
-            'success'=>true,
-            'message'=>'Trip removed from favourites successfully',
-        ]);
-    }
 
     // helpful functions
     private function checkSeatAvailability($request,$trip,$date): bool
@@ -560,6 +546,24 @@ class UserTripsController extends UserController
     {
         $now = Carbon::now();
         return ($date['departure_date'] > $now);
+    }
+
+    private function isMyFavourite($trips,$request)
+    {
+        // for each trip, check if it is in user's favourites list
+
+        if(!$request->hasHeader('Authorization')){
+            foreach($trips as $trip){
+                $trip['is_my_favourite'] = 0;
+            }
+            return $trips;
+        }
+        $user = auth('user-api')->user();
+        foreach($trips as $trip){
+            $bool = TripFavourite::where('user_id',$user['id'])->where('trip_id',$trip['id'])->first();
+            $trip['is_my_favourite'] = ( isset($bool) ? 1:0);
+        }
+        return $trips;
     }
 
 }

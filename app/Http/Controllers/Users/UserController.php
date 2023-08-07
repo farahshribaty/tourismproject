@@ -31,7 +31,6 @@ class UserController extends Controller
      * @param UserRegistrationRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-
     public function register(Request $request): JsonResponse
     {
         $validated_data = Validator::make($request->all(), [
@@ -130,6 +129,11 @@ class UserController extends Controller
         ]);
     }
 
+    /**
+     * Main Page For The Website
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function index(Request $request): JsonResponse
     {
         $top_trips = Trip::select(['id','destination','description','days_number','rate','num_of_ratings','max_persons','start_age','end_age'])
@@ -197,6 +201,11 @@ class UserController extends Controller
         ]);
     }
 
+    /**
+     * Search Function For Hotels, Attractions, Trips.
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function searchForAll(Request $request): JsonResponse
     {
         $word = $request->word;
@@ -257,6 +266,74 @@ class UserController extends Controller
             'trips'=>$trips,
         ]);
     }
+
+    /**
+     * Add To Favourites
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function addToFavourites(Request $request): JsonResponse
+    {
+        $validated_data = Validator::make($request->all(), [
+            'section_id'=> 'required|between:0,3',
+            'section_type'=> 'required',
+        ]);
+        if($validated_data->fails()){
+            return response()->json(['error' => $validated_data->errors()->all()]);
+        }
+
+        $sections = ['trip_favourites','attraction_favourites','hotels','flights'];     // Those are the names of 4 tables each one for its section favourites.
+        $ids = ['trip_id','attraction_id','hotel_id','flight_id'];     // Those are the names of section_id column in the last 4 tables.
+
+        // check if they're already in favourites:
+
+        $last_one = DB::table($sections[$request->section_type])->where('user_id',$request->user()->id)->where($ids[$request->section_type],$request->section_id)->first();
+
+        if(isset($last_one)){
+            return $this->error('It is already in your favourites!');
+        }
+
+        // putting it in favourites:
+
+        DB::table($sections[$request->section_type])->insert([
+            'user_id'=> $request->user()->id,
+            $ids[$request->section_type] => $request->section_id,
+        ]);
+
+        return response()->json([
+            'success'=>true,
+            'message'=>'Added to favourites successfully'
+        ]);
+    }
+
+    /**
+     * Remove From Favourites
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function removeFromFavourites(Request $request): JsonResponse
+    {
+        $validated_data = Validator::make($request->all(), [
+            'section_id'=> 'required|between:0,3',
+            'section_type'=> 'required',
+        ]);
+        if($validated_data->fails()){
+            return response()->json(['error' => $validated_data->errors()->all()]);
+        }
+
+        $sections = ['trip_favourites','attraction_favourites','hotels','flights'];     // Those are the names of 4 tables each one for its section favourites.
+        $ids = ['trip_id','attraction_id','hotel_id','flight_id'];     // Those are the names of section_id column in the last 4 tables.
+
+        DB::table($sections[$request->section_type])->where('user_id',$request->user()->id)->where($ids[$request->section_type],$request->section_id)->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Trip removed from favourites successfully',
+        ]);
+    }
+
+
+    // helpful functions:
 
     public function checkWallet($money_needed,$user_id): bool
     {

@@ -7,6 +7,7 @@ use App\Http\Controllers\Users\UserController;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
 use App\Http\Requests\AttractionRequest\AttractionReserveRequest;
 use App\Models\Attraction;
+use App\Models\AttractionFavourite;
 use App\Models\AttractionReservation;
 use App\Models\AttractionReview;
 use App\Models\City;
@@ -48,6 +49,10 @@ class UserAttractionController extends UserController
             ->take(6)
             ->get();
 
+        $topRated = $this->isMyFavourite($topRated,$request);
+        $paid = $this->isMyFavourite($paid,$request);
+        $free = $this->isMyFavourite($free,$request);
+
 
         return response()->json([
             'status'=>true,
@@ -69,10 +74,10 @@ class UserAttractionController extends UserController
             ->where(function ($query) use ($request) {
                 $query->where('name', 'like', '%' . $request->word . '%')
                     ->orWhereHas('city', function ($query) use ($request) {
-                        $query->where('name', $request->word);
+                        $query->where('name', 'like','%'.$request->word.'%');
                     })
                     ->orWhereHas('city.country', function ($query) use ($request) {
-                        $query->where('name', $request->word);
+                        $query->where('name', 'like', '%'.$request->word.'%');
                     });
             });
 
@@ -92,17 +97,10 @@ class UserAttractionController extends UserController
         $attractions = $attractions->paginate(10);
 
         // converting 'open_at' and 'close_at' to hours and minutes:
+        $attractions = $this->adjustTime($attractions);
 
-        foreach($attractions as $attraction){
-            $date1 = $attraction['open_at'];
-            $date2 = $attraction['close_at'];
-
-            $new_date1 = DateTime::createfromformat('Y-m-d H:i:s',$date1);
-            $new_date2 = DateTime::createfromformat('Y-m-d H:i:s',$date2);
-
-            $attraction['open_at'] = $new_date1->format('H:i');
-            $attraction['close_at'] = $new_date2->format('H:i');
-        }
+        // sending whether the attraction is in the user's favourites list ( just if the user is signed in)
+        $attractions = $this->isMyFavourite($attractions,$request);
 
 
         return response()->json([
@@ -119,7 +117,6 @@ class UserAttractionController extends UserController
      */
     public function viewAttractionDetails(Request $request): JsonResponse
     {
-
         $request->validate([
             'attraction_id'=>'required',
         ]);
@@ -144,6 +141,16 @@ class UserAttractionController extends UserController
             ->with(['photo','city'])
             ->take(6)
             ->get();
+
+        // checking if it is in user's favourites list
+        if($request->hasHeader('Authorization')){
+            $user = auth('user-api')->user();
+            $favourite = AttractionFavourite::where('user_id',$user['id'])->where('attraction_id',$attraction['id'])->first();
+            $attraction['is_my_favourite'] = ( isset($favourite) ? 1:0);
+        }
+        else{
+            $attraction['is_my_favourite'] = 0;
+        }
 
         return response()->json([
             'success'=>true,
@@ -313,11 +320,38 @@ class UserAttractionController extends UserController
         return true;
     }
 
+    private function adjustTime($attractions)
+    {
+        // it converts the time in each attraction to hours and minutes
+        foreach($attractions as $attraction){
+            $date1 = $attraction['open_at'];
+            $date2 = $attraction['close_at'];
 
-//    public function city(Request $request)
-//    {
-//        $ip = $request->ip();
-//        $data = Location::get('178.52.233.205')->countryName;
-//        return $data;
-//    }
+            $new_date1 = DateTime::createfromformat('Y-m-d H:i:s',$date1);
+            $new_date2 = DateTime::createfromformat('Y-m-d H:i:s',$date2);
+
+            $attraction['open_at'] = $new_date1->format('H:i');
+            $attraction['close_at'] = $new_date2->format('H:i');
+        }
+        return $attractions;
+    }
+    private function isMyFavourite($attractions,$request)
+    {
+        // for each trip, check if it is in user's favourites list
+
+        if(!$request->hasHeader('Authorization')){
+            foreach($attractions as $attraction){
+                $attraction['is_my_favourite'] = 0;
+            }
+            return $attractions;
+        }
+        $user = auth('user-api')->user();
+        foreach($attractions as $attraction){
+            $bool = AttractionFavourite::where('user_id',$user['id'])->where('attraction_id',$attraction['id'])->first();
+
+            $attraction['is_my_favourite'] = ( isset($bool) ? 1:0);
+        }
+        return $attractions;
+    }
+
 }

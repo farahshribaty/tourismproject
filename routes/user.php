@@ -28,6 +28,8 @@ Route::post('logout',[UserController::class,'logout'])->middleware('auth:user-ap
 
 Route::get('index',[UserController::class,'index']);
 Route::post('searchForAll',[UserController::class,'searchForAll']);
+Route::post('addToFavourites',[UserController::class,'addToFavourites'])->middleware('auth:user-api');
+Route::post('removeFromFavourites',[UserController::class,'removeFromFavourites'])->middleware('auth:user-api');
 
 
 // Email verification routes
@@ -41,5 +43,4 @@ Route::group(['middleware' => ['web']], function () {
     Route::post('forget-password', [ForgotPasswordController::class, 'submitForgetPasswordForm'])->name('forget.password.post');
 //    Route::get('reset-password/{token}', [ForgotPasswordController::class, 'showResetPasswordForm'])->name('reset.password.get');
     Route::post('reset-password', [ForgotPasswordController::class, 'submitResetPasswordForm'])->name('reset.password.post');
-
 });
