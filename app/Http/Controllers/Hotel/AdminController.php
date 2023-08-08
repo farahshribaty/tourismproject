@@ -13,6 +13,7 @@ use App\Models\Room;
 use App\Models\RoomFeatures;
 use App\Models\RoomPhotos;
 use App\Models\Types;
+use App\Models\RoomType;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -282,6 +283,22 @@ class AdminController extends Controller
     public function getHotelType(Request $request)
     {
         $types = Types::get();
+        return response()->json([
+            'data'=>$types,
+            'success'=>true,
+        ], 200);
+    }
+    public function getRoomType(Request $request)
+    {
+        $types = RoomType::get();
+        return response()->json([
+            'data'=>$types,
+            'success'=>true,
+        ], 200);
+    }
+    public function getRoomFeatures(Request $request)
+    {
+        $types = Features::get();
         return response()->json([
             'data'=>$types,
             'success'=>true,
