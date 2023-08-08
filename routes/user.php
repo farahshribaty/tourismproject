@@ -23,13 +23,19 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('register',[UserController::class,'register']);
 Route::post('login',[UserController::class,'login']);
-Route::post('logout',[UserController::class,'logout'])->middleware('auth:user-api');
-
-
 Route::get('index',[UserController::class,'index']);
 Route::post('searchForAll',[UserController::class,'searchForAll']);
-Route::post('addToFavourites',[UserController::class,'addToFavourites'])->middleware('auth:user-api');
-Route::post('removeFromFavourites',[UserController::class,'removeFromFavourites'])->middleware('auth:user-api');
+
+Route::group(['middleware' => ['auth:user-api']], function () {
+    Route::post('logout',[UserController::class,'logout']);
+    Route::post('addToFavourites',[UserController::class,'addToFavourites']);
+    Route::post('removeFromFavourites',[UserController::class,'removeFromFavourites']);
+    Route::get('profile',[UserController::class,'profile']);
+    Route::post('editProfileInfo',[UserController::class,'editProfileInfo']);
+    Route::post('editProfilePhoto',[UserController::class,'editProfilePhoto']);
+    Route::get('getFavouriteList',[UserController::class,'getFavouriteList']);
+    Route::get('getLastReservations',[UserController::class,'getLastReservations']);
+});
 
 
 // Email verification routes

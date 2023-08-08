@@ -72,4 +72,9 @@ class Attraction extends Model
     {
         return $this->belongsTo(AttractionAdmin::class,'attraction_admin_id');
     }
+
+    public function followers()
+    {
+        return $this->hasMany(AttractionFavourite::class,'attraction_id');
+    }
 }

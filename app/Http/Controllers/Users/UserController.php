@@ -38,7 +38,7 @@ class UserController extends Controller
             'last_name'=>'required',
             'email'=>'required|unique:users|email',
             'password'=>'required|confirmed',
-            'phone_number'=>'required',
+            'phone_number'=>'required|min:10|max:15',
         ]);
         if($validated_data->fails()){
             return response()->json(['error' => $validated_data->errors()->all()]);
@@ -120,6 +120,11 @@ class UserController extends Controller
         }
     }
 
+    /**
+     * User Logout
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function logout(Request $request): JsonResponse
     {
         $request->user()->token()->revoke();
@@ -127,6 +132,57 @@ class UserController extends Controller
             'success'=>true,
             'message'=>'logged out successfully',
         ]);
+    }
+
+    /**
+     * Show Profile
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function profile(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $user->makeHidden('wallet');
+        return $this->success($user);
+    }
+
+    /**
+     * Update Profile Info
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function editProfileInfo(Request $request): JsonResponse
+    {
+        if(isset($request['email'])) unset($request['email']);
+        if(isset($request['password'])) unset($request['password']);
+        if(isset($request['wallet'])) unset($request['wallet']);
+        if(isset($request['points'])) unset($request['points']);
+
+        User::where('id',$request->user()->id)->update($request->toArray());
+
+        return $this->success(null,'Profile updated successfully');
+    }
+
+    /**
+     * Update Profile Photo
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function editProfilePhoto(Request $request): JsonResponse
+    {
+        if ($request->hasFile('image')) {
+            $file_extension = $request->image->getClientOriginalExtension();
+            $file_name = time() . '.' . $file_extension;
+            $path = 'images/user';
+            $request->image->move($path, $file_name);
+            $request['photo'] = 'http://127.0.0.1:8000/images/user/' . $file_name;
+        }
+
+        User::where('id',$request->user()->id)->update([
+            'photo'=> $request['photo'],
+        ]);
+
+        return $this->success(null,'Profile photo updated successfully');
     }
 
     /**
@@ -164,8 +220,8 @@ class UserController extends Controller
             ->get();
 
         $top_attractions = Attraction::select(['id','city_id','name','rate','num_of_ratings','adult_price','child_price'])
-            ->orderBy('rate','desc')
             ->with(['photo','city'])
+            ->orderBy('rate','desc')
             ->take(6)
             ->get();
 
@@ -267,6 +323,7 @@ class UserController extends Controller
         ]);
     }
 
+    // todo: add hotels and flights to this function
     /**
      * Add To Favourites
      * @param Request $request
@@ -306,6 +363,7 @@ class UserController extends Controller
         ]);
     }
 
+    // todo: add hotels and flights to this function
     /**
      * Remove From Favourites
      * @param Request $request
@@ -331,6 +389,74 @@ class UserController extends Controller
             'message' => 'Trip removed from favourites successfully',
         ]);
     }
+
+    // todo: add hotels and flights to this function
+    /**
+     * Show Favourite List Of The 4 Sections
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getFavouriteList(Request $request): JsonResponse
+    {
+        $attractions = Attraction::select(['id','city_id','name','rate','num_of_ratings','adult_price','child_price'])
+            ->with(['photo','city'])
+            ->whereHas('followers',function($q)use($request){
+            $q->where('user_id',$request->user()->id);
+        })->take(4)->get();
+
+        $trips = Trip::select(['id','destination','description','days_number','rate','num_of_ratings','max_persons','start_age','end_age'])
+            ->with(['photo',
+                'destination'=>function($q){
+                    $q->with(['country']);
+                }
+            ])
+            ->whereHas('followers',function($q)use($request){
+            $q->where('user_id',$request->user()->id);
+        })->take(4)->get();
+
+        return response()->json([
+            'success'=>'true',
+            'attractions'=> $attractions,
+            'trips'=> $trips,
+        ]);
+    }
+
+    // todo: add hotels and flights to this function
+    /**
+     * Show Last Reservations Of The 4 Sections
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getLastReservations(Request $request): JsonResponse
+    {
+        $attractions = Attraction::select(['attractions.id','attraction_reservations.id as reservation_id','city_id','name','rate','num_of_ratings','adult_price','child_price','book_date','payment'])
+            ->with(['photo','city'])
+            ->join('attraction_reservations','attraction_reservations.attraction_id','=','attractions.id')
+            ->where('attraction_reservations.user_id','=',$request->user()->id)
+            ->take(4)
+            ->get();
+
+        $trips = Trip::select(['trips.id','trips_reservations.id as reservation_id','destination','description','days_number','rate','num_of_ratings','max_persons','start_age','end_age','departure_date','money_spent'])
+            ->with(['photo',
+                'destination'=>function($q){
+                    $q->with(['country']);
+                }
+            ])
+            ->join('trip_dates','trip_dates.trip_id','=','trips.id')
+            ->join('trips_reservations','trips_reservations.date_id','=','trip_dates.id')
+            ->where('trips_reservations.user_id','=',$request->user()->id)
+            ->take(4)
+            ->get();
+
+
+        return response()->json([
+            'success'=> true,
+            'attractions'=> $attractions,
+            'trips'=> $trips,
+        ]);
+    }
+
+
 
 
     // helpful functions:

@@ -81,4 +81,9 @@ class Trip extends Model
         return $this->belongsToMany(User::class,TripReview::class,'trip_id','user_id');
     }
 
+    public function followers()
+    {
+        return $this->hasMany(TripFavourite::class,'trip_id');
+    }
+
 }
