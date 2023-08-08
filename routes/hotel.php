@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 
 //Hotel Admin Routes:
 Route::post('hotel/adminlogin',[AdminController::class, 'AdminLogin']);
-Route::post('admin/OneHotel',[AdminController::class, 'getHotelWithAllInfo']);
+
 Route::post('admin/addMultiRooms',[AdminController::class, 'addMultiRoomsByType']);
 Route::post('admin/addingFeatures',[AdminController::class, 'addingFeatures']);
 Route::post('admin/addPhoto',[AdminController::class, 'addPhotos']);
@@ -37,6 +37,7 @@ Route::post('getReservations',[UserController::class,'Reservations']);
 Route::group( ['middleware' => ['auth:hotel_admin-api'] ],function()
 {
     Route::post('admin/createhotel',[AdminController::class, 'CreateHotel']);
+    Route::post('admin/OneHotel',[AdminController::class, 'getHotelWithAllInfoByToken']);
 });
 
 Route::group( ['prefix' => 'hotel','middleware' => ['auth:hotel-api'] ],function(){

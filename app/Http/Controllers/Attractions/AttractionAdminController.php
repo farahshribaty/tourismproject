@@ -56,7 +56,7 @@ class AttractionAdminController extends Controller
             'child_price' => 'required',
             'child_ability_per_day' => 'required',
             'adult_ability_per_day' => 'required',
-            'points_added_when_booking' => 'required',
+//            'points_added_when_booking' => 'required',
         ]);
         if ($validated_data->fails()) {
             return response()->json(['error' => $validated_data->errors()->all()]);
@@ -68,6 +68,7 @@ class AttractionAdminController extends Controller
         $data['accepted'] = 0;
         $data['rejected'] = 0;
         $data['seen'] = 0;
+        $data['points_added_when_booking'] = 0;
 
         if (isset($request->Saturday)) {
             $week = ['Saturday' => $data['Saturday'], 'Sunday' => $data['Sunday'], 'Monday' => $data['Monday'],
@@ -233,6 +234,16 @@ class AttractionAdminController extends Controller
 
                 }
             }
+        }
+        $request['available_days'] = 1;
+
+        if(isset($request->Saturday)){
+            $week = [];
+            $days = ['Saturday','Sunday','Monday','Tuesday','Wednesday','Thursday','Friday'];
+            foreach($days as $day){
+                $week[$day] = $request->input($day);
+            }
+            $request['available_days'] = $this->convertWeekArrayToBitmask($week);
         }
         $user = Attraction::findOrFail($id);
         $user->fill($request->all());
