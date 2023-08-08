@@ -12,6 +12,7 @@ use App\Models\HotelUpdating;
 use App\Models\Room;
 use App\Models\RoomFeatures;
 use App\Models\RoomPhotos;
+use App\Models\Types;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -80,6 +81,7 @@ class AdminController extends Controller
 
         $data = $request;
         $data['hotel_admins_id'] = $request->user()->id;
+        $data['admin_id'] = $request->user()->id;
         $data['add_or_update'] = 0;
         $data['accepted'] = 0;
         $data['rejected'] = 0;
@@ -103,8 +105,8 @@ class AdminController extends Controller
             'message'=>"hotel not found",
         ],200);
     }
-      $request["id"]=$hotel->id;
-
+    $request["id"]=$hotel->id;
+     return $this->getHotelWithAllInfo($request);
     }
     public function getHotelWithAllInfo(Request $request)
     {
@@ -276,6 +278,14 @@ class AdminController extends Controller
         $room->delete();
         return response()->json([
         'message' => 'Room deleted successfully'], 200);
+    }
+    public function getHotelType(Request $request)
+    {
+        $types = Types::get();
+        return response()->json([
+            'data'=>$types,
+            'success'=>true,
+        ], 200);
     }
 
 }

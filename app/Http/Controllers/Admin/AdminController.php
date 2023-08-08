@@ -14,6 +14,7 @@ use App\Models\HotelAdmin;
 use App\Models\TripAdmin;
 use App\Models\TripCompany;
 use App\Models\TripUpdating;
+use App\Models\HotelUpdating;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -62,7 +63,7 @@ class AdminController extends Controller
             ]);
     }
 
-    public function CreateAdmin(Request $request) //new 
+    public function CreateAdmin(Request $request) //new
     {
         $request->validate([
         'user_name',
@@ -261,6 +262,11 @@ class AdminController extends Controller
             ->where('accepted',0)
             ->where('rejected',0)
             ->get()->toArray();
+        $hotels = HotelUpdating::select(['id','hotel_admins_id', 'add_or_update', 'accepted', 'rejected', 'seen', 'created_at'])
+            ->with('admin')
+            ->where('accepted',0)
+            ->where('rejected',0)
+            ->get()->toArray();
 
         $is_all_seen = 1;    // Initially, we suppose that all updates are seen.
 
@@ -274,6 +280,11 @@ class AdminController extends Controller
             $attraction['type'] = 'attraction_company';
             $is_all_seen &= $attraction['seen'];
             array_push($all,$attraction);
+        }
+        foreach($hotels as $hotel){
+            $hotel['type'] = 'hotel_company';
+            $is_all_seen &= $hotel['seen'];
+            array_push($all,$hotel);
         }
 
         // Sorting updates by created time.

@@ -133,6 +133,25 @@ class HotelController extends AdminController
         ])->paginate(10);
         return $this->success($admins,'Admins retrieved successfully');
     }
+    public function getUpdatingDetails(Request $request)
+    {
+        $validated_data = Validator::make($request->all(), [
+            'id' => 'required|exists:hotel_updatings',
+        ]);
+        if ($validated_data->fails()) {
+            return response()->json(['error' => $validated_data->errors()->all()]);
+        }
+
+        $update = HotelUpdating::where('id', '=', $request->id)
+            ->with('admin')
+            ->first();
+
+        HotelUpdating::where('id', '=', $request->id)->update([
+            'seen' => 1,
+        ]);
+
+        return $this->success($update, 'Update retrieved successfully');
+    }
 
 
 
