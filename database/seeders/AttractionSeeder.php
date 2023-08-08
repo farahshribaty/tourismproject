@@ -54,7 +54,7 @@ class AttractionSeeder extends Seeder
 
         // adding admins
 
-        for($i=0 ; $i<17 ; $i++){
+        for($i=0 ; $i<30 ; $i++){
             AttractionAdmin::create([
                 'user_name'=> 'attractionAdmin'.($i+1).'@gmail.com',
                 'password'=> 'admin',
@@ -73,18 +73,18 @@ class AttractionSeeder extends Seeder
         $locations = [
             'main Street', 'behind tour','city center'
         ];
-        for($i = 0 ; $i<17 ; $i++){
+        for($i = 0 ; $i<30 ; $i++){
 
             Attraction::create([
                 'city_id'=>random_int(1,3),
                 'attraction_type_id'=>random_int(1,7),
-                'attraction_admin_id'=> ($i+1),
-                'name'=>$names[$i],
-                'email'=>$names[$i].'@email.com',
+                'attraction_admin_id'=> ($i%17+1),
+                'name'=>$names[$i%17],
+                'email'=>$names[$i%17].$i.'@email.com',
 //                'password'=>$names[$i],
                 'location'=>$locations[$i%3],
                 'phone_number'=> random_int(11111,99999),
-                'details'=>$names[$i].' is a beautiful attraction to visit, with its wonderful scenes and perfect service, you will get best experience!',
+                'details'=>$names[$i%17].' is a beautiful attraction to visit, with its wonderful scenes and perfect service, you will get best experience!',
                 'rate'=> random_int(1,5),
                 'num_of_ratings'=> random_int(10,3000),
                 'adult_price'=>random_int(0,1000),
@@ -102,7 +102,7 @@ class AttractionSeeder extends Seeder
 
         // adding some updates
 
-        for($i=0 ; $i<10 ; $i++){
+        for($i=0 ; $i<20 ; $i++){
             AttractionUpdating::create([
                 'attraction_id'=> ($i+1),
                 'attraction_admin_id'=> ($i+1),
