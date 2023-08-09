@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
 class HotelController extends AdminController
 {
     // This controller contains all operations the main admin can do on the Hotel section.
-    public function CreateAdmin(Request $request) 
+    public function CreateAdmin(Request $request)
     {
         $request->validate([
             'first_name'=>['required','max:55'],
@@ -52,11 +52,12 @@ class HotelController extends AdminController
     }
     public function getAllHotelsWithMainInfo()
     {
-        $hotels = DB::table('hotels')->select('id', 'name','email', 'location','phone_number','details')->get();
-
-        return $hotels;
+        // $hotels = DB::table('hotels')->select('id', 'name','email', 'location','phone_number','details')->get();
+        // return $hotels;
+        $hotel = Hotel::with('admin')->paginate(10);
+        return $this->success($hotel, 'Retrieved successfully');
     }
-    public function getHotelWithAllInfo2($id) 
+    public function getHotelWithAllInfo2($id)
     {
         $hotel = $this->getHotelWithAllInfo($id);
 
@@ -112,7 +113,7 @@ class HotelController extends AdminController
 
             return $this->success(null,'Updates accepted successfully');
         }
-        
+
         else{       // adding new Hotel
             $updates['rate'] = 0;
             $updates['num_of_ratings'] = 0;
@@ -132,7 +133,26 @@ class HotelController extends AdminController
         ])->paginate(10);
         return $this->success($admins,'Admins retrieved successfully');
     }
-    
-    
+    public function getUpdatingDetails(Request $request)
+    {
+        $validated_data = Validator::make($request->all(), [
+            'id' => 'required|exists:hotel_updatings',
+        ]);
+        if ($validated_data->fails()) {
+            return response()->json(['error' => $validated_data->errors()->all()]);
+        }
+
+        $update = HotelUpdating::where('id', '=', $request->id)
+            ->with('admin')
+            ->first();
+
+        HotelUpdating::where('id', '=', $request->id)->update([
+            'seen' => 1,
+        ]);
+
+        return $this->success($update, 'Update retrieved successfully');
+    }
+
+
 
 }

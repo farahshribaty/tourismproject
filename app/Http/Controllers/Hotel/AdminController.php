@@ -12,6 +12,8 @@ use App\Models\HotelUpdating;
 use App\Models\Room;
 use App\Models\RoomFeatures;
 use App\Models\RoomPhotos;
+use App\Models\Types;
+use App\Models\RoomType;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -20,7 +22,7 @@ use Illuminate\Support\Facades\Validator;
 
 class AdminController extends Controller
 {
-    public function AdminLogin(Request $request) 
+    public function AdminLogin(Request $request)
     {
         $request->validate([
 
@@ -48,7 +50,7 @@ class AdminController extends Controller
         {
             return 'password not found';
         }
-        
+
     }
     /**
      * Adding My Hotel info
@@ -67,10 +69,7 @@ class AdminController extends Controller
             'location',
             'phone_number',
             'details',
-            'num_of_rooms',
-            'rate',
             'stars',
-            'num_of_ratings',
             'price_start_from',
             'website_url',
             'city_id',
@@ -80,20 +79,36 @@ class AdminController extends Controller
         if($validated_data->fails()){
             return response()->json(['error' => $validated_data->errors()->all()]);
         }
-    
+
         $data = $request;
         $data['hotel_admins_id'] = $request->user()->id;
+        $data['admin_id'] = $request->user()->id;
         $data['add_or_update'] = 0;
         $data['accepted'] = 0;
         $data['rejected'] = 0;
         $data['seen'] = 0;
-    
+        $data['num_of_rooms'] = 0;
+        $data['num_of_ratings'] = 0;
+        $data['rate'] = 0;
+
         HotelUpdating::create($data->all());
         return $this->success(null,'Form sent successfully, pending approval.');
     }
     /**
      * Getting one hotel with all info
      */
+    public function getHotelWithAllInfoByToken(Request $request)
+    {
+      $hotel = Hotel::where('admin_id',$request->user()->id)->first();
+      if (!isset($hotel)) {
+        return response()->json([
+            'data'=>null,
+            'message'=>"hotel not found",
+        ],200);
+    }
+    $request["id"]=$hotel->id;
+     return $this->getHotelWithAllInfo($request);
+    }
     public function getHotelWithAllInfo(Request $request)
     {
         $hotel = Hotel::with(['type', 'city'=> function ($query) {
@@ -103,7 +118,7 @@ class AdminController extends Controller
                 } , 'photo', 'facilities','reviews'=> function($qu){
                 $qu->select('id','hotel_id','rate','comment','user_id')
                 ->with(['user' => function ($q) {
-                $q->select('id','first_name','last_name'); 
+                $q->select('id','first_name','last_name');
                 }]);
             }])
         ->where('id',$request->id)
@@ -122,7 +137,7 @@ class AdminController extends Controller
         ]);
     }
     /***
-     * Creating rooms from the same type 
+     * Creating rooms from the same type
      */
     public function addMultiRoomsByType(Request $request)
     {
@@ -197,7 +212,7 @@ class AdminController extends Controller
                 'path'=> 'http://127.0.0.1:8000/images/hotel/'.$file_name,
                 'hotel_id'=>$request->hotel_id,
             ]);
-        
+
          return response()->json([
             'status'=>true,
             'message'=>'photo added successfully',
@@ -211,7 +226,7 @@ class AdminController extends Controller
              ]);
         }
     }
-   
+
     public function addRoomPhotos(Request $request) //done
     {
         if($request->hasFile('photo')) {
@@ -223,7 +238,7 @@ class AdminController extends Controller
                 'path'=> 'http://127.0.0.1:8000/images/room/'.$file_name,
                 'room_id'=>$request->room_id,
             ]);
-        
+
          return response()->json([
             'status'=>true,
             'message'=>'photo added successfully',
@@ -265,5 +280,29 @@ class AdminController extends Controller
         return response()->json([
         'message' => 'Room deleted successfully'], 200);
     }
-    
+    public function getHotelType(Request $request)
+    {
+        $types = Types::get();
+        return response()->json([
+            'data'=>$types,
+            'success'=>true,
+        ], 200);
+    }
+    public function getRoomType(Request $request)
+    {
+        $types = RoomType::get();
+        return response()->json([
+            'data'=>$types,
+            'success'=>true,
+        ], 200);
+    }
+    public function getRoomFeatures(Request $request)
+    {
+        $types = Features::get();
+        return response()->json([
+            'data'=>$types,
+            'success'=>true,
+        ], 200);
+    }
+
 }
