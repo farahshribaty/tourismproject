@@ -457,8 +457,6 @@ class UserController extends Controller
     }
 
 
-
-
     // helpful functions:
 
     public function checkWallet($money_needed,$user_id): bool
