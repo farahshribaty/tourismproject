@@ -266,15 +266,15 @@ class AdminController extends Controller
 
         return response()->json([
         'message'=>"done",
-        'Room:'=>$rooms
+        'Room'=>$rooms
         ]);
     }
     public function DeleteRoom(Request $request)
     {
         $room_id = $request->room_id;
         $room = Room::find($room_id);
-        if(!isset($photo)){
-            return $this->error('Photo not found');
+        if(!isset($room)){
+            return $this->error('room not found');
         }
         $room->delete();
         return response()->json([
