@@ -2,21 +2,26 @@
 
 namespace App\Http\Controllers\Hotel;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Users\UserController as UsersUserController;
 use App\Models\Country;
-use App\Models\Facilities;
 use App\Models\Hotel;
 use App\Models\City;
-use App\Models\HotelReview;
 use App\Models\Room;
-use Illuminate\Support\Facades\DB;
 use App\Models\User;
+use Illuminate\Support\Carbon;
+use App\Models\Facilities;
+use App\Models\HotelReview;
 use Illuminate\Http\Request;
+use App\Models\HotelReservation;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Support\Facades\Validator;
 
-class UserController extends Controller
+
+class UserController extends UsersUserController
 {
-    public function Register(Request $request)
+    public function Register(Request $request) :JsonResponse
     {
         $request->validate([
             'first_name' => ['required', 'max:55'],
@@ -49,7 +54,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function Login(Request $request)
+    public function Login(Request $request) :JsonResponse
     {
         $request->validate([
 
@@ -94,7 +99,6 @@ class UserController extends Controller
         // Return the list of cities as a JSON response
         return response()->json(['cities' => $cities], 200);
     }
-    
     /**
      * Search for Hotels by user
      */
@@ -104,13 +108,19 @@ class UserController extends Controller
         $num_of_adults = $request->input('num_of_adults');
         $num_of_children = $request->input('num_of_children');
 
-        if ($request->has('name')) {
-            $query->where('name', 'like', '%' . $request->input('name') . '%');
-        } 
-        else if ($request->has('location')) {
-            $query->where('location', 'like', '%' . $request->input('location') . '%');
+        if ($request->has('word')) {
+            $word = $request->input('word');
+            $query->where(function ($query) use ($word) {
+                $query->where('name', 'like', '%' . $word . '%')
+                    ->orWhere('location', 'like', '%' . $word . '%')
+                    ->orWhereHas('city', function ($query) use ($word) {
+                        $query->where('name', 'like','%'.$word.'%');
+                    })
+                    ->orWhereHas('city.country', function ($query) use ($word) {
+                        $query->where('name', 'like', '%'.$word.'%');
+                    });
+            });
         }
-
         if ($request->has('num_of_rooms')) {
             $query->where('num_of_rooms', '>=', $request->input('num_of_rooms'));
         }
@@ -126,7 +136,7 @@ class UserController extends Controller
                 });
             });
         }
-    
+
         if ($request->has('num_of_adults') && $request->has('num_of_children')) {
             $num_of_adults = $request->input('num_of_adults');
             $num_of_children = $request->input('num_of_children');
@@ -141,13 +151,13 @@ class UserController extends Controller
 
         // Rate Filters
 
-        if ($request->has('rate')) {                    
+        if ($request->has('rate')) {
             $query->where('rate', '=', $request->input('rate'));
         }
 
         // stars Filters
 
-        if ($request->has('stars')) {                   
+        if ($request->has('stars')) {
             $query->where('stars', '=', $request->input('stars'));
         }
 
@@ -194,17 +204,6 @@ class UserController extends Controller
             'All_hotels' => $hotels,
         ]);
     }
-
-    public function Reservations(Request $request)
-    {
-        $data = Hotel::where('id','=',$request->id)
-            ->with('Room',function($query){
-                $query->with('Reservations');
-            })->get();
-
-        return $data;
-    }
-
     /**
      *Adding reviews By user
      */
@@ -254,7 +253,7 @@ class UserController extends Controller
 
         $num_of_ratings = $hotel['num_of_ratings'];
         $rate = $hotel->rate;
-       
+
         $old_rate = $num_of_ratings*$hotel['rate'];
         $new_rate = ($old_rate+$request->rate)/($num_of_ratings+1);
 
@@ -279,29 +278,36 @@ class UserController extends Controller
         $hotel = Hotel::with(['type', 'city'=> function ($query) {
             $query->select('id','name','country_id')
             ->with(['country' => function ($que) {
-                $que->select('id','name'); }]);
-                } , 'photo', 'facilities','reviews'=> function($qu){
-                $qu->select('id','hotel_id','rate','comment','user_id')
-                ->with(['user' => function ($q) {
-                $q->select('id','first_name','last_name'); 
-                }]);
-            }])
+                $que->select('id','name');
+            }]);
+            } , 'photo', 'facilities'])
         ->where('id',$request->id)
         ->get();
 
+        $reviews = HotelReview::where('hotel_id',$request->id)
+        ->with('user',function($q){
+            $q->select(['id','first_name','last_name','photo']);
+        })
+            ->paginate(6);
+
         $roomsByType = DB::table('rooms')
         ->join('room_types', 'rooms.room_type', '=', 'room_types.id')
-        ->select('name as room_type','rooms.beds', DB::raw('COUNT(*) as room_count'))
-        ->groupBy('room_types.name','rooms.beds')
+        ->select('name as room_type','rooms.beds','price_for_night', DB::raw('COUNT(*) as room_count'))
+        ->groupBy('room_types.name','rooms.beds','price_for_night')
         ->where('hotel_id', $request->id)
         ->get();
 
+        $location = $hotel[0]['location'];
+        $nearestHotels = Hotel::select('Hotels.*')
+        ->where('Hotels.location','=',$location)->paginate(4);
+
         return response([
             'Hotel_info'=>$hotel,
-            'Rooms'=>$roomsByType
+            'Rooms'=>$roomsByType,
+            'Reviews'=>$reviews,
+            'Nearest_Hotels'=>$nearestHotels
         ]);
     }
-
     /**
      * show all rooms for this type
      */
@@ -320,7 +326,125 @@ class UserController extends Controller
         return response([
             'Room_info'=>$room,
         ]);
-    
-    }
 
+    }
+    /**
+     * Booking a Room in a Hotel with all the checking functions:
+     * @param HotelReservation $request
+     * @return JsonResponse
+     */
+    public function bookingRoom(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'room_id' => 'required',
+            'check_in' => 'required',
+            'check_out' => 'required',
+            'adults' => 'required|integer',
+            'children' => 'required|integer',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 400);
+        }
+
+        $info = $validator->validated();
+
+
+        $room = Room::select('rooms.*')
+        ->where('id', '=', $request->room_id)->first();
+
+        if (!$room) {
+            return $this->error('Room not found', 400);
+        }
+
+        // Check if the room is available for the specified dates
+        if (!$this->checkRoomAvailability($info)) {
+            return $this->error('The room is not available for the selected dates.
+            Please choose different dates.');
+        }
+
+        $user_id= auth()->id();
+        $hasMoney = $this->checkMoneyAvailability($info, $user_id);
+        if ($hasMoney == -1) {
+            // $user=auth('web')->user()->id;
+            // return response()->json([$user_id]);
+            return $this->error('You do not have enough money.');
+        }
+        //  Check if the room can accommodate the specified number of adults and children
+        if (!$this->checkRoomCapacity($info)) {
+            return $this->error('The room does not have enough capacity for the specified number of adults and children.');
+        }
+
+        HotelReservation::create([
+            'user_id' => auth()->id(),
+            'room_id' => $info['room_id'],
+            'hotel_id' => $room['hotel_id'],
+            'check_in' => $info['check_in'],
+            'check_out' => $info['check_out'],
+            'payment' => $hasMoney,
+            'points_added' => $room['points_added_when_booking'],
+            'num_of_adults'=> $info['adults'],
+            'num_of_children'=> $info['children'],
+            'price'=> $hasMoney,
+        ]);
+
+        User::where('id',$request->user()->id)
+            ->update([
+                'wallet'=> $request->user()->wallet - $hasMoney,
+            ]);
+
+        $final_info = HotelReservation::where([
+            'user_id' => auth()->id(),
+            'room_id' => $info['room_id'],
+        ])->orderBy('id', 'desc')->first();
+
+        return $this->success($final_info, 'Room reserved successfully with the following info:', 200);
+    }
+    private function checkMoneyAvailability($info,$user_id)
+    {
+        $room = Room::where('id','=',$info['room_id'])->first();
+        $checkInDate = Carbon::parse($info['check_in']);
+        $checkOutDate = Carbon::parse($info['check_out']);
+
+        $numberOfNights = $checkOutDate->diffInDays($checkInDate);
+
+        $numberOfNights++;
+        $moneyNeeded = $numberOfNights * $room['Price_for_night'];
+
+        if($this->checkWallet($moneyNeeded,$user_id)){
+            return $moneyNeeded;
+        }
+        else return -1;
+    }
+    private function checkRoomAvailability($info) :bool
+    {
+        $checkInDate = $info['check_in'];
+        $checkOutDate = $info['check_out'];
+        $room = Room::where('id','=',$info['room_id'])->first();
+
+        $existingReservations = HotelReservation::select('hotel_reservations.*')
+        ->where(function ($query) use ($room,$checkInDate, $checkOutDate) {
+            $query->where('room_id','=', $room['id'])
+                ->where('check_in', '<=', $checkOutDate)
+                ->Where('check_out', '>=', $checkInDate);
+            }
+        )->exists();
+
+        return !$existingReservations;
+    }
+    private function checkRoomCapacity($info): bool
+    {
+        $room = Room::where('id', '=', $info['room_id'])->first();
+
+        if (!$room) {
+            return false; // Room not found
+        }
+
+        $adults = $info['adults'];
+        $children = $info['children'];
+
+        $totalCapacity = $room['Sleeps'] + $room['Beds'];
+
+        return ($adults + $children) <= $totalCapacity;
+    }
 }

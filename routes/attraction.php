@@ -27,7 +27,7 @@ Route::group( [],function(){
 Route::group( ['middleware' => ['auth:user-api'] ],function(){
     Route::post('rateAttraction',[UserAttractionController::class,'addReview']);
     Route::post('sendReview',[UserAttractionController::class,'addReview']);
-    Route::post('bookingTicket',[UserAttractionController::class,'bookingTicket']);
+    Route::post('bookingTicket',[UserAttractionController::class,'bookingTicket1']);
 });
 
 // Attraction Admin Operation

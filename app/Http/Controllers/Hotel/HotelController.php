@@ -243,38 +243,4 @@ class HotelController extends Controller
         'Room:'=>$rooms
         ]);
     }
-
-    public function create()
-    {
-        //
-    }
-
-
-    public function store(Request $request)
-    {
-        //
-    }
-
-
-    public function show(Hotel $hotel)
-    {
-        //
-    }
-
-
-    public function edit(Hotel $hotel)
-    {
-        //
-    }
-
-
-    public function update(Request $request, Hotel $hotel)
-    {
-        //
-    }
-
-    public function destroy(Hotel $hotel)
-    {
-        //
-    }
 }

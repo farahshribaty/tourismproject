@@ -11,6 +11,7 @@ use App\Models\AttractionFavourite;
 use App\Models\AttractionReservation;
 use App\Models\AttractionReview;
 use App\Models\City;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -135,6 +136,7 @@ class UserAttractionController extends UserController
             })
             ->paginate(6);
 
+
         $you_may_also_like = Attraction::select(['id','city_id','name','rate','num_of_ratings','adult_price','child_price'])
             ->where('city_id','=',$city_id)
             ->with(['photo','city'])
@@ -165,6 +167,59 @@ class UserAttractionController extends UserController
      * @param AttractionReserveRequest $request
      * @return JsonResponse
      */
+//    public function bookingTicket(AttractionReserveRequest $request): JsonResponse
+//    {
+//        $info = $request->validated();
+//
+//        $attraction = Attraction::where('id','=',$info['attraction_id'])->first();
+//
+//        if(!$attraction){
+//            return $this->error('Attraction not found',400);
+//        }
+//        if(!$this->checkTicketAvailability($info)){
+//            return $this->error('We have run out of tickets for this day, please select another one.');
+//        }
+//        if(!$this->checkTimeAvailability($info)){
+//            return $this->error('This attraction is closed on selected day.');
+//        }
+//        $hasMoney = $this->checkMoneyAvailability($info,$request->user()->id);
+//        if($hasMoney==-1){
+//            return $this->error('You do not have enough money.');
+//        }
+//
+//        AttractionReservation::create([
+//            'user_id'=>$request->user()->id,
+//            'attraction_id'=>$info['attraction_id'],
+//            'book_date'=>$info['book_date'],
+//            'adults'=>$info['adults'],
+//            'children'=>$info['children'],
+//            'payment'=>$hasMoney,
+//            'points_added'=>$attraction['points_added_when_booking']
+//        ]);
+//
+//        // todo: add points to the user and subtract money of him
+//
+//        User::where('id',$request->user()->id)
+//            ->update([
+//                'wallet'=> $request->user()->wallet - $hasMoney,
+//            ]);
+//
+//
+//        $final_info = AttractionReservation::where([
+//            'user_id'=>$request->user()->id,
+//            'attraction_id'=>$info['attraction_id'],
+//            ])->orderBy('id','desc')->first();
+//
+//        return $this->success($final_info,'Ticket reserved successfully with the following info:',200);
+//    }
+
+
+    /**
+     * Booking Ticket Function
+     *
+     * @param AttractionReserveRequest $request
+     * @return JsonResponse
+     */
     public function bookingTicket(AttractionReserveRequest $request): JsonResponse
     {
         $info = $request->validated();
@@ -185,7 +240,7 @@ class UserAttractionController extends UserController
             return $this->error('You do not have enough money.');
         }
 
-        AttractionReservation::create([
+        $booking_info = [
             'user_id'=>$request->user()->id,
             'attraction_id'=>$info['attraction_id'],
             'book_date'=>$info['book_date'],
@@ -193,16 +248,23 @@ class UserAttractionController extends UserController
             'children'=>$info['children'],
             'payment'=>$hasMoney,
             'points_added'=>$attraction['points_added_when_booking']
-        ]);
+        ];
 
-        // todo: add points to the user and subtract money of him
+        if($request->check_or_book == 'check'){
+            return $this->success($booking_info,'When you press on book button, a ticket will be reserved with the following Info:');
+        }
+        else{
+            AttractionReservation::create($booking_info);
 
-        $final_info = AttractionReservation::where([
-            'user_id'=>$request->user()->id,
-            'attraction_id'=>$info['attraction_id'],
-            ])->orderBy('id','desc')->first();
+            // todo: add points to the user and subtract money of him
 
-        return $this->success($final_info,'Ticket reserved successfully with the following info:',200);
+            User::where('id',$request->user()->id)
+                ->update([
+                    'wallet'=> $request->user()->wallet - $hasMoney,
+                ]);
+
+            return $this->success($booking_info,'Ticket reserved successfully with the following info:',200);
+        }
     }
 
     /**

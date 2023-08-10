@@ -272,8 +272,6 @@ class UserTripsController extends UserController
         ]);
     }
 
-    // todo: send prices after discount!
-
     // todo: add points to user account
 
     /**
@@ -287,6 +285,7 @@ class UserTripsController extends UserController
             'date_id'=>'required',
             'adults'=>'required',
             'children'=>'required',
+            'check_or_book'=> 'required',
         ]);
 
         // validating variable data
@@ -299,13 +298,6 @@ class UserTripsController extends UserController
                 'gender'.$i =>'required',
             ]);
         }
-
-
-//        $trip = Trip::whereHas('departure',function($query)use($request){
-//            $query->whereHas('dates',function($q)use($request){
-//                $q->where('id',$request['date_id']);
-//            });
-//        })->first();
 
         $trip = Trip::whereHas('dates',function($q)use($request){
             $q->where('id',$request['date_id']);
@@ -329,20 +321,20 @@ class UserTripsController extends UserController
             return $this->error('There are no enough seats');
         }
 
-        // ### 4 ### check if the user have enough money
+        // ### 4 ### check if the user has enough money
         $money_needed = $this->checkMoneyAvailability($request,$trip,$date);
         if($money_needed == -1){
             return $this->error('You do not have enough money');
         }
 
-        // ### 5 ### check if the date haven't passed yet
+        // ### 5 ### check if the date hasn't passed yet
         if(!$this->checkTimeAvailability($date)){
             return $this->error('This date has already been passed');
         }
 
         // congratulations! finally, the booking process will proceed to the next step.
 
-        TripsReservation::create([
+        $booking_info = [
             'date_id'=>$date['id'],
             'user_id'=>$request->user()->id,
             'child'=>$request->children,
@@ -350,44 +342,48 @@ class UserTripsController extends UserController
             'money_spent'=>$money_needed,
             'points_added'=>10,
             'active'=>1,
-        ]);
+        ];
 
-
-        // update current_reserved_people in date:
-
-        TripDate::where('id',$date['id'])
-            ->update([
-            'current_reserved_people'=> $date['current_reserved_people']+$request['adults']+$request['children'],
-            ]);
-
-
-        // todo: add points to user account and erase money form his wallet
-        $user = User::where('id',$request->user()->id)->first();
-        User::where('id','=',$user['id'])
-            ->update([
-                'wallet'=>$user['wallet']-$money_needed,
-            ]);
-
-
-        // getting reservation to show it to user
-
-        $reservation = TripsReservation::where('date_id',$date['id'])->where('user_id',$request->user()->id)->orderBy('id','desc')->first();
-        $reservation['date of departure']=$date['departure_date'];
-
-
-        // adding travelers
-
-        for($i=1 ; $i<=($request['adults']+$request['children']-1) ; $i++){
-            TripTraveler::create([
-                'reservation_id'=>$reservation['id'],
-                'first_name'=>$request->input('first_name'.$i),
-                'last_name'=>$request->input('last_name'.$i),
-                'birth'=>$request->input('birth'.$i),
-                'gender'=>$request->input('gender'.$i),
-            ]);
+        if($request->check_or_book == 'check'){
+            return $this->success($booking_info,'When you press on book button, a ticket will be reserved with the following Info:');
         }
+        else{
 
-        return $this->success($reservation,'Trip has been reserved with the last information');
+            TripsReservation::create($booking_info);
+
+            // update current_reserved_people in dates table:
+
+            TripDate::where('id',$date['id'])
+                ->update([
+                    'current_reserved_people'=> $date['current_reserved_people']+$request['adults']+$request['children'],
+                ]);
+
+            // todo: add points to user account
+
+            User::where('id','=',$request->user()->id)
+                ->update([
+                    'wallet'=> $request->user()->wallet - $money_needed,
+                ]);
+
+
+            // getting reservation to show it to user
+
+            $trip_reservation = TripsReservation::where('date_id',$date['id'])->where('user_id',$request->user()->id)->orderBy('id','desc')->first();
+
+            // adding travelers
+
+            for($i=1 ; $i<=($request['adults']+$request['children']-1) ; $i++){
+                TripTraveler::create([
+                    'reservation_id'=>$trip_reservation['id'],
+                    'first_name'=>$request->input('first_name'.$i),
+                    'last_name'=>$request->input('last_name'.$i),
+                    'birth'=>$request->input('birth'.$i),
+                    'gender'=>$request->input('gender'.$i),
+                ]);
+            }
+
+            return $this->success($booking_info,'Trip has been reserved with the last information');
+        }
     }
 
     /**

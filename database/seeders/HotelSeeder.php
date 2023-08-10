@@ -70,7 +70,7 @@ class HotelSeeder extends Seeder
         for($i = 0 ; $i<17 ; $i++){
             HotelReview::create([
                 'user_id'=>random_int(1,20),
-                'hotel_id'=>random_int(1,17),
+                'hotel_id'=>random_int(1,5),
                 'rate'=>random_int(1,5),
                 'comment'=>'this is my comment'
             ]);

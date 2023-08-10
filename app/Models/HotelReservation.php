@@ -7,10 +7,10 @@ use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Model;
 
-class HotelResevation extends Model
+class HotelReservation extends Model
 {
     use HasFactory,HasApiTokens,Notifiable;
-    protected $table='hotel_resevations';
+    protected $table='hotel_reservations';
     protected $primaryKey='id';
 
     protected $fillable =[
@@ -22,6 +22,10 @@ class HotelResevation extends Model
         'adults',
         'children',
         'price',
+        'points_added',
+        'num_of_children',
+        'num_of_adults',
+
     ];
 
 

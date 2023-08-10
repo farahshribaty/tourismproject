@@ -17,7 +17,7 @@ class Room extends Model
      'room_type',
      'hotel_id',
      'details',
-     'price_for_night',
+     'Price_for_night',
      'rate',
      'num_of_ratings',
      'Sleeps',
@@ -31,9 +31,7 @@ class Room extends Model
     public function Hotel(){
         return $this->belongsTo(Hotel::class, 'hotel_id');
     }
-    // public function Photo(){
-    //     return $this->hasOne(TripPhoto::class,'trip_id')->latest('id');
-    // }
+
     public function photo()
     {
         return $this->hasMany(RoomPhotos::class, 'room_id');
@@ -51,7 +49,7 @@ class Room extends Model
 
     public function Reservations()
     {
-        return $this->hasMany(HotelResevation::class,'room_id');
+        return $this->hasMany(HotelReservation::class,'room_id');
     }
 
 }
