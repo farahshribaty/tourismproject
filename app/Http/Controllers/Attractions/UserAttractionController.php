@@ -133,8 +133,7 @@ class UserAttractionController extends UserController
             ->with('user',function($q){
                 $q->select(['id','first_name','last_name','photo']);
             })
-//                ->with('user')
-                ->paginate(6);
+            ->paginate(6);
 
         $you_may_also_like = Attraction::select(['id','city_id','name','rate','num_of_ratings','adult_price','child_price'])
             ->where('city_id','=',$city_id)
