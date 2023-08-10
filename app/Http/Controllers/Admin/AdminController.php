@@ -11,6 +11,8 @@ use App\Models\City;
 use App\Models\HotelAdmin;
 use App\Models\TripAdmin;
 use App\Models\TripUpdating;
+use App\Models\HotelUpdating;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -56,7 +58,7 @@ class AdminController extends Controller
             ]);
     }
 
-    public function CreateAdmin(Request $request) //new 
+    public function CreateAdmin(Request $request) //new
     {
         $request->validate([
         'user_name',
@@ -181,29 +183,15 @@ class AdminController extends Controller
 
     }
     //this should work for users..:
-    // public function ShowCities(Request $request)
-    // {
-    //     // Find a country by its ID
-    //     // $country = DB::table('countries')->get();
-    //     // ->where('id','=',$request->id)->get();
-    //     $country_id = Country::find($request->country_id);
-    //     // $country = Country::where('id', $request->country_id)->first();
-    //     // if (!$country) {
-    //     //     // Handle the case where the country ID does not exist
-    //     //     return response()->json(['error' => 'Country not found',$country], 404);
-    //     // }
+    public function ShowCities(Request $request)
+    {
+        // Find a country by its ID
+        $country = Country::find($request->country_id);
 
-    //     // Retrieve all cities in the country
-    //     $cities = City::select('id','cities.*')
-    //     ->where('cities.country_id', $country_id)->get();
-
-    //     // Return the list of cities as a JSON response
-    //     return response()->json([
-    //         'cities' => $cities,
-    //         'country'=>$country_id,
-    //         $request->country_id
-    //     ], 200);
-    // }
+        if (!$country) {
+            // Handle the case where the country ID does not exist
+            return response()->json(['error' => 'Country not found'], 404);
+        }
 
     public function ShowCities(Request $request)// mo zapeeeeet
     {
@@ -274,6 +262,11 @@ class AdminController extends Controller
             ->where('accepted',0)
             ->where('rejected',0)
             ->get()->toArray();
+        $hotels = HotelUpdating::select(['id','hotel_admins_id', 'add_or_update', 'accepted', 'rejected', 'seen', 'created_at'])
+            ->with('admin')
+            ->where('accepted',0)
+            ->where('rejected',0)
+            ->get()->toArray();
 
         $is_all_seen = 1;    // Initially, we suppose that all updates are seen.
 
@@ -287,6 +280,11 @@ class AdminController extends Controller
             $attraction['type'] = 'attraction_company';
             $is_all_seen &= $attraction['seen'];
             array_push($all,$attraction);
+        }
+        foreach($hotels as $hotel){
+            $hotel['type'] = 'hotel_company';
+            $is_all_seen &= $hotel['seen'];
+            array_push($all,$hotel);
         }
 
         // Sorting updates by created time.
