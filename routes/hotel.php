@@ -1,11 +1,11 @@
 <?php
 
 //use App\Http\Controllers\HotelController;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Hotel\AdminController;
 use App\Http\Controllers\Hotel\UserController;
 use App\Http\Controllers\Hotel\HotelController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+
 
 
 //Hotel Admin Routes:
@@ -29,10 +29,8 @@ Route::post('ShowHotelRooms',[HotelController::class, 'ShowHotelRooms']);
 Route::post('hotel/Hotelsearch',[UserController::class, 'Hotelsearch']);
 Route::post('AllHotelInfo',[UserController::class, 'GetALLHotelInfo']);
 Route::post('ShowOneRoom',[UserController::class, 'ShowOneRoom']);
+Route::post('bookingRoom',[UserController::class, 'bookingRoom']);
 
-
-// trial root:
-Route::post('getReservations',[UserController::class,'Reservations']);
 
 Route::group( ['middleware' => ['auth:hotel_admin-api'] ],function()
 {

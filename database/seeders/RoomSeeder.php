@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\HotelReservation;
 use App\Models\Room;
 use App\Models\RoomFeatures;
 use App\Models\RoomPhotos;
@@ -65,7 +66,7 @@ class RoomSeeder extends Seeder
             ]);
         }
         for($i = 0 ; $i<40; $i++){
-            HotelResevation::create([
+            HotelReservation::create([
                 'user_id'=>random_int(1,15),
                 'hotel_id'=>random_int(1,17),
                 'room_id'=>random_int(1,60),

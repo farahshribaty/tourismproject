@@ -4,26 +4,20 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use App\Models\AirlineAdmin;
-use App\Models\Attraction;
 use App\Models\AttractionAdmin;
 use App\Models\AttractionUpdating;
 use App\Models\Country;
 use App\Models\City;
-use App\Models\Hotel;
 use App\Models\HotelAdmin;
 use App\Models\TripAdmin;
-use App\Models\TripCompany;
 use App\Models\TripUpdating;
-use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Http\Request;
-use App\Http\Requests\LoginRequest;
+use Illuminate\Database\Query\Builder;
 
 
 class AdminController extends Controller
@@ -148,10 +142,12 @@ class AdminController extends Controller
     {
         $request->validate([
             'name'=>'required',
+            'path'=>'required'
         ]);
 
         $country =new Country();
         $country->name = $request->name;
+        $country->path = $request->path;
         $country->save();
 
         return response()->json([
@@ -185,23 +181,40 @@ class AdminController extends Controller
 
     }
     //this should work for users..:
-    public function ShowCities(Request $request)
+    // public function ShowCities(Request $request)
+    // {
+    //     // Find a country by its ID
+    //     // $country = DB::table('countries')->get();
+    //     // ->where('id','=',$request->id)->get();
+    //     $country_id = Country::find($request->country_id);
+    //     // $country = Country::where('id', $request->country_id)->first();
+    //     // if (!$country) {
+    //     //     // Handle the case where the country ID does not exist
+    //     //     return response()->json(['error' => 'Country not found',$country], 404);
+    //     // }
+
+    //     // Retrieve all cities in the country
+    //     $cities = City::select('id','cities.*')
+    //     ->where('cities.country_id', $country_id)->get();
+
+    //     // Return the list of cities as a JSON response
+    //     return response()->json([
+    //         'cities' => $cities,
+    //         'country'=>$country_id,
+    //         $request->country_id
+    //     ], 200);
+    // }
+
+    public function ShowCities(Request $request)// mo zapeeeeet
     {
-        // Find a country by its ID
-        $country = Country::find($request->country_id);
+        $country_id=DB::table('countries')
+        ->select('countries.*')
+        ->where('id',$request->id)->get();
 
-        if (!$country) {
-            // Handle the case where the country ID does not exist
-            return response()->json(['error' => 'Country not found'], 404);
-        }
-
-        // Retrieve all cities in the country
-        $cities = City::where('country_id', $country->id)->get();
-
-        // Return the list of cities as a JSON response
-        return response()->json(['cities' => $cities], 200);
+        return response()->json([
+            $country_id
+        ]);
     }
-
     function login(Request $request)     // this login is for all admins
     {
         $validated_data = Validator::make($request->all(), [

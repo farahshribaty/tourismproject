@@ -23,7 +23,7 @@ class City extends Model
         'updated_at',
     ];
 
-    public function Addcities()
+    public function countries()
     {
         return $this->belongsTo(Country::class,'countries');
     }

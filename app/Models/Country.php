@@ -25,7 +25,7 @@ class Country extends Model
         'updated_at',
     ];
 
-    public function Addcities()
+    public function cities()
     {
         return $this->hasMany(City::class,'cities');
     }

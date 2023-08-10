@@ -24,9 +24,9 @@ return new class extends Migration
             $table->integer('stars');
             $table->integer('price_start_from');
             $table->string('website_url')->nullable();
-            $table->foreignId('city_id')->constrained('cities');
-            $table->foreignId('type_id')->constrained('types');
-            $table->foreignId('admin_id')->constrained('hotel_admins');
+            $table->foreignId('city_id')->constrained('cities')->onDelete('cascade');
+            $table->foreignId('type_id')->constrained('types')->onDelete('cascade');
+            $table->foreignId('admin_id')->constrained('hotel_admins')->onDelete('cascade');
             $table->timestamps();
 
         });
