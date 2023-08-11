@@ -299,8 +299,16 @@ class UserController extends UsersUserController
         ->get();
 
         $location = $hotel[0]['location'];
-        $nearestHotels = Hotel::select('Hotels.*')
-        ->where('Hotels.location','=',$location)->paginate(4);
+        $nearestHotels = Hotel::where('Hotels.location','=',$location)
+        ->with(['photo','city'=> function ($query) {
+            $query->select('id','name','country_id')
+            ->with(['country' => function ($q) {
+                $q->select('id','name');
+            }]);
+        }]) 
+        ->paginate(4);
+        $nearestHotels = $nearestHotels->makeHidden(['email','phone_number',
+       'details','website_url','created_at','updated_at']);
 
         return response([
             'Hotel_info'=>$hotel,
