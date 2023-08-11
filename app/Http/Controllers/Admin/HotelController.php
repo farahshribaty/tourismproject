@@ -51,12 +51,7 @@ class HotelController extends AdminController
         $hotel = Hotel::with('admin')->paginate(10);
         return $this->success($hotel, 'Retrieved successfully');
     }
-<<<<<<< HEAD
     public function getHotelWithAllInfo2(Request $request)
-=======
-
-    public function getHotelWithAllInfo2($id)
->>>>>>> d0a43aa64dbbf2a01bf5780d9966d87f4fc1090d
     {
         $hotel = $this->getHotelWithAllInfo($request);
         return $hotel;

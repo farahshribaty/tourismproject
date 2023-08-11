@@ -398,17 +398,11 @@ class AdminController extends Controller
     {
         $room_id = $request->room_id;
         $room = Room::find($room_id);
-<<<<<<< HEAD
-        if(!isset($room)){
-            return $this->error('room not found');
-=======
-
         if (!$room) {
             return response()->json([
                 'error' => 'Room not found.'
             ], 404);
-        
->>>>>>> d0a43aa64dbbf2a01bf5780d9966d87f4fc1090d
+
         }
 
         $room->Reservations()->delete();
@@ -425,7 +419,7 @@ class AdminController extends Controller
     public function deleteFeatureFromRoom(Request $request)
     {
         $room = Room::find($request->roomId);
-        
+
         if (!$room) {
             return response()->json([
                 'error' => 'Room not found.'
