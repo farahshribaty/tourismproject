@@ -31,13 +31,29 @@ Route::post('ShowHotelRooms',[HotelController::class, 'ShowHotelRooms']);
 Route::post('hotel/Hotelsearch',[UserController::class, 'Hotelsearch']);
 Route::post('AllHotelInfo',[UserController::class, 'GetALLHotelInfo']);
 Route::post('ShowOneRoom',[UserController::class, 'ShowOneRoom']);
+<<<<<<< HEAD
 Route::post('bookingRoom',[UserController::class, 'bookingRoom'])->middleware('auth:user-api');
+=======
+>>>>>>> d0a43aa64dbbf2a01bf5780d9966d87f4fc1090d
 
+
+Route::group( ['middleware' => ['auth:user-api'] ],function()
+{
+    Route::post('bookingRoom',[UserController::class, 'bookingRoom']);
+    // ->middleware('auth:user-api');
+});
 
 Route::group( ['middleware' => ['auth:hotel_admin-api'] ],function()
 {
     Route::post('admin/createhotel',[AdminController::class, 'CreateHotel']);
     Route::post('admin/OneHotel',[AdminController::class, 'getHotelWithAllInfoByToken']);
+    Route::post('admin/addFacilitis',[AdminController::class, 'addFacilitisForHotel']);
+    Route::get('admin/getAllFacilities',[AdminController::class, 'getAllFacilitiesForThisHotel']);
+    Route::post('admin/addOneFacility',[AdminController::class, 'addOneFacility']);
+    Route::post('admin/deleteFacility',[AdminController::class, 'deleteFacility']);
+    Route::post('admin/deleteFeature',[AdminController::class, 'deleteFeatureFromRoom']);
+    Route::post('admin/deleteRoom',[AdminController::class, 'DeleteRoom']);
+    
 });
 
 Route::group( ['prefix' => 'hotel','middleware' => ['auth:hotel-api'] ],function(){
