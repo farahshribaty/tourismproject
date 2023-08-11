@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Hotel\AdminController;
+use App\Models\Facilities;
 use App\Models\Hotel;
 use App\Models\HotelAdmin;
 use App\Models\HotelUpdating;
@@ -16,45 +17,41 @@ use Illuminate\Support\Facades\DB;
 class HotelController extends AdminController
 {
     // This controller contains all operations the main admin can do on the Hotel section.
-    public function CreateAdmin(Request $request)
+
+    public function makeNewAdmin(Request $request)
     {
-        $request->validate([
-            'first_name'=>['required','max:55'],
-            'last_name'=>['required','max:55'],
-            'user_name'=>['required','unique:hotels'],
-            'email'=>['required','max:60'],
-            'password'=>[
-                'required',
-               password::min(8)
-                ->letters()
-                ->numbers()
-                ->symbols()
-            ],
-             'phone_number'=>['required']
-            ]);
+        $validated_data = Validator::make($request->all(), [
+            'first_name',
+            'last_name',
+            'user_name' => 'required|unique:hotel_admins',
+            'email'=>'required|max:60',
+            'password' => 'required',
+            'phone_number' => 'required',
+        ]);
+        if($validated_data->fails()){
+            return response()->json(['error' => $validated_data->errors()->all()]);
+        }
 
-        $admin = new HotelAdmin();
-        $admin->first_name = $request->first_name;
-        $admin->last_name = $request->last_name;
-        $admin->user_name = $request->user_name;
-        $admin->email = $request->email;
-        $admin->password =$request->password;  //should add bcrypt() but it didn;t eork on the login bcuz of it
-        $admin->phone_number = $request->phone_number;
+        HotelAdmin::create([
+            'first_name'=>$request->first_name,
+            'last_name'=>$request->last_name,
+            'user_name'=>$request->user_name,
+            'email'=>$request->email,
+            'password'=>$request->password,
+            'phone_number'=> $request->phone_number,
+        ]);
 
-        $admin->save();
+        $hotel = HotelAdmin::where('user_name','=',$request->user_name)->first();
+        $hotel['token'] = $hotel->createToken('MyApp')->accessToken;
 
-        $accessToken=$admin->createtoken('MyApp',['admin'])->accessToken;
-
-          return response()->json([
-                   'admin'=> $admin,
-                   'access_token'=>$accessToken
-            ]);
+        return $this->success($hotel,'Admin added successfully');
     }
     public function getAllHotelsWithMainInfo()
     {
         $hotel = Hotel::with('admin')->paginate(10);
         return $this->success($hotel, 'Retrieved successfully');
     }
+
     public function getHotelWithAllInfo2($id)
     {
         $hotel = $this->getHotelWithAllInfo($id);
@@ -149,6 +146,23 @@ class HotelController extends AdminController
         ]);
 
         return $this->success($update, 'Update retrieved successfully');
+    }
+    public function addFacilitiesForHotel(Request $request)
+    {
+        $request->validate([
+            'name'=>'required'
+        ]);
+        $facility = new Facilities();
+        $facility->name = $request->name;
+        $facility->save();
+
+        return $this->success($facility, 'Facility Added successfully');
+    }
+    public function getAllFacilitiesForHotel()
+    {
+        $facilities=Facilities::get();
+        return $this->success($facilities, 'Facility Added successfully');
+
     }
 
 

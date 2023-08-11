@@ -287,7 +287,9 @@ class UserController extends Controller
 
         // check if they're already in favourites:
 
-        $last_one = DB::table($sections[$request->section_type])->where('user_id',$request->user()->id)->where($ids[$request->section_type],$request->section_id)->first();
+        $last_one = DB::table($sections[$request->section_type])
+        ->where('user_id',$request->user()->id)
+        ->where($ids[$request->section_type],$request->section_id)->first();
 
         if(isset($last_one)){
             return $this->error('It is already in your favourites!');
