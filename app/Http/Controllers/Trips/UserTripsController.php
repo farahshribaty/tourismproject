@@ -290,7 +290,7 @@ class UserTripsController extends UserController
 
         // validating variable data
 
-        for($i=1 ; $i<=($request['adults']+$request['children']-1) ; $i++){
+        for($i=1 ; $i<=($request['adults']+$request['children']) ; $i++){
             $request->validate([
                 'first_name'.$i =>'required',
                 'last_name'.$i =>'required',
@@ -372,7 +372,7 @@ class UserTripsController extends UserController
 
             // adding travelers
 
-            for($i=1 ; $i<=($request['adults']+$request['children']-1) ; $i++){
+            for($i=1 ; $i<=($request['adults']+$request['children']) ; $i++){
                 TripTraveler::create([
                     'reservation_id'=>$trip_reservation['id'],
                     'first_name'=>$request->input('first_name'.$i),
