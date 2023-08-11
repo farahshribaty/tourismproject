@@ -8,6 +8,7 @@ use App\Models\Hotel;
 use App\Models\City;
 use App\Models\Room;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
 use App\Models\Facilities;
 use App\Models\HotelReview;
@@ -335,12 +336,13 @@ class UserController extends UsersUserController
      */
     public function bookingRoom(Request $request)
     {
+
         $validator = Validator::make($request->all(), [
             'room_id' => 'required',
             'check_in' => 'required',
             'check_out' => 'required',
-            'adults' => 'required|integer',
-            'children' => 'required|integer',
+            'num_of_adults' => 'required|integer',
+            'num_of_children' => 'required|integer',
         ]);
 
         if ($validator->fails()) {
@@ -363,11 +365,9 @@ class UserController extends UsersUserController
             Please choose different dates.');
         }
 
-        $user_id= auth()->id();
+        $user_id= $request->user()->id;
         $hasMoney = $this->checkMoneyAvailability($info, $user_id);
         if ($hasMoney == -1) {
-            // $user=auth('web')->user()->id;
-            // return response()->json([$user_id]);
             return $this->error('You do not have enough money.');
         }
         //  Check if the room can accommodate the specified number of adults and children
@@ -381,16 +381,18 @@ class UserController extends UsersUserController
             'hotel_id' => $room['hotel_id'],
             'check_in' => $info['check_in'],
             'check_out' => $info['check_out'],
+            'num_of_adults'=> $info['num_of_adults'],
+            'num_of_children'=> $info['num_of_children'],
+            'price'=> $hasMoney,
             'payment' => $hasMoney,
             'points_added' => $room['points_added_when_booking'],
-            'num_of_adults'=> $info['adults'],
-            'num_of_children'=> $info['children'],
-            'price'=> $hasMoney,
+
         ]);
 
-        User::where('id',$request->user()->id)
+        $user = Auth::user();
+        User::where('id', $user->id)
             ->update([
-                'wallet'=> $request->user()->wallet - $hasMoney,
+                'wallet' => $user->wallet - $hasMoney,
             ]);
 
         $final_info = HotelReservation::where([
@@ -400,6 +402,7 @@ class UserController extends UsersUserController
 
         return $this->success($final_info, 'Room reserved successfully with the following info:', 200);
     }
+
     private function checkMoneyAvailability($info,$user_id)
     {
         $room = Room::where('id','=',$info['room_id'])->first();
@@ -416,6 +419,7 @@ class UserController extends UsersUserController
         }
         else return -1;
     }
+
     private function checkRoomAvailability($info) :bool
     {
         $checkInDate = $info['check_in'];
@@ -432,6 +436,7 @@ class UserController extends UsersUserController
 
         return !$existingReservations;
     }
+
     private function checkRoomCapacity($info): bool
     {
         $room = Room::where('id', '=', $info['room_id'])->first();
@@ -440,8 +445,8 @@ class UserController extends UsersUserController
             return false; // Room not found
         }
 
-        $adults = $info['adults'];
-        $children = $info['children'];
+        $adults = $info['num_of_adults'];
+        $children = $info['num_of_children'];
 
         $totalCapacity = $room['Sleeps'] + $room['Beds'];
 
