@@ -52,8 +52,6 @@ class HotelController extends AdminController
     }
     public function getAllHotelsWithMainInfo()
     {
-        // $hotels = DB::table('hotels')->select('id', 'name','email', 'location','phone_number','details')->get();
-        // return $hotels;
         $hotel = Hotel::with('admin')->paginate(10);
         return $this->success($hotel, 'Retrieved successfully');
     }
