@@ -13,6 +13,7 @@ use App\Models\AttractionReview;
 use App\Models\City;
 use App\Models\User;
 use Carbon\Carbon;
+use DateInterval;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Nette\Utils\DateTime;
@@ -167,78 +168,30 @@ class UserAttractionController extends UserController
      * @param AttractionReserveRequest $request
      * @return JsonResponse
      */
-//    public function bookingTicket(AttractionReserveRequest $request): JsonResponse
-//    {
-//        $info = $request->validated();
-//
-//        $attraction = Attraction::where('id','=',$info['attraction_id'])->first();
-//
-//        if(!$attraction){
-//            return $this->error('Attraction not found',400);
-//        }
-//        if(!$this->checkTicketAvailability($info)){
-//            return $this->error('We have run out of tickets for this day, please select another one.');
-//        }
-//        if(!$this->checkTimeAvailability($info)){
-//            return $this->error('This attraction is closed on selected day.');
-//        }
-//        $hasMoney = $this->checkMoneyAvailability($info,$request->user()->id);
-//        if($hasMoney==-1){
-//            return $this->error('You do not have enough money.');
-//        }
-//
-//        AttractionReservation::create([
-//            'user_id'=>$request->user()->id,
-//            'attraction_id'=>$info['attraction_id'],
-//            'book_date'=>$info['book_date'],
-//            'adults'=>$info['adults'],
-//            'children'=>$info['children'],
-//            'payment'=>$hasMoney,
-//            'points_added'=>$attraction['points_added_when_booking']
-//        ]);
-//
-//        // todo: add points to the user and subtract money of him
-//
-//        User::where('id',$request->user()->id)
-//            ->update([
-//                'wallet'=> $request->user()->wallet - $hasMoney,
-//            ]);
-//
-//
-//        $final_info = AttractionReservation::where([
-//            'user_id'=>$request->user()->id,
-//            'attraction_id'=>$info['attraction_id'],
-//            ])->orderBy('id','desc')->first();
-//
-//        return $this->success($final_info,'Ticket reserved successfully with the following info:',200);
-//    }
-
-
-    /**
-     * Booking Ticket Function
-     *
-     * @param AttractionReserveRequest $request
-     * @return JsonResponse
-     */
     public function bookingTicket(AttractionReserveRequest $request): JsonResponse
     {
         $info = $request->validated();
 
         $attraction = Attraction::where('id','=',$info['attraction_id'])->first();
 
+        // ### 1 ### check if the ID is valid
         if(!$attraction){
             return $this->error('Attraction not found',400);
         }
+        // ### 2 ### check if there are tickets remains
         if(!$this->checkTicketAvailability($info)){
             return $this->error('We have run out of tickets for this day, please select another one.');
         }
+        // ### 3 ### check if the time & date are valid
         if(!$this->checkTimeAvailability($info)){
-            return $this->error('This attraction is closed on selected day.');
+            return $this->error('This attraction is closed on selected day/time.');
         }
+        // ### 4 ### check if user has money
         $hasMoney = $this->checkMoneyAvailability($info,$request->user()->id);
         if($hasMoney==-1){
             return $this->error('You do not have enough money.');
         }
+        // end of checks.
 
         $booking_info = [
             'user_id'=>$request->user()->id,
@@ -347,18 +300,26 @@ class UserAttractionController extends UserController
     {
         $date = $info['book_date'];
 
-        $new_date = DateTime::createfromformat('Y-m-d',$date);
+        $new_date = Carbon::createFromFormat('Y-m-d h:i:s',$date);
         $day = $new_date->format('l');
-        //echo $day;
-
-        $numOfDay = $this->dayNumber($day);
+        $hour = $new_date->format('h:i');
+        $hour_plus = Carbon::createFromFormat('Y-m-d h:i:s',$date)->addHour()->format('h:i');
 
         $attraction = Attraction::where('id','=',$info['attraction_id'])->first();
-        $openDays = $attraction['available_days'];
 
+        // check hour availability
+        $open = DateTime::createfromformat('Y-m-d h:i:s',$attraction['open_at']);
+        $close = DateTime::createfromformat('Y-m-d h:i:s',$attraction['close_at']);
+        $open = $open->format('h:i');
+        $close = $close->format('h:i');
+        if($hour<$open || $hour_plus>$close) return false;
+
+        // check day availability
+        $numOfDay = $this->dayNumber($day);
+        $openDays = $attraction['available_days'];
         $mask = 1<<$numOfDay;
         if($mask & $openDays) return true;
-        else return false;
+        return false;
     }
     private function checkTicketAvailability($info): bool
     {

@@ -285,17 +285,17 @@ class UserTripsController extends UserController
             'date_id'=>'required',
             'adults'=>'required',
             'children'=>'required',
-            'check_or_book'=> 'required',
+            'check_or_book'=> 'required|in:book,check',
         ]);
 
         // validating variable data
 
-        for($i=1 ; $i<=($request['adults']+$request['children']-1) ; $i++){
+        for($i=1 ; $i<=($request['adults']+$request['children']) ; $i++){
             $request->validate([
                 'first_name'.$i =>'required',
                 'last_name'.$i =>'required',
                 'birth'.$i =>'required',
-                'gender'.$i =>'required',
+                'gender'.$i =>'in:male,female',
             ]);
         }
 
@@ -372,7 +372,7 @@ class UserTripsController extends UserController
 
             // adding travelers
 
-            for($i=1 ; $i<=($request['adults']+$request['children']-1) ; $i++){
+            for($i=1 ; $i<=($request['adults']+$request['children']) ; $i++){
                 TripTraveler::create([
                     'reservation_id'=>$trip_reservation['id'],
                     'first_name'=>$request->input('first_name'.$i),

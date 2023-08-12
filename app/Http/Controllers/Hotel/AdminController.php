@@ -398,11 +398,13 @@ class AdminController extends Controller
     {
         $room_id = $request->room_id;
         $room = Room::find($room_id);
+
         if (!$room) {
             return response()->json([
                 'error' => 'Room not found.'
             ], 404);
 
+>>>>>>>>> Temporary merge branch 2
         }
 
         $room->Reservations()->delete();
