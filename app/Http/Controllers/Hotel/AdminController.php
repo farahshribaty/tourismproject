@@ -404,7 +404,6 @@ class AdminController extends Controller
                 'error' => 'Room not found.'
             ], 404);
 
->>>>>>>>> Temporary merge branch 2
         }
 
         $room->Reservations()->delete();
