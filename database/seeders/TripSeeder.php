@@ -213,6 +213,5 @@ class TripSeeder extends Seeder
             ]);
         }
 
-
     }
 }

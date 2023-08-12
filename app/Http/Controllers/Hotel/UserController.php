@@ -305,7 +305,7 @@ class UserController extends UsersUserController
             ->with(['country' => function ($q) {
                 $q->select('id','name');
             }]);
-        }]) 
+        }])
         ->paginate(4);
         $nearestHotels = $nearestHotels->makeHidden(['email','phone_number',
        'details','website_url','created_at','updated_at']);
@@ -346,6 +346,7 @@ class UserController extends UsersUserController
     {
 
         $validator = Validator::make($request->all(), [
+            'check_or_book' =>'required|in:book,check',
             'room_id' => 'required',
             'check_in' => 'required',
             'check_out' => 'required',
@@ -383,7 +384,7 @@ class UserController extends UsersUserController
             return $this->error('The room does not have enough capacity for the specified number of adults and children.');
         }
 
-        HotelReservation::create([
+        $booking_info = [
             'user_id' => auth()->id(),
             'room_id' => $info['room_id'],
             'hotel_id' => $room['hotel_id'],
@@ -394,21 +395,22 @@ class UserController extends UsersUserController
             'price'=> $hasMoney,
             'payment' => $hasMoney,
             'points_added' => $room['points_added_when_booking'],
+        ];
 
-        ]);
+        if($request->check_or_book == 'check'){
+            return $this->success($booking_info,'When you press on book button, the room will be reserved with the following Info:');
+        }
+        else{
+            HotelReservation::create($booking_info);
 
-        $user = Auth::user();
-        User::where('id', $user->id)
-            ->update([
-                'wallet' => $user->wallet - $hasMoney,
-            ]);
+            $user = Auth::user();
+            User::where('id', $user->id)
+                ->update([
+                    'wallet' => $user->wallet - $hasMoney,
+                ]);
 
-        $final_info = HotelReservation::where([
-            'user_id' => auth()->id(),
-            'room_id' => $info['room_id'],
-        ])->orderBy('id', 'desc')->first();
-
-        return $this->success($final_info, 'Room reserved successfully with the following info:', 200);
+            return $this->success($booking_info, 'Room reserved successfully with the following info:', 200);
+        }
     }
 
     private function checkMoneyAvailability($info,$user_id)

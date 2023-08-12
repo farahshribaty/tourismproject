@@ -285,7 +285,7 @@ class UserTripsController extends UserController
             'date_id'=>'required',
             'adults'=>'required',
             'children'=>'required',
-            'check_or_book'=> 'required',
+            'check_or_book'=> 'required|in:book,check',
         ]);
 
         // validating variable data
@@ -295,7 +295,7 @@ class UserTripsController extends UserController
                 'first_name'.$i =>'required',
                 'last_name'.$i =>'required',
                 'birth'.$i =>'required',
-                'gender'.$i =>'required',
+                'gender'.$i =>'in:male,female',
             ]);
         }
 
