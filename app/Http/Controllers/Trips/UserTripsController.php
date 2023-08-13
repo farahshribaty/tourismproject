@@ -286,6 +286,7 @@ class UserTripsController extends UserController
             'adults'=>'required',
             'children'=>'required',
             'check_or_book'=> 'required|in:book,check',
+            'with_discount'=> 'required_if:check_or_book,==,book|in:yes,no',
         ]);
 
         // validating variable data
@@ -334,21 +335,45 @@ class UserTripsController extends UserController
 
         // congratulations! finally, the booking process will proceed to the next step.
 
+        $one_dollar_equals = 0.01;
+
         $booking_info = [
             'date_id'=>$date['id'],
             'user_id'=>$request->user()->id,
             'child'=>$request->children,
             'adult'=>$request->adults,
-            'money_spent'=>$money_needed,
-            'points_added'=>10,
+            'payment'=>$money_needed,
+            'points_added'=> (int)($money_needed * $one_dollar_equals),
             'active'=>1,
         ];
 
+        $one_point_equals = 10; // one point equals 10 dollars
+        $discount = min($booking_info['payment'],$request->user()->points * $one_point_equals);
+        $booking_info['payment_with_discount'] = $booking_info['payment']-$discount;
+
         if($request->check_or_book == 'check'){
-            return $this->success($booking_info,'When you press on book button, a ticket will be reserved with the following Info:');
+            //return $this->success($booking_info,'When you press on book button, a ticket will be reserved with the following Info:');
+            if($request->user()->points == 0){
+                unset($booking_info['payment_with_discount']);
+                return $this->success($booking_info,'When you press on book button, a ticket will be reserved with the following Info:');
+            }
+            else{
+                return response()->json([
+                    'message'=> 'When you press on book button, a ticket will be reserved with the following Info:',
+                    'data'=> $booking_info,
+                    'message1'=> 'Would you like to get benefit of your points?',
+                ]);
+            }
         }
         else{
+            if($request->with_discount == 'yes'){
+                $booking_info['payment'] = $booking_info['payment_with_discount'];
+            }
+            else{
+                $discount = 0;
+            }
 
+            unset($booking_info['payment_with_discount']);
             TripsReservation::create($booking_info);
 
             // update current_reserved_people in dates table:
@@ -360,9 +385,10 @@ class UserTripsController extends UserController
 
             // todo: add points to user account
 
-            User::where('id','=',$request->user()->id)
+            User::where('id',$request->user()->id)
                 ->update([
-                    'wallet'=> $request->user()->wallet - $money_needed,
+                    'wallet'=> $request->user()->wallet - $booking_info['payment'],
+                    'points'=> $request->user()->points - ($discount/$one_point_equals) + $booking_info['points_added'],
                 ]);
 
 

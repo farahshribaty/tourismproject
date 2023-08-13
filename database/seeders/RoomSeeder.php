@@ -77,7 +77,7 @@ class RoomSeeder extends Seeder
                 random_int(0, 59), random_int(0, 59)),
                 'num_of_adults'=>random_int(1,20),
                 'num_of_children'=>random_int(1,10),
-                'price'=>random_int(1,10)
+                'payment'=>random_int(1,10)
             ]);
         }
 
@@ -93,7 +93,7 @@ class RoomSeeder extends Seeder
                 'check_out'=> '2023-11-12',
                 'num_of_adults'=> 2,
                 'num_of_children'=> 2,
-                'price'=> 399,
+                'payment'=> 399,
                 'points_added'=> 20,
             ]);
         }

@@ -193,6 +193,8 @@ class UserAttractionController extends UserController
         }
         // end of checks.
 
+        $one_dollar_equals = 0.01;
+
         $booking_info = [
             'user_id'=>$request->user()->id,
             'attraction_id'=>$info['attraction_id'],
@@ -200,7 +202,7 @@ class UserAttractionController extends UserController
             'adults'=>$info['adults'],
             'children'=>$info['children'],
             'payment'=>$hasMoney,
-            'points_added'=>$attraction['points_added_when_booking'],
+            'points_added'=> (int)($hasMoney * $one_dollar_equals),
         ];
 
         $one_point_equals = 10; // one point equals 10 dollars
@@ -236,7 +238,7 @@ class UserAttractionController extends UserController
             User::where('id',$request->user()->id)
                 ->update([
                     'wallet'=> $request->user()->wallet - $booking_info['payment'],
-                    'points'=> $request->user()->points - ($discount/$one_point_equals),
+                    'points'=> $request->user()->points - ($discount/$one_point_equals) + $booking_info['points_added'],
                 ]);
 
             return $this->success($booking_info,'Ticket reserved successfully with the following info:',200);

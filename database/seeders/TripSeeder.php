@@ -170,7 +170,7 @@ class TripSeeder extends Seeder
                     'child'=> 2,
                     'adult'=> 2,
                     'points_added'=> 10,
-                    'money_spent'=> 4*$date['price'],
+                    'payment'=> 4*$date['price'],
                     'active'=> 1,
                 ]);
             }
@@ -224,7 +224,7 @@ class TripSeeder extends Seeder
                 'child'=> 2,
                 'adult'=> 2,
                 'points_added'=> 20,
-                'money_spent'=> 399,
+                'payment'=> 399,
                 'active'=> 1,
             ]);
         }

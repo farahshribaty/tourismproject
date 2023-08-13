@@ -21,7 +21,7 @@ class HotelReservation extends Model
         'check_out',
         'num_of_adults',
         'num_of_children',
-        'price',
+        'payment',
         'points_added',
     ];
 

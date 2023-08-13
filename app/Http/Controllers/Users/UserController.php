@@ -463,7 +463,7 @@ class UserController extends Controller
             ->take(4)
             ->get();
 
-        $trips = Trip::select(['trips.id','trips_reservations.id as reservation_id','destination','description','days_number','rate','num_of_ratings','max_persons','start_age','end_age','departure_date','money_spent'])
+        $trips = Trip::select(['trips.id','trips_reservations.id as reservation_id','destination','description','days_number','rate','num_of_ratings','max_persons','start_age','end_age','departure_date','payment'])
             ->with(['photo',
                 'destination'=>function($q){
                     $q->with(['country']);
@@ -475,7 +475,7 @@ class UserController extends Controller
             ->take(4)
             ->get();
 
-        $rooms = Room::select(['rooms.id','rooms.hotel_id','hotel_reservations.id as reservation_id','check_in','check_out','num_of_adults','num_of_children','price'])
+        $rooms = Room::select(['rooms.id','rooms.hotel_id','hotel_reservations.id as reservation_id','check_in','check_out','num_of_adults','num_of_children','payment'])
             ->join('hotel_reservations','hotel_reservations.room_id','=','rooms.id')
             ->where('hotel_reservations.user_id','=',$request->user()->id)
             ->with(['photo', 'Hotel' => function ($query) {

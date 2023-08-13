@@ -352,6 +352,7 @@ class UserController extends UsersUserController
             'check_out' => 'required',
             'num_of_adults' => 'required|integer',
             'num_of_children' => 'required|integer',
+            'with_discount'=> 'required_if:check_or_book,==,book|in:yes,no',
         ]);
 
         if ($validator->fails()) {
@@ -383,6 +384,9 @@ class UserController extends UsersUserController
         if (!$this->checkRoomCapacity($info)) {
             return $this->error('The room does not have enough capacity for the specified number of adults and children.');
         }
+        // end of checks.
+
+        $one_dollar_equals = 0.01;
 
         $booking_info = [
             'user_id' => auth()->id(),
@@ -394,19 +398,43 @@ class UserController extends UsersUserController
             'num_of_children'=> $info['num_of_children'],
             'price'=> $hasMoney,
             'payment' => $hasMoney,
-            'points_added' => $room['points_added_when_booking'],
+            'points_added' => (int)($hasMoney * $one_dollar_equals),
         ];
 
+        $one_point_equals = 10; // one point equals 10 dollars
+        $discount = min($booking_info['payment'],$request->user()->points * $one_point_equals);
+        $booking_info['payment_with_discount'] = $booking_info['payment']-$discount;
+
         if($request->check_or_book == 'check'){
-            return $this->success($booking_info,'When you press on book button, the room will be reserved with the following Info:');
+            //return $this->success($booking_info,'When you press on book button, the room will be reserved with the following Info:');
+            if($request->user()->points == 0){
+                unset($booking_info['payment_with_discount']);
+                return $this->success($booking_info,'When you press on book button, a ticket will be reserved with the following Info:');
+            }
+            else{
+                return response()->json([
+                    'message'=> 'When you press on book button, a ticket will be reserved with the following Info:',
+                    'data'=> $booking_info,
+                    'message1'=> 'Would you like to get benefit of your points?',
+                ]);
+            }
         }
         else{
+            if($request->with_discount == 'yes'){
+                $booking_info['payment'] = $booking_info['payment_with_discount'];
+            }
+            else{
+                $discount = 0;
+            }
+
+            unset($booking_info['payment_with_discount']);
             HotelReservation::create($booking_info);
 
             $user = Auth::user();
-            User::where('id', $user->id)
+            User::where('id',$request->user()->id)
                 ->update([
-                    'wallet' => $user->wallet - $hasMoney,
+                    'wallet'=> $request->user()->wallet - $booking_info['payment'],
+                    'points'=> $request->user()->points - ($discount/$one_point_equals) + $booking_info['points_added'],
                 ]);
 
             return $this->success($booking_info, 'Room reserved successfully with the following info:', 200);
