@@ -3,15 +3,20 @@
 namespace App\Http\Controllers\Flight;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Users\UserController;
 use App\Models\Country;
 use App\Models\Flights;
 use App\Models\FlightsReservation;
+use App\Models\FlightsTime;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Validator;
+use phpseclib3\Math\PrimeField\Integer;
 
-class FlightsController extends Controller
+class FlightsController extends UserController
 {
 
     public function popularCountries()
@@ -125,11 +130,103 @@ class FlightsController extends Controller
             $totalPrice =$outboundPriceForadults+$outboundPriceForchildren+$returnPriceForadults+$returnPriceForchildren;
             $pair['total_price'] = $totalPrice;
         }
-        
+
 
         return response()->json([
         'message' => "done",
         'final_flights' => $flights
         ]);
     }
+
+    /**
+     * Booking Flight Tickets
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function bookingTickets(Request $request)
+    {
+        $validated_data = Validator::make($request->all(), [
+            'check_or_book' => 'required|in:check,book',
+            'flights_times_id' => 'required',
+            'flight_class' => 'required',
+            'num_of_adults' => 'required',
+            'num_of_children' => 'required',
+        ]);
+        if ($validated_data->fails()) {
+            return response()->json(['error' => $validated_data->errors()->all()]);
+        }
+
+        $flight_time = FlightsTime::where('id', $request->flights_times_id)->first();
+
+        // ### 1 ### check if the ID is valid:
+        if (!isset($flight_time)) {
+            return $this->error('Flight time not found.', 404);
+        }
+        $flight = Flights::where('id', $flight_time['flights_id'])->first();
+
+        // ### 2 ### check if there are tickets remains:
+        if (!$this->checkTicketAvailability($request, $flight_time, $flight)) {
+            return $this->error('We have run out of tickets for this date.');
+        }
+
+        // ### 3 ### check money
+        $money_needed = $this->checkMoneyAvailability($flight_time, $request);
+        if ($money_needed == -1) {
+            return $this->error('You do not have enough money.');
+        }
+
+        // end of checks
+
+        $booking_info = [
+            'user_id' => $request->user()->id,
+            'flights_times_id' => $request->flights_times_id,
+            'flight_class' => $request->flight_class,
+            'num_of_adults' => $request->num_of_adults,
+            'num_of_children' => $request->num_of_children,
+            'payment' => $money_needed,
+            'Points' => (int)($money_needed / 100),
+        ];
+
+        if ($request->check_or_book == 'check') {
+            return $this->success($booking_info, 'When you press on book button, a ticket will be reserved with the following Info:');
+        } else {
+            FlightsReservation::create($booking_info);
+
+            // todo: add points to the user and subtract money of him
+
+            User::where('id', $request->user()->id)
+                ->update([
+                    'wallet' => $request->user()->wallet - $money_needed,
+                ]);
+
+            return $this->success($booking_info, 'Ticket reserved successfully with the following info:', 200);
+        }
+    }
+
+
+
+
+    // helpful functions:
+
+    protected function checkTicketAvailability($request,$flight_time,$flight): bool
+    {
+        $current_reservations = FlightsReservation::select([DB::raw('SUM(num_of_adults) as adults'),DB::raw('SUM(num_of_children) as children')])
+            ->where('flights_times_id',$flight_time['id'])
+            ->get();
+
+        $all = $current_reservations[0]['adults'] + $current_reservations[0]['children'] + $request->num_of_adults + $request->num_of_children;
+
+        if($all > $flight['available_seats']) return false;
+        return true;
+    }
+    protected function checkMoneyAvailability($flight_time,$request): int
+    {
+        $moneyNeeded = $flight_time['adults_price']*$request->num_of_adults + $flight_time['children_price']*$request->num_of_children;
+
+        if($this->checkWallet($moneyNeeded,$request->user()->id)){
+            return $moneyNeeded;
+        }
+        else return -1;
+    }
+
 }

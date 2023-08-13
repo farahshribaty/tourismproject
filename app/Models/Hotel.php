@@ -62,6 +62,9 @@ class Hotel extends Authenticatable
     {
         return $this->hasMany(HotelReview::class,'hotel_id');
     }
+    public function followers(){
+        return $this->hasMany(HotelFavourite::class,'hotel_id');
+    }
 
     public function Admin()
     {

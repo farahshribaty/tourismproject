@@ -132,8 +132,8 @@ class UserController extends UsersUserController
 
             $query->whereHas('Room', function ($que) use ($checkIn, $checkOut) {
                 $que->whereDoesntHave('Reservations', function ($q) use ($checkIn, $checkOut) {
-                    $q->where('hotel_resevations.check_in', '<=', $checkOut)
-                        ->Where('hotel_resevations.check_out', '>=', $checkIn);
+                    $q->where('hotel_reservations.check_in', '<=', $checkOut)
+                        ->Where('hotel_reservations.check_out', '>=', $checkIn);
                 });
             });
         }

@@ -10,12 +10,14 @@ use App\Models\TripCompany;
 use App\Models\TripDate;
 use App\Models\TripDay;
 use App\Models\TripDeparture;
+use App\Models\TripFavourite;
 use App\Models\TripOffer;
 use App\Models\TripPhoto;
 use App\Models\TripReview;
 use App\Models\TripService;
 use App\Models\TripsReservation;
 use App\Models\TripUpdating;
+use App\Models\User;
 use App\Models\WhatIsIncluded;
 use Carbon\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -210,6 +212,28 @@ class TripSeeder extends Seeder
                 'accepted'=> 0,
                 'rejected'=> 0,
                 'seen'=> 0,
+            ]);
+        }
+
+        // adding some reservations for mohamad user:
+        $user = User::where('first_name','=','mohamad')->first();
+        foreach($dates as $date){
+            TripsReservation::create([
+                'date_id'=> $date['id'],
+                'user_id'=> $user['id'],
+                'child'=> 2,
+                'adult'=> 2,
+                'points_added'=> 20,
+                'money_spent'=> 399,
+                'active'=> 1,
+            ]);
+        }
+
+        // adding some favourites:
+        foreach($trips as $trip){
+            TripFavourite::create([
+                'user_id'=> $user['id'],
+                'trip_id'=> $trip['id'],
             ]);
         }
 

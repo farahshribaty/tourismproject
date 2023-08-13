@@ -23,9 +23,6 @@ class HotelReservation extends Model
         'num_of_children',
         'price',
         'points_added',
-        'num_of_children',
-        'num_of_adults',
-
     ];
 
 

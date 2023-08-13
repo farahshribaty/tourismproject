@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest\UserLoginRequest;
 use App\Http\Requests\UserRequest\UserRegistrationRequest;
 use App\Models\Attraction;
+use App\Models\Flights;
 use App\Models\FlightsReservation;
 use App\Models\Hotel;
+use App\Models\Room;
 use App\Models\Trip;
 use App\Models\User;
 use Carbon\Carbon;
@@ -413,13 +415,36 @@ class UserController extends Controller
                 }
             ])
             ->whereHas('followers',function($q)use($request){
-            $q->where('user_id',$request->user()->id);
-        })->take(4)->get();
+                $q->where('user_id',$request->user()->id);
+            })
+            ->take(4)
+            ->get();
+
+        $hotels = Hotel::with(['photo', 'city', 'city.country', 'type','facilities'])
+            ->whereHas('followers',function($q)use($request){
+                $q->where('user_id',$request->user()->id);
+            })
+            ->take(4)
+            ->get();
+
+        $flights = Flights::select('flights.id as flight_id',  'flights_times.departe_day', 'flights.available_seats', 'flights.available_weight', 'country_from.name as from', 'country_to.name as to','flights_times.From_hour', 'flights_times.To_hour','flights_times.duration'
+            ,'airlines.name as airline_name','airlines.path as airline_photo',)
+            ->whereHas('followers',function($q)use($request){
+                $q->where('user_id','=',$request->user()->id);
+            })
+            ->join('flights_times', 'flights_times.flights_id', '=', 'flights.id')
+            ->join('countries as country_from','flights.from','=','country_from.id')
+            ->join('countries as country_to','flights.distination','=','country_to.id')
+            ->join('airlines','flights.airline_id','=','airlines.id')
+            ->take(4)
+            ->get();
 
         return response()->json([
             'success'=>'true',
             'attractions'=> $attractions,
             'trips'=> $trips,
+            'hotels'=> $hotels,
+            'flights'=> $flights,
         ]);
     }
 
@@ -450,11 +475,37 @@ class UserController extends Controller
             ->take(4)
             ->get();
 
+        $rooms = Room::select(['rooms.id','rooms.hotel_id','hotel_reservations.id as reservation_id','check_in','check_out','num_of_adults','num_of_children','price'])
+            ->join('hotel_reservations','hotel_reservations.room_id','=','rooms.id')
+            ->where('hotel_reservations.user_id','=',$request->user()->id)
+            ->with(['photo', 'Hotel' => function ($query) {
+                $query->select('id','name', 'location','city_id')
+                    ->with(['City' => function ($q) {
+                        $q->select('id','name');
+                    }]);
+            }])
+            ->take(4)
+            ->get();
+
+        $flights = Flights::select('flights.id as flight_id',  'flights_times.departe_day', 'flights.available_seats', 'flights.available_weight', 'country_from.name as from', 'country_to.name as to','flights_times.From_hour', 'flights_times.To_hour','flights_times.duration'
+            ,'airlines.name as airline_name','airlines.path as airline_photo','flights_reservations.payment')
+            ->join('flights_times', 'flights_times.flights_id', '=', 'flights.id')
+            ->join('countries as country_from','flights.from','=','country_from.id')
+            ->join('countries as country_to','flights.distination','=','country_to.id')
+            ->join('airlines','flights.airline_id','=','airlines.id')
+            ->join('flights_reservations','flights_reservations.flights_times_id','=','flights_times.id')
+            ->where('flights_reservations.user_id','=',$request->user()->id)
+            ->take(4)
+            ->get();
+
+
 
         return response()->json([
             'success'=> true,
             'attractions'=> $attractions,
             'trips'=> $trips,
+            'rooms'=> $rooms,
+            'flights'=> $flights,
         ]);
     }
 

@@ -17,8 +17,8 @@ class FlightsTime extends Model
     'To_hour',
     'duration',
     'flights_id',
-    'adult_price',
-    'chlid_price',
+    'adults_price',
+    'children_price',
     ];
 
     public function Flights()

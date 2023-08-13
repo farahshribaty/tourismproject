@@ -2,9 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Models\FlightFavourites;
 use App\Models\Flights;
 use App\Models\FlightsReservation;
 use App\Models\FlightsTime;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 
@@ -99,8 +101,31 @@ class FlightsSeeder extends Seeder
                 'flight_class'=>$class[$i%3],
                 'num_of_adults'=>random_int(1,10),
                 'num_of_children'=>random_int(1,10),
-                'PayPal'=>random_int(1,10),
+                'payment'=>random_int(100,1000),
                 'Points'=>random_int(1,10)
+            ]);
+        }
+
+        $flights = Flights::get();
+        // adding some reservations for mohamad user:
+        $user = User::where('first_name','=','mohamad')->first();
+        foreach($flights as $flight){
+            FlightsReservation::create([
+                'user_id'=> $user['id'],
+                'flights_times_id'=>random_int(1,30),
+                'flight_class'=>$class[$i%3],
+                'num_of_adults'=>random_int(1,10),
+                'num_of_children'=>random_int(1,10),
+                'payment'=>random_int(100,1000),
+                'Points'=>random_int(1,10)
+            ]);
+        }
+
+        // adding some favourites for mohamad user:
+        foreach($flights as $flight){
+            FlightFavourites::create([
+                'user_id'=> $user['id'],
+                'flight_id'=> $flight['id'],
             ]);
         }
     }

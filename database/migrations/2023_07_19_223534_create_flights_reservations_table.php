@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('flight_class');
             $table->integer('num_of_adults');
             $table->integer('num_of_children');
-            $table->integer('PayPal')->nullable();
+            $table->integer('payment');
             $table->integer('Points')->nullable();
             $table->timestamps();
         });

@@ -44,5 +44,8 @@ class Flights extends Authenticatable
     {
         return $this->belongsTo(FlightsTime::class,'flights_id');
     }
+    public function followers(){
+        return $this->hasMany(FlightFavourites::class,'flight_id');
+    }
 
 }

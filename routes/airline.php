@@ -25,6 +25,8 @@ Route::get('popularCountries',[FlightsController::class, 'popularCountries']);
 Route::get('getCountries',[FlightsController::class, 'getCountries']);
 Route::post('searchFlights',[FlightsController::class, 'searchFlights']);
 
+Route::post('bookingTickets',[FlightsController::class,'bookingTickets'])->middleware('auth:user-api');
+
 
 Route::post('airline/register',[HotelController::class, 'airRegister'])->name('airline.login');
 
