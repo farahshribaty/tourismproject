@@ -341,8 +341,8 @@ class UserController extends Controller
             return response()->json(['error' => $validated_data->errors()->all()]);
         }
 
-        $sections = ['trip_favourites','attraction_favourites','hotels','flights'];     // Those are the names of 4 tables each one for its section favourites.
-        $ids = ['trip_id','attraction_id','hotel_id','flight_id'];     // Those are the names of section_id column in the last 4 tables.
+        $sections = ['trip_favourites','attraction_favourites','hotel_favourites','flight_favourites'];     // Those are the names of 4 tables each one for its section favourites.
+        $ids = ['trip_id','attraction_id','hotel_id','flight_id'];     // Those are the names of section_id column in the 4 previous tables.
 
         // check if they're already in favourites:
 
@@ -383,7 +383,7 @@ class UserController extends Controller
             return response()->json(['error' => $validated_data->errors()->all()]);
         }
 
-        $sections = ['trip_favourites','attraction_favourites','hotels','flights'];     // Those are the names of 4 tables each one for its section favourites.
+        $sections = ['trip_favourites','attraction_favourites','hotel_favourites','flight_favourites'];     // Those are the names of 4 tables each one for its section favourites.
         $ids = ['trip_id','attraction_id','hotel_id','flight_id'];     // Those are the names of section_id column in the last 4 tables.
 
         DB::table($sections[$request->section_type])->where('user_id',$request->user()->id)->where($ids[$request->section_type],$request->section_id)->delete();
