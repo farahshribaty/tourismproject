@@ -57,36 +57,36 @@ class FlightsController extends UserController
         $children = $request->input('children');
 
         $outboundFlights = Flights::select('flights.id as flight_id',  'flights_times.departe_day', 'flights.available_seats', 'flights.available_weight', 'country_from.name as from', 'country_to.name as to', 'flights_times.adults_price', 'flights_times.children_price','flights_times.From_hour', 'flights_times.To_hour','flights_times.duration'
-        ,'airlines.name as airline_name','airlines.path as airline_photo',
-        DB::raw("'outbound_flights' as direction"),
-        DB::raw('(flights_times.adults_price  + flights_times.children_price ) as total_price'))
-        ->join('flights_times', 'flights_times.flights_id', '=', 'flights.id')
-        ->join('countries as country_from','flights.from','=','country_from.id')
-        ->join('countries as country_to','flights.distination','=','country_to.id')
-        ->join('airlines','flights.airline_id','=','airlines.id')
-        ->where('country_from.name','LIKE', '%'.$from.'%')
-        ->where('country_to.name','LIKE', '%'.$distination.'%')
-        ->where('flights_times.departe_day', '>=', Carbon::parse($departe_day))
-        ->where(function ($query) use ($adults, $children) {
+            ,'airlines.name as airline_name','airlines.path as airline_photo','adults_price','children_price',
+            DB::raw("'outbound_flights' as direction"))
+//        DB::raw('(flights_times.adults_price  + flights_times.children_price ) as total_price'))
+            ->join('flights_times', 'flights_times.flights_id', '=', 'flights.id')
+            ->join('countries as country_from','flights.from','=','country_from.id')
+            ->join('countries as country_to','flights.distination','=','country_to.id')
+            ->join('airlines','flights.airline_id','=','airlines.id')
+            ->where('country_from.name','LIKE', '%'.$from.'%')
+            ->where('country_to.name','LIKE', '%'.$distination.'%')
+            ->where('flights_times.departe_day', '>=', Carbon::parse($departe_day))
+            ->where(function ($query) use ($adults, $children) {
         $query->where('flights.available_seats', '>=', $adults + $children);})
-        ->orderByRaw('ABS(DATEDIFF(flights_times.departe_day, ?))', [$departe_day]) //to get the closest flights from the depart day
-        ->take(4)->get()->toArray();
+            ->orderByRaw('ABS(DATEDIFF(flights_times.departe_day, ?))', [$departe_day]) //to get the closest flights from the depart day
+            ->take(4)->get()->toArray();
 
         //Return flights
         if(isset($return_day)&&$return_day!=null)
         {
         $returnFlights = Flights::select('flights.id as flight_id',  'flights_times.departe_day', 'flights.available_seats', 'flights.available_weight', 'country_from.name as from', 'country_to.name as to', 'flights_times.adults_price', 'flights_times.children_price','flights_times.From_hour', 'flights_times.To_hour','flights_times.duration'
-        ,'airlines.name as airline_name','airlines.path as airline_photo',
-        DB::raw("'return_flights' as direction"),
-        DB::raw('(flights_times.adults_price  + flights_times.children_price ) as total_price'))
-        ->join('flights_times', 'flights_times.flights_id', '=', 'flights.id')
-        ->join('countries as country_from','flights.from','=','country_from.id')
-        ->join('countries as country_to','flights.distination','=','country_to.id')
-        ->join('airlines','flights.airline_id','=','airlines.id')
-        ->where('country_from.name','LIKE', '%'.$distination.'%')
-        ->where('country_to.name','LIKE', '%'.$from.'%')
-        ->where('flights_times.departe_day', '>=',  Carbon::parse($return_day))
-        ->where(function ($query) use ($departe_day) {
+            ,'airlines.name as airline_name','airlines.path as airline_photo','adults_price','children_price',
+            DB::raw("'return_flights' as direction"))
+//        DB::raw('(flights_times.adults_price  + flights_times.children_price ) as total_price'))
+            ->join('flights_times', 'flights_times.flights_id', '=', 'flights.id')
+            ->join('countries as country_from','flights.from','=','country_from.id')
+            ->join('countries as country_to','flights.distination','=','country_to.id')
+            ->join('airlines','flights.airline_id','=','airlines.id')
+            ->where('country_from.name','LIKE', '%'.$distination.'%')
+            ->where('country_to.name','LIKE', '%'.$from.'%')
+            ->where('flights_times.departe_day', '>=',  Carbon::parse($return_day))
+            ->where(function ($query) use ($departe_day) {
             $query->where(function ($query) use ($departe_day) {
                 $query->whereDate('flights_times.departe_day', '>', Carbon::parse($departe_day))
                         ->orWhere(function ($query) use ($departe_day) {
@@ -96,9 +96,10 @@ class FlightsController extends UserController
                         });
             });
         })
-        ->where(function ($query) use ($adults, $children) {
+            ->where(function ($query) use ($adults, $children) {
             $query->where('flights.available_seats', '>=', $adults + $children);
-        })->take(4)->get()->toArray();
+        })
+            ->take(4)->get()->toArray();
 
 
         foreach ($outboundFlights as &$flight) {
@@ -134,7 +135,7 @@ class FlightsController extends UserController
 
         return response()->json([
         'message' => "done",
-        'final_flights' => $flights
+        'final_flights' => $flights,
         ]);
     }
 

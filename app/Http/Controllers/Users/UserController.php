@@ -276,7 +276,7 @@ class UserController extends Controller
                     });
             })
             ->with(['photo', 'city', 'city.country', 'type','facilities'])
-            ->take(6)->get();
+            ->paginate(6);
 
 
         $attractions = Attraction::where('name','like','%'.$word.'%')
@@ -287,7 +287,7 @@ class UserController extends Controller
                     });
             })
             ->with(['photo', 'city'])
-            ->take(6)->get();
+            ->paginate(6);
 
         foreach($attractions as $attraction){
             $date1 = $attraction['open_at'];
@@ -315,7 +315,7 @@ class UserController extends Controller
                 'destination.country'
             ])
             ->availableTrips()
-            ->take(6)->get();
+            ->paginate(6);
 
         return response()->json([
             'success'=>true,
