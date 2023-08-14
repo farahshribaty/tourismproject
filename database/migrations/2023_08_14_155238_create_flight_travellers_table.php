@@ -11,10 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('attraction_favourites', function (Blueprint $table) {
+        Schema::create('flight_travellers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreignId('attraction_id')->constrained('attractions')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('reservation_id')->constrained('flights_reservations')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->dateTime('birth');
+            $table->string('gender');
             $table->timestamps();
         });
     }
@@ -24,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('attraction_favourites');
+        Schema::dropIfExists('flight_travellers');
     }
 };

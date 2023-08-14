@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('child');
             $table->integer('adult');
             $table->integer('points_added');
-            $table->integer('money_spent');
+            $table->integer('payment');
             $table->boolean('active');
             $table->timestamps();
         });

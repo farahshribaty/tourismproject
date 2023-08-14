@@ -4,10 +4,13 @@ namespace Database\Seeders;
 
 use App\Models\Attraction;
 use App\Models\AttractionAdmin;
+use App\Models\AttractionFavourite;
 use App\Models\AttractionPhoto;
+use App\Models\AttractionReservation;
 use App\Models\AttractionReview;
 use App\Models\AttractionType;
 use App\Models\AttractionUpdating;
+use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -138,6 +141,28 @@ class AttractionSeeder extends Seeder
                     'stars'=> ($i==0 ? 5:1),
                 ]);
             }
+        }
+
+        // adding some reservations for mohamad user:
+        $user = User::where('first_name','=','mohamad')->first();
+        foreach($attrs as $attr){
+            AttractionReservation::create([
+                'user_id'=> $user['id'],
+                'attraction_id'=> $attr['id'],
+                'book_date'=> '2023-11-11',
+                'adults'=> 1,
+                'children'=> 1,
+                'payment'=> 230,
+                'points_added'=> 19,
+            ]);
+        }
+
+        // adding some favourites:
+        foreach($attrs as $attr){
+            AttractionFavourite::create([
+                'user_id'=> $user['id'],
+                'attraction_id'=> $attr['id'],
+            ]);
         }
     }
 }

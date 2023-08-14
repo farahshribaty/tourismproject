@@ -24,5 +24,16 @@ class UserSeeder extends Seeder
                 'points'=>20,
             ]);
         }
+
+        User::create([
+            'first_name'=> 'mohamad',
+            'last_name'=> 'qattan',
+            'email'=> 'mohamad@gmail.com',
+            'password'=> 'mohamadm',
+            'phone_number'=> '0999999999',
+            'wallet'=> 3000,
+            'points'=> 30,
+        ]);
+
     }
 }

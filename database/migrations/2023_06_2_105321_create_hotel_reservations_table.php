@@ -20,7 +20,7 @@ return new class extends Migration
             $table->date('check_out');
             $table->integer('num_of_adults');
             $table->integer('num_of_children');
-            $table->integer('price');
+            $table->integer('payment');
             $table->integer('points_added')->nullable();
             $table->timestamps();
         });

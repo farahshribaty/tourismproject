@@ -4,8 +4,12 @@ namespace Database\Seeders;
 
 use App\Models\Hotel;
 use App\Models\HotelAdmin;
+use App\Models\HotelFavourite;
 use App\Models\HotelPhoto;
+use App\Models\HotelReservation;
 use App\Models\HotelReview;
+use App\Models\Room;
+use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
 
@@ -27,7 +31,7 @@ class HotelSeeder extends Seeder
                 'phone_number'=>fake()->phoneNumber(),
             ]);
         }
-        
+
         $names = [
             'Hilton', 'Sheraton', 'Westin',' Four Seasons','Ritz-Carlton','Hyatt','Renaissance','Embassy Suites','blueTour',' InterContinental',
             'Hyatt Regency',' Shangri-La',' Grand Hyatt',' Wyndham',' JW Marriott',' Fairmont','Sofitel',
@@ -76,6 +80,18 @@ class HotelSeeder extends Seeder
             ]);
         }
 
+
+        // adding some reservations for mohamad user:
+        $user = User::where('first_name','=','mohamad')->first();
+
+
+        // adding some favourites for mohamad user:
+        foreach($hotels as $hotel){
+            HotelFavourite::create([
+                'user_id'=> $user['id'],
+                'hotel_id'=> $hotel['id'],
+            ]);
+        }
     }
 }
 

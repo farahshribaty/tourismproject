@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest\UserLoginRequest;
 use App\Http\Requests\UserRequest\UserRegistrationRequest;
 use App\Models\Attraction;
+use App\Models\Flights;
 use App\Models\FlightsReservation;
 use App\Models\Hotel;
+use App\Models\Room;
 use App\Models\Trip;
 use App\Models\User;
 use Carbon\Carbon;
@@ -274,7 +276,7 @@ class UserController extends Controller
                     });
             })
             ->with(['photo', 'city', 'city.country', 'type','facilities'])
-            ->take(6)->get();
+            ->paginate(6);
 
 
         $attractions = Attraction::where('name','like','%'.$word.'%')
@@ -285,7 +287,7 @@ class UserController extends Controller
                     });
             })
             ->with(['photo', 'city'])
-            ->take(6)->get();
+            ->paginate(6);
 
         foreach($attractions as $attraction){
             $date1 = $attraction['open_at'];
@@ -313,7 +315,7 @@ class UserController extends Controller
                 'destination.country'
             ])
             ->availableTrips()
-            ->take(6)->get();
+            ->paginate(6);
 
         return response()->json([
             'success'=>true,
@@ -339,8 +341,8 @@ class UserController extends Controller
             return response()->json(['error' => $validated_data->errors()->all()]);
         }
 
-        $sections = ['trip_favourites','attraction_favourites','hotels','flights'];     // Those are the names of 4 tables each one for its section favourites.
-        $ids = ['trip_id','attraction_id','hotel_id','flight_id'];     // Those are the names of section_id column in the last 4 tables.
+        $sections = ['trip_favourites','attraction_favourites','hotel_favourites','flight_favourites'];     // Those are the names of 4 tables each one for its section favourites.
+        $ids = ['trip_id','attraction_id','hotel_id','flight_id'];     // Those are the names of section_id column in the 4 previous tables.
 
         // check if they're already in favourites:
 
@@ -381,7 +383,7 @@ class UserController extends Controller
             return response()->json(['error' => $validated_data->errors()->all()]);
         }
 
-        $sections = ['trip_favourites','attraction_favourites','hotels','flights'];     // Those are the names of 4 tables each one for its section favourites.
+        $sections = ['trip_favourites','attraction_favourites','hotel_favourites','flight_favourites'];     // Those are the names of 4 tables each one for its section favourites.
         $ids = ['trip_id','attraction_id','hotel_id','flight_id'];     // Those are the names of section_id column in the last 4 tables.
 
         DB::table($sections[$request->section_type])->where('user_id',$request->user()->id)->where($ids[$request->section_type],$request->section_id)->delete();
@@ -413,13 +415,36 @@ class UserController extends Controller
                 }
             ])
             ->whereHas('followers',function($q)use($request){
-            $q->where('user_id',$request->user()->id);
-        })->take(4)->get();
+                $q->where('user_id',$request->user()->id);
+            })
+            ->take(4)
+            ->get();
+
+        $hotels = Hotel::with(['photo', 'city', 'city.country', 'type','facilities'])
+            ->whereHas('followers',function($q)use($request){
+                $q->where('user_id',$request->user()->id);
+            })
+            ->take(4)
+            ->get();
+
+        $flights = Flights::select('flights.id as flight_id',  'flights_times.departe_day', 'flights.available_seats', 'flights.available_weight', 'country_from.name as from', 'country_to.name as to','flights_times.From_hour', 'flights_times.To_hour','flights_times.duration'
+            ,'airlines.name as airline_name','airlines.path as airline_photo',)
+            ->whereHas('followers',function($q)use($request){
+                $q->where('user_id','=',$request->user()->id);
+            })
+            ->join('flights_times', 'flights_times.flights_id', '=', 'flights.id')
+            ->join('countries as country_from','flights.from','=','country_from.id')
+            ->join('countries as country_to','flights.distination','=','country_to.id')
+            ->join('airlines','flights.airline_id','=','airlines.id')
+            ->take(4)
+            ->get();
 
         return response()->json([
             'success'=>'true',
             'attractions'=> $attractions,
             'trips'=> $trips,
+            'hotels'=> $hotels,
+            'flights'=> $flights,
         ]);
     }
 
@@ -438,7 +463,7 @@ class UserController extends Controller
             ->take(4)
             ->get();
 
-        $trips = Trip::select(['trips.id','trips_reservations.id as reservation_id','destination','description','days_number','rate','num_of_ratings','max_persons','start_age','end_age','departure_date','money_spent'])
+        $trips = Trip::select(['trips.id','trips_reservations.id as reservation_id','destination','description','days_number','rate','num_of_ratings','max_persons','start_age','end_age','departure_date','payment'])
             ->with(['photo',
                 'destination'=>function($q){
                     $q->with(['country']);
@@ -450,11 +475,37 @@ class UserController extends Controller
             ->take(4)
             ->get();
 
+        $rooms = Room::select(['rooms.id','rooms.hotel_id','hotel_reservations.id as reservation_id','check_in','check_out','num_of_adults','num_of_children','payment'])
+            ->join('hotel_reservations','hotel_reservations.room_id','=','rooms.id')
+            ->where('hotel_reservations.user_id','=',$request->user()->id)
+            ->with(['photo', 'Hotel' => function ($query) {
+                $query->select('id','name', 'location','city_id')
+                    ->with(['City' => function ($q) {
+                        $q->select('id','name');
+                    }]);
+            }])
+            ->take(4)
+            ->get();
+
+        $flights = Flights::select('flights.id as flight_id',  'flights_times.departe_day', 'flights.available_seats', 'flights.available_weight', 'country_from.name as from', 'country_to.name as to','flights_times.From_hour', 'flights_times.To_hour','flights_times.duration'
+            ,'airlines.name as airline_name','airlines.path as airline_photo','flights_reservations.payment')
+            ->join('flights_times', 'flights_times.flights_id', '=', 'flights.id')
+            ->join('countries as country_from','flights.from','=','country_from.id')
+            ->join('countries as country_to','flights.distination','=','country_to.id')
+            ->join('airlines','flights.airline_id','=','airlines.id')
+            ->join('flights_reservations','flights_reservations.flights_times_id','=','flights_times.id')
+            ->where('flights_reservations.user_id','=',$request->user()->id)
+            ->take(4)
+            ->get();
+
+
 
         return response()->json([
             'success'=> true,
             'attractions'=> $attractions,
             'trips'=> $trips,
+            'rooms'=> $rooms,
+            'flights'=> $flights,
         ]);
     }
 

@@ -15,9 +15,9 @@ class FlightsReservation extends Model
         'user_id',
         'flights_times_id',
         'flight_class',
-        'num_of_adult',
-        'num_of_child',
-        'PayPal',
+        'num_of_adults',
+        'num_of_children',
+        'payment',
         'Points',
     ];
 

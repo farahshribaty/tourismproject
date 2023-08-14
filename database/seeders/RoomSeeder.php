@@ -7,6 +7,7 @@ use App\Models\Room;
 use App\Models\RoomFeatures;
 use App\Models\RoomPhotos;
 use App\Models\HotelResevation;
+use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -16,7 +17,7 @@ class RoomSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-    
+
     public function run(): void
     {
         $bedsPerType = [
@@ -33,7 +34,7 @@ class RoomSeeder extends Seeder
 
         $roomType = random_int(1, 9);
         $numBeds = $bedsPerType[$roomType];
-        
+
         for($i = 0 ; $i<100 ; $i++){
 
         Room::create([
@@ -76,7 +77,24 @@ class RoomSeeder extends Seeder
                 random_int(0, 59), random_int(0, 59)),
                 'num_of_adults'=>random_int(1,20),
                 'num_of_children'=>random_int(1,10),
-                'price'=>random_int(1,10)
+                'payment'=>random_int(1,10)
+            ]);
+        }
+
+        $rooms = Room::get();
+        // adding some reservations for mohamad user:
+        $user = User::where('first_name','=','mohamad')->first();
+        foreach($rooms as $room){
+            HotelReservation::create([
+                'user_id'=> $user['id'],
+                'hotel_id'=> $room['hotel_id'],
+                'room_id'=> $room['id'],
+                'check_in'=> '2023-11-11',
+                'check_out'=> '2023-11-12',
+                'num_of_adults'=> 2,
+                'num_of_children'=> 2,
+                'payment'=> 399,
+                'points_added'=> 20,
             ]);
         }
     }
