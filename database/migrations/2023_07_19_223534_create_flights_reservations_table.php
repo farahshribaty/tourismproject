@@ -15,8 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('flights_times_id')->constrained('flights_times');
-            $table->string('flight_class');
-            $table->integer('num_of_adults');
+            $table->integer('num_of_adults')->nullable();
             $table->integer('num_of_children');
             $table->integer('payment');
             $table->integer('Points')->nullable();

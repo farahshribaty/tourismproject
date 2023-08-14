@@ -8,6 +8,7 @@ use App\Models\Country;
 use App\Models\Flights;
 use App\Models\FlightsReservation;
 use App\Models\FlightsTime;
+use App\Models\FlightTravellers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -149,11 +150,21 @@ class FlightsController extends UserController
         $validated_data = Validator::make($request->all(), [
             'check_or_book' => 'required|in:check,book',
             'flights_times_id' => 'required',
-            'flight_class' => 'required',
+//            'flight_class' => 'required',
             'num_of_adults' => 'required',
             'num_of_children' => 'required',
             'with_discount'=> 'required_if:check_or_book,==,book|in:yes,no',
         ]);
+
+        for($i=1 ; $i<=($request['num_of_adults']+$request['num_of_children']) ; $i++){
+            $request->validate([
+                'first_name'.$i =>'required',
+                'last_name'.$i =>'required',
+                'birth'.$i =>'required',
+                'gender'.$i =>'in:male,female',
+            ]);
+        }
+
         if ($validated_data->fails()) {
             return response()->json(['error' => $validated_data->errors()->all()]);
         }
@@ -222,6 +233,17 @@ class FlightsController extends UserController
                     'wallet'=> $request->user()->wallet - $booking_info['payment'],
                     'points'=> $request->user()->points - ($discount/$one_point_equals) + $booking_info['Points'],
                 ]);
+
+            $flight_reservation = FlightsReservation::where('flights_times_id',$request['flights_times_id'])->where('user_id',$request->user()->id)->orderBy('id','desc')->first();
+            for($i=1 ; $i<=($request['num_of_children']+$request['num_of_adults']) ; $i++){
+                FlightTravellers::create([
+                    'reservation_id'=>$flight_reservation['id'],
+                    'first_name'=>$request->input('first_name'.$i),
+                    'last_name'=>$request->input('last_name'.$i),
+                    'birth'=>$request->input('birth'.$i),
+                    'gender'=>$request->input('gender'.$i),
+                ]);
+            }
 
             return $this->success($booking_info, 'Ticket reserved successfully with the following info:', 200);
         }
