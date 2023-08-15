@@ -7,6 +7,7 @@ use App\Models\Attraction;
 use App\Models\AttractionAdmin;
 use App\Models\AttractionPhoto;
 use App\Models\AttractionReservation;
+use App\Models\AttractionType;
 use App\Models\AttractionUpdating;
 use App\Models\UpdateAcceptance;
 use Illuminate\Http\JsonResponse;
@@ -204,6 +205,12 @@ class AttractionAdminController extends Controller
         return $this->success($updates,'Updates retrieved successfully');
     }
     // todo: get reservations using real time !!!!!
+
+    public function getAttractionTypes(Request $request): JsonResponse
+    {
+        $types = AttractionType::get();
+        return $this->success($types,'Types retrieved successfully.');
+    }
 
 
     // helpful functions

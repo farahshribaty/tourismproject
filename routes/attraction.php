@@ -42,6 +42,7 @@ Route::group( ['middleware' => ['auth:attraction_admin-api'] ],function(){
         Route::post('uploadOnePhoto',[AttractionAdminController::class,'uploadOnePhoto']);
         Route::post('deleteOnePhoto',[AttractionAdminController::class,'deleteOnePhoto']);
         Route::get('getLatestReservations',[AttractionAdminController::class,'getLatestReservations']);
+        Route::get('getAttractionTypes',[AttractionAdminController::class,'getAttractionTypes']);
     });
 });
 Route::post('adminRegister',[AttractionAdminController::class,'adminRegister']);  // not official
