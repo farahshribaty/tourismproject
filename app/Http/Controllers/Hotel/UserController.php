@@ -238,7 +238,7 @@ class UserController extends UsersUserController
         HotelReview::create([
             'rate'=>$rate,
             'comment'=>$comment,
-            'user_id'=>$request->user_id,
+            'user_id'=>$request->user()->id,
             'hotel_id'=>$request->hotel_id,
         ]);
 
