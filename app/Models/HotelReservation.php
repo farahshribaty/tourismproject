@@ -15,6 +15,8 @@ class HotelReservation extends Model
 
     protected $fillable =[
         'user_id',
+        'first_name',
+        'last_name',
         'hotel_id',
         'room_id',
         'check_in',

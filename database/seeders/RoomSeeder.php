@@ -69,6 +69,8 @@ class RoomSeeder extends Seeder
         for($i = 0 ; $i<40; $i++){
             HotelReservation::create([
                 'user_id'=>random_int(1,15),
+                'first_name'=>fake()->name(),
+                'last_name'=>fake()->name(),
                 'hotel_id'=>random_int(1,17),
                 'room_id'=>random_int(1,60),
                 'check_in'=>Carbon::now()->addDays(random_int(1, 14))->setTime(random_int(0, 23),
@@ -87,6 +89,8 @@ class RoomSeeder extends Seeder
         foreach($rooms as $room){
             HotelReservation::create([
                 'user_id'=> $user['id'],
+                'first_name'=> 'mohamad',
+                'last_name'=> 'qattan',
                 'hotel_id'=> $room['hotel_id'],
                 'room_id'=> $room['id'],
                 'check_in'=> '2023-11-11',

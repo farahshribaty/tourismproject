@@ -24,6 +24,8 @@ class AttractionReserveRequest extends FormRequest
         return [
             //'user_id'=>'required',
             'attraction_id'=>'required',
+            'first_name'=>'required',
+            'last_name'=>'required',
             'book_date'=>'required',
             'adults'=>'required',
             'children'=>'required',

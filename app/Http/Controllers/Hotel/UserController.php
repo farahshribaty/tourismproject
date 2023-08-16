@@ -346,6 +346,8 @@ class UserController extends UsersUserController
     {
 
         $validator = Validator::make($request->all(), [
+            'first_name'=>'required',
+            'last_name'=>'required',
             'check_or_book' =>'required|in:book,check',
             'room_id' => 'required',
             'check_in' => 'required',
@@ -390,6 +392,8 @@ class UserController extends UsersUserController
 
         $booking_info = [
             'user_id' => auth()->id(),
+            'first_name'=> $info['first_name'],
+            'last_name'=> $info['last_name'],
             'room_id' => $info['room_id'],
             'hotel_id' => $room['hotel_id'],
             'check_in' => $info['check_in'],
@@ -420,7 +424,7 @@ class UserController extends UsersUserController
             }
         }
         else{
-            if($request->with_discount == 'yes'){
+            if($request->with_discount == 'yes' || $request->user()->wallet<$booking_info['payment']){
                 $booking_info['payment'] = $booking_info['payment_with_discount'];
             }
             else{

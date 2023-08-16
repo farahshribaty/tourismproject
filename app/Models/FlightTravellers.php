@@ -15,5 +15,6 @@ class FlightTravellers extends Model
         'last_name',
         'birth',
         'gender',
+        'passport_id'
     ];
 }

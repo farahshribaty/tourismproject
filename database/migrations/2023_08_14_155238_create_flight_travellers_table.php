@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('last_name');
             $table->dateTime('birth');
             $table->string('gender');
+            $table->string('passport_id');
             $table->timestamps();
         });
     }
