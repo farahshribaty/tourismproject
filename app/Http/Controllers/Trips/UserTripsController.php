@@ -425,7 +425,7 @@ class UserTripsController extends UserController
 
         $reservation = TripsReservation::where('id',$request->reservation_id)->first();
 
-        // ### 1 ### if there is no reservation with the last id
+        // ### 1 ### if there is no reservation with the previous id
         if(!isset($reservation)){
             return $this->error('Reservation not found.');
         }
@@ -459,7 +459,7 @@ class UserTripsController extends UserController
         }
 
 
-        // Finally, reservation will be cancelled
+        // Finally, reservation will be cancelled.
 
 
         // update current_reserved_people
@@ -479,7 +479,7 @@ class UserTripsController extends UserController
 
         User::where('id','=',$user['id'])
             ->update([
-                'wallet'=>$user['wallet']+$reservation['money_spent'],
+                'wallet'=>$user['wallet']+$reservation['money_spent']*(9/10),
             ]);
 
         return $this->success('Reservation cancelled successfully!');
