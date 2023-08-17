@@ -472,6 +472,7 @@ class UserController extends Controller
             ->join('trip_dates','trip_dates.trip_id','=','trips.id')
             ->join('trips_reservations','trips_reservations.date_id','=','trip_dates.id')
             ->where('trips_reservations.user_id','=',$request->user()->id)
+            ->where('active','=',1)
             ->take(4)
             ->get();
 

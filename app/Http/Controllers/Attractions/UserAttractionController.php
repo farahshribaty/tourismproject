@@ -327,18 +327,18 @@ class UserAttractionController extends UserController
     {
         $date = $info['book_date'];
 
-        $new_date = Carbon::createFromFormat('Y-m-d h:i:s',$date);
+        $new_date = Carbon::createFromFormat('Y-m-d H:i:s',$date);
         $day = $new_date->format('l');
-        $hour = $new_date->format('h:i');
-        $hour_plus = Carbon::createFromFormat('Y-m-d h:i:s',$date)->addHour()->format('h:i');
+        $hour = $new_date->format('H:i');
+        $hour_plus = Carbon::createFromFormat('Y-m-d H:i:s',$date)->addHour()->format('h:i');
 
         $attraction = Attraction::where('id','=',$info['attraction_id'])->first();
 
         // check hour availability
-        $open = DateTime::createfromformat('Y-m-d h:i:s',$attraction['open_at']);
-        $close = DateTime::createfromformat('Y-m-d h:i:s',$attraction['close_at']);
-        $open = $open->format('h:i');
-        $close = $close->format('h:i');
+        $open = DateTime::createfromformat('Y-m-d H:i:s',$attraction['open_at']);
+        $close = DateTime::createfromformat('Y-m-d H:i:s',$attraction['close_at']);
+        $open = $open->format('H:i');
+        $close = $close->format('H:i');
         if($hour<$open || $hour_plus>$close) return false;
 
         // check day availability

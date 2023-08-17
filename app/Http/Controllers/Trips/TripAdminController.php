@@ -152,18 +152,16 @@ class TripAdminController extends Controller
     public function getLatestReservations(Request $request): JsonResponse
     {
         $validated_data = Validator::make($request->all(), [
-            'trip_id' => 'required',
         ]);
         if ($validated_data->fails()) {
             return response()->json(['error' => $validated_data->errors()->all()]);
         }
 
-        if (!$this->hasTrip($request->trip_id, $request->user()->id)) {
-            return $this->error('Unauthorized to reach this trip.', 403);
-        }
+//        if (!$this->hasTrip($request->trip_id, $request->user()->id)) {
+//            return $this->error('Unauthorized to reach this trip.', 403);
+//        }
 
-        return $this->latestReservations($request->trip_id);
-
+        return $this->latestReservations($request->user()->id);
     }
 
     /**
@@ -507,11 +505,13 @@ class TripAdminController extends Controller
         return $this->success($dates, 'Dates retrieved successfully');
     }
 
-    protected function latestReservations($id)
+    protected function latestReservations($admin_id)
     {
-        $reservations = TripsReservation::select(['date_id', 'user_id', 'child', 'adult', 'points_added', 'money_spent', 'active', 'departure_date'])
+        $reservations = TripsReservation::select(['date_id','trips.description', 'user_id', 'child', 'adult', 'points_added', 'payment', 'active', 'departure_date'])
             ->join('trip_dates', 'trips_reservations.date_id', '=', 'trip_dates.id')
-            ->where('trip_dates.trip_id', $id)
+            ->join('trips','trips.id','=','trip_dates.trip_id')
+            ->join('trip_companies','trip_companies.id','=','trips.trip_company_id')
+            ->where('trip_companies.trip_admin_id','=',$admin_id)
             ->orderBy('trips_reservations.id', 'desc')
             ->get();
 

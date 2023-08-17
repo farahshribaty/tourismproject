@@ -69,7 +69,7 @@ class FlightsController extends UserController
             ->where('country_to.name','LIKE', '%'.$distination.'%')
             ->where('flights_times.departe_day', '>=', Carbon::parse($departe_day))
             ->where(function ($query) use ($adults, $children) {
-        $query->where('flights.available_seats', '>=', $adults + $children);})
+                $query->where('flights.available_seats', '>=', $adults + $children);})
             ->orderByRaw('ABS(DATEDIFF(flights_times.departe_day, ?))', [$departe_day]) //to get the closest flights from the depart day
             ->take(4)->get()->toArray();
 
@@ -102,6 +102,10 @@ class FlightsController extends UserController
         })
             ->take(4)->get()->toArray();
 
+//        return response()->json([
+//            'outBound'=> $outboundFlights,
+//            'return'=> $returnFlights,
+//        ]);
 
         foreach ($outboundFlights as &$flight) {
             $flight = ['outbound_flights' => $flight];
@@ -124,13 +128,9 @@ class FlightsController extends UserController
         }
 
         foreach ($flights as &$pair) {
-            $outboundPriceForadults = $pair[0]['outbound_flights']['adults_price']*$adults;
-            $outboundPriceForchildren = $pair[0]['outbound_flights']['children_price']*$children;
-            $returnPriceForadults = isset($pair[1]['return_flights']) ? $pair[1]['return_flights']['adults_price']*$adults : 0;
-            $returnPriceForchildren = isset($pair[1]['return_flights']) ? $pair[1]['return_flights']['children_price']*$children : 0;
 
-            $totalPrice =$outboundPriceForadults+$outboundPriceForchildren+$returnPriceForadults+$returnPriceForchildren;
-            $pair['total_price'] = $totalPrice;
+            $pair['adults_price'] = $pair[0]['outbound_flights']['adults_price'] + $pair[1]['return_flights']['adults_price'];
+            $pair['children_price'] = $pair[0]['outbound_flights']['children_price'] + $pair[1]['return_flights']['children_price'];
         }
 
 
