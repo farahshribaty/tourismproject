@@ -22,6 +22,7 @@ return new class extends Migration
             $table->integer('children');
             $table->integer('payment');
             $table->integer('points_added');
+            $table->boolean('seen')->default(false);
             $table->timestamps();
         });
     }

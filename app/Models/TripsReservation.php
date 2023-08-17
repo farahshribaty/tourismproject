@@ -17,6 +17,7 @@ class TripsReservation extends Model
         'points_added',
         'payment',
         'active',
+        'seen',
     ];
 
     protected $hidden = [

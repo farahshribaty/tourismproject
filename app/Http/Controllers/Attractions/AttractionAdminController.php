@@ -184,6 +184,7 @@ class AttractionAdminController extends Controller
         $attraction = Attraction::where('attraction_admin_id', '=', $request->user()->id)->first();
 
         $reservations = AttractionReservation::where('attraction_id', '=', $attraction['id'])
+            ->where('seen',false)
             ->with([
                 'user' => function ($q) {
                     $q->select('id', 'first_name', 'last_name', 'email', 'phone_number');
@@ -191,7 +192,20 @@ class AttractionAdminController extends Controller
             ])
             ->orderBy('id', 'desc')
             ->paginate(10);
-        return $this->success($reservations, 'Reservations returned successfully');
+
+        $all_are_seen = 1;
+        foreach($reservations as $reservation){
+            AttractionReservation::where('id',$reservation['id'])->update([
+                'seen'=> true,
+            ]);
+            $all_are_seen=0;
+        }
+
+        return response()->json([
+            'success'=>true,
+            'all_are_seen'=> $all_are_seen,
+            'data'=> $reservations,
+        ]);
     }
 
     /**
@@ -229,6 +243,10 @@ class AttractionAdminController extends Controller
             ->first();
 
         $attraction['available_days'] = $this->convertBitmaskToWeekArray($attraction['available_days']);
+
+        $reservations = AttractionReservation::where('attraction_id',$id)->where('seen',false)->count();
+
+        $attraction['num_of_unseen_reservations'] = $reservations;
 
         return $this->success($attraction);
     }

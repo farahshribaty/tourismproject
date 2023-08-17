@@ -19,6 +19,7 @@ class AttractionReservation extends Model
         'children',
         'payment',
         'points_added',
+        'seen',
     ];
 
     public function user()
