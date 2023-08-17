@@ -51,7 +51,24 @@ class TripController extends TripAdminController
 
         return $this->success($attraction, 'Admin added successfully');
     }
+  /**
+     * Delete An Admin
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function deleteAdmin(Request $request): JsonResponse
+    {
+        $validated_data = Validator::make($request->all(), [
+            'id' => 'required|exists:trip_admins',
+        ]);
+        if($validated_data->fails()){
+            return response()->json(['error' => $validated_data->errors()->all()]);
+        }
 
+       TripAdmin::where('id','=',$request->id)->delete();
+
+        return $this->success(null,'Admin deleted successfully with his company');
+    }
     /**
      * Accepting An Update (Adding/Editing Trip)
      * @param Request $request

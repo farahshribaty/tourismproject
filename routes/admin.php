@@ -59,7 +59,7 @@ Route::get('deleteSomeTrip',[TripController::class,'deleteSomeTrip']);
 Route::get('deleteSomeOffer',[TripController::class,'deleteSomeOffer']);
 Route::get('deleteSomeDate',[TripController::class,'deleteSomeDate']);
 Route::get('deleteOneTripPhoto',[TripController::class,'deleteOnePhoto']);
-
+Route::get('deleteTripAdmin',[TripController::class,'deleteAdmin']);
 
 
 // Attraction Operations:
