@@ -84,8 +84,8 @@ Route::get('getLatestReservations',[AttractionController::class,'getLatestReserv
 
 
 // Hotel Operations:
-Route::post('makeNewAdmin',[HotelController::class,'makeNewAdmin']);
-Route::post('acceptUpdate',[HotelController::class,'acceptingHotel']);
+Route::post('makeNewAdminHotel',[HotelController::class,'makeNewAdmin']);
+Route::post('acceptUpdateHotel',[HotelController::class,'acceptingHotel']);
 Route::get('AllHotels',[HotelController::class, 'getAllHotelsWithMainInfo']);
 Route::post('OneHotelByAdmin',[HotelController::class, 'getHotelWithAllInfo2']);
 Route::get('getAllHotelAdmins',[HotelController::class,'getAllHotelAdmins']);

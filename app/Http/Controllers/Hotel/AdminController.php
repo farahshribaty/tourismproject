@@ -295,7 +295,7 @@ class AdminController extends Controller
                 'room_type' => $request->room_type,
                 'hotel_id' => $request->hotel_id,
                 'details' => $request->details,
-                'price_for_night' => $request->price_for_night,
+                'Price_for_night' => $request->price_for_night,
                 'rate' => 0,
                 'num_of_ratings' => 0,
                 'Sleeps' => $request->Sleeps,
