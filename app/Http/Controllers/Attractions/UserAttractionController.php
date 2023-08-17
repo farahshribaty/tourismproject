@@ -197,6 +197,8 @@ class UserAttractionController extends UserController
 
         $booking_info = [
             'user_id'=>$request->user()->id,
+            'first_name'=>$info['first_name'],
+            'last_name'=>$info['last_name'],
             'attraction_id'=>$info['attraction_id'],
             'book_date'=>$info['book_date'],
             'adults'=>$info['adults'],
@@ -223,7 +225,7 @@ class UserAttractionController extends UserController
             }
         }
         else{
-            if($request->with_discount == 'yes'){
+            if($request->with_discount == 'yes' || $request->user()->wallet<$booking_info['payment']){
                 $booking_info['payment'] = $booking_info['payment_with_discount'];
             }
             else{

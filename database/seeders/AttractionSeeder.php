@@ -148,6 +148,8 @@ class AttractionSeeder extends Seeder
         foreach($attrs as $attr){
             AttractionReservation::create([
                 'user_id'=> $user['id'],
+                'first_name'=> 'mohamad',
+                'last_name'=> 'qattan',
                 'attraction_id'=> $attr['id'],
                 'book_date'=> '2023-11-11',
                 'adults'=> 1,

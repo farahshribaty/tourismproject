@@ -520,6 +520,8 @@ class UserController extends Controller
             return false;
         }
         $wallet = $user['wallet'];
+        $one_point_equals = 10; // one point equals 10 dollars
+        $wallet += $user['points']*$one_point_equals;
         if($money_needed>$wallet){
             return false;
         }

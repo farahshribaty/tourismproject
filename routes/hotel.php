@@ -21,7 +21,7 @@ Route::post('hotel/SeeAllRooms',[AdminController::class, 'SeeAllRooms']);
 
 
 //Hotel user Routes:
-Route::post('user/addReview',[UserController::class, 'addReview']);
+
 Route::get('TopRatedAndTypes',[HotelController::class, 'TopRatedAndTypes']);
 Route::get('TopRated',[HotelController::class, 'TopRated']);
 Route::get('ShowHotelTypes',[HotelController::class, 'ShowHotelTypes']);
@@ -37,6 +37,7 @@ Route::group( ['middleware' => ['auth:user-api'] ],function()
 {
     Route::post('bookingRoom',[UserController::class, 'bookingRoom']);
     // ->middleware('auth:user-api');
+    Route::post('user/addReview',[UserController::class, 'addReview']);
 });
 
 Route::group( ['prefix' => 'hotel','middleware' => ['auth:hotel_admin-api'] ],function()

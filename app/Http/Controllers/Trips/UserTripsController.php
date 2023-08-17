@@ -366,7 +366,7 @@ class UserTripsController extends UserController
             }
         }
         else{
-            if($request->with_discount == 'yes'){
+            if($request->with_discount == 'yes' || $request->user()->wallet<$booking_info['payment']){
                 $booking_info['payment'] = $booking_info['payment_with_discount'];
             }
             else{

@@ -57,7 +57,7 @@ class FlightsController extends UserController
         $adults = $request->input('adults');
         $children = $request->input('children');
 
-        $outboundFlights = Flights::select('flights.id as flight_id',  'flights_times.departe_day', 'flights.available_seats', 'flights.available_weight', 'country_from.name as from', 'country_to.name as to', 'flights_times.adults_price', 'flights_times.children_price','flights_times.From_hour', 'flights_times.To_hour','flights_times.duration'
+        $outboundFlights = Flights::select('flights.id as flight_id','flights_times.id as flights_times_id',  'flights_times.departe_day', 'flights.available_seats', 'flights.available_weight', 'country_from.name as from', 'country_to.name as to', 'flights_times.adults_price', 'flights_times.children_price','flights_times.From_hour', 'flights_times.To_hour','flights_times.duration'
             ,'airlines.name as airline_name','airlines.path as airline_photo','adults_price','children_price',
             DB::raw("'outbound_flights' as direction"))
 //        DB::raw('(flights_times.adults_price  + flights_times.children_price ) as total_price'))
@@ -76,7 +76,7 @@ class FlightsController extends UserController
         //Return flights
         if(isset($return_day)&&$return_day!=null)
         {
-        $returnFlights = Flights::select('flights.id as flight_id',  'flights_times.departe_day', 'flights.available_seats', 'flights.available_weight', 'country_from.name as from', 'country_to.name as to', 'flights_times.adults_price', 'flights_times.children_price','flights_times.From_hour', 'flights_times.To_hour','flights_times.duration'
+        $returnFlights = Flights::select('flights.id as flight_id','flights_times.id as flights_times_id',  'flights_times.departe_day', 'flights.available_seats', 'flights.available_weight', 'country_from.name as from', 'country_to.name as to', 'flights_times.adults_price', 'flights_times.children_price','flights_times.From_hour', 'flights_times.To_hour','flights_times.duration'
             ,'airlines.name as airline_name','airlines.path as airline_photo','adults_price','children_price',
             DB::raw("'return_flights' as direction"))
 //        DB::raw('(flights_times.adults_price  + flights_times.children_price ) as total_price'))
@@ -142,6 +142,7 @@ class FlightsController extends UserController
 
     /**
      * Booking Flight Tickets
+     *
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
@@ -149,7 +150,8 @@ class FlightsController extends UserController
     {
         $validated_data = Validator::make($request->all(), [
             'check_or_book' => 'required|in:check,book',
-            'flights_times_id' => 'required',
+            'flights_times_id_departure' => 'required',
+            'flights_times_id_arrival' => 'required',
 //            'flight_class' => 'required',
             'num_of_adults' => 'required',
             'num_of_children' => 'required',
@@ -162,6 +164,7 @@ class FlightsController extends UserController
                 'last_name'.$i =>'required',
                 'birth'.$i =>'required',
                 'gender'.$i =>'in:male,female',
+                'passport_id'.$i =>'required',
             ]);
         }
 
@@ -169,21 +172,25 @@ class FlightsController extends UserController
             return response()->json(['error' => $validated_data->errors()->all()]);
         }
 
-        $flight_time = FlightsTime::where('id', $request->flights_times_id)->first();
+        $flight_time_departure = FlightsTime::where('id', $request->flights_times_id_departure)->first();
+        $flight_time_arrival = FlightsTime::where('id',$request->flights_times_id_arrival)->first();
+
+
 
         // ### 1 ### check if the ID is valid:
-        if (!isset($flight_time)) {
+        if (!isset($flight_time_departure) || !isset($flight_time_arrival)) {
             return $this->error('Flight time not found.', 404);
         }
-        $flight = Flights::where('id', $flight_time['flights_id'])->first();
+        $flight_departure = Flights::where('id', $flight_time_departure['flights_id'])->first();
+        $flight_arrival = Flights::where('id',$flight_time_arrival['flights_id'])->first();
 
         // ### 2 ### check if there are tickets remains:
-        if (!$this->checkTicketAvailability($request, $flight_time, $flight)) {
+        if (!$this->checkTicketAvailability($request, $flight_time_departure, $flight_departure) || !$this->checkTicketAvailability($request,$flight_time_arrival,$flight_arrival)) {
             return $this->error('We have run out of tickets for this date.');
         }
 
         // ### 3 ### check money
-        $money_needed = $this->checkMoneyAvailability($flight_time, $request);
+        $money_needed = $this->checkMoneyAvailability($flight_time_departure,$flight_time_arrival,$request);
         if ($money_needed == -1) {
             return $this->error('You do not have enough money.');
         }
@@ -193,8 +200,9 @@ class FlightsController extends UserController
 
         $booking_info = [
             'user_id' => $request->user()->id,
-            'flights_times_id' => $request->flights_times_id,
-            'flight_class' => $request->flight_class,
+            'flights_times_id_departure' => $request->flights_times_id_departure,
+            'flights_times_id_arrival' => $request->flights_times_id_arrival,
+//            'flight_class' => $request->flight_class,
             'num_of_adults' => $request->num_of_adults,
             'num_of_children' => $request->num_of_children,
             'payment' => $money_needed,
@@ -218,7 +226,7 @@ class FlightsController extends UserController
                 ]);
             }
         } else {
-            if($request->with_discount == 'yes'){
+            if($request->with_discount == 'yes' || $request->user()->wallet<$booking_info['payment']){
                 $booking_info['payment'] = $booking_info['payment_with_discount'];
             }
             else{
@@ -226,6 +234,11 @@ class FlightsController extends UserController
             }
 
             unset($booking_info['payment_with_discount']);
+
+            // book for the two flights:
+            $booking_info['flights_times_id'] = $booking_info['flights_times_id_departure'];
+            FlightsReservation::create($booking_info);
+            $booking_info['flights_times_id'] = $booking_info['flights_times_id_arrival'];
             FlightsReservation::create($booking_info);
 
             User::where('id',$request->user()->id)
@@ -234,14 +247,25 @@ class FlightsController extends UserController
                     'points'=> $request->user()->points - ($discount/$one_point_equals) + $booking_info['Points'],
                 ]);
 
-            $flight_reservation = FlightsReservation::where('flights_times_id',$request['flights_times_id'])->where('user_id',$request->user()->id)->orderBy('id','desc')->first();
+            $flight_reservation_departure = FlightsReservation::where('flights_times_id',$request['flights_times_id_departure'])->where('user_id',$request->user()->id)->orderBy('id','desc')->first();
+            $flight_reservation_arrival = FlightsReservation::where('flights_times_id',$request['flights_times_id_arrival'])->where('user_id',$request->user()->id)->orderBy('id','desc')->first();
+
             for($i=1 ; $i<=($request['num_of_children']+$request['num_of_adults']) ; $i++){
                 FlightTravellers::create([
-                    'reservation_id'=>$flight_reservation['id'],
+                    'reservation_id'=>$flight_reservation_arrival['id'],
                     'first_name'=>$request->input('first_name'.$i),
                     'last_name'=>$request->input('last_name'.$i),
                     'birth'=>$request->input('birth'.$i),
                     'gender'=>$request->input('gender'.$i),
+                    'passport_id'=>$request->input('passport_id'.$i),
+                ]);
+                FlightTravellers::create([
+                    'reservation_id'=>$flight_reservation_departure['id'],
+                    'first_name'=>$request->input('first_name'.$i),
+                    'last_name'=>$request->input('last_name'.$i),
+                    'birth'=>$request->input('birth'.$i),
+                    'gender'=>$request->input('gender'.$i),
+                    'passport_id'=>$request->input('passport_id'.$i),
                 ]);
             }
 
@@ -265,9 +289,9 @@ class FlightsController extends UserController
         if($all > $flight['available_seats']) return false;
         return true;
     }
-    protected function checkMoneyAvailability($flight_time,$request): int
+    protected function checkMoneyAvailability($flight_time_departure,$flight_time_arrival,$request): int
     {
-        $moneyNeeded = $flight_time['adults_price']*$request->num_of_adults + $flight_time['children_price']*$request->num_of_children;
+        $moneyNeeded = ($flight_time_departure['adults_price']+$flight_time_arrival['adults_price'])*$request->num_of_adults + ($flight_time_departure['children_price']+$flight_time_arrival['children_price'])*$request->num_of_children;
 
         if($this->checkWallet($moneyNeeded,$request->user()->id)){
             return $moneyNeeded;
