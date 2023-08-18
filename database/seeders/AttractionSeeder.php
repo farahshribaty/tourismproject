@@ -136,12 +136,12 @@ class AttractionSeeder extends Seeder
             for($i=0 ; $i<5 ; $i++){
                 AttractionPhoto::create([
                     'attraction_id'=> $attr['id'],
-                    'path'=> 'http://127.0.0.1:8000/images/attraction/'.$photos[random_int(0,22)],
+                    'path'=> 'http://127.0.0.1:8000/images/attraction/'.$photos[random_int(0,22)].'.jpg',
                 ]);
             }
             AttractionPhoto::create([
                 'attraction_id'=> $attr['id'],
-                'path'=> 'http://127.0.0.1:8000/images/attraction/'.$photos[$i],
+                'path'=> 'http://127.0.0.1:8000/images/attraction/'.$photos[$i].'.jpg',
             ]);
         }
 
