@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('points_added');
             $table->integer('payment');
             $table->boolean('active');
+            $table->boolean('seen')->default(false);
             $table->timestamps();
         });
     }

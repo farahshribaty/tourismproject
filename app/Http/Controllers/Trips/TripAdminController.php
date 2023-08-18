@@ -157,9 +157,6 @@ class TripAdminController extends Controller
             return response()->json(['error' => $validated_data->errors()->all()]);
         }
 
-//        if (!$this->hasTrip($request->trip_id, $request->user()->id)) {
-//            return $this->error('Unauthorized to reach this trip.', 403);
-//        }
 
         return $this->latestReservations($request->user()->id);
     }
@@ -470,6 +467,15 @@ class TripAdminController extends Controller
             return $this->error('Company not found');
         }
 
+        $reservations = TripsReservation::select(['*'])
+            ->join('trip_dates','trip_dates.id','=','trips_reservations.date_id')
+            ->join('trips','trips.id','=','trip_dates.trip_id')
+            ->where('trips.trip_company_id',$id)
+            ->where('seen',false)
+            ->count();
+
+        $company['num_of_unseen_reservations'] = $reservations;
+
         return $this->success($company, 'Company retrieved successfully');
     }
 
@@ -507,15 +513,28 @@ class TripAdminController extends Controller
 
     protected function latestReservations($admin_id)
     {
-        $reservations = TripsReservation::select(['date_id','trips.description', 'user_id', 'child', 'adult', 'points_added', 'payment', 'active', 'departure_date'])
+        $reservations = TripsReservation::select(['trips_reservations.id','date_id','trips.description', 'user_id', 'child', 'adult', 'points_added', 'payment', 'active', 'departure_date', 'seen'])
             ->join('trip_dates', 'trips_reservations.date_id', '=', 'trip_dates.id')
             ->join('trips','trips.id','=','trip_dates.trip_id')
             ->join('trip_companies','trip_companies.id','=','trips.trip_company_id')
             ->where('trip_companies.trip_admin_id','=',$admin_id)
+            ->where('seen',false)
             ->orderBy('trips_reservations.id', 'desc')
             ->get();
 
-        return $this->success($reservations, 'Reservations retrieved successfully');
+        $all_are_seen = 1;
+        foreach($reservations as $reservation){
+            TripsReservation::where('id',$reservation['id'])->update([
+                'seen'=>true,
+            ]);
+            $all_are_seen = 0;
+        }
+
+        return response()->json([
+            'success'=> true,
+            'all_are_seen'=> $all_are_seen,
+            'data'=> $reservations,
+        ]);
     }
 
     protected function editCompany($request, $id)

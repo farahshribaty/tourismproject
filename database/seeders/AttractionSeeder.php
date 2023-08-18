@@ -57,7 +57,7 @@ class AttractionSeeder extends Seeder
 
         // adding admins
 
-        for($i=0 ; $i<30 ; $i++){
+        for($i=0 ; $i<23 ; $i++){
             AttractionAdmin::create([
                 'user_name'=> 'attractionAdmin'.($i+1).'@gmail.com',
                 'password'=> 'admin',
@@ -70,14 +70,16 @@ class AttractionSeeder extends Seeder
         // adding attractions
 
         $names = [
-            'Uskudar', 'Restaurant', 'UmayyadMosque','UpTown','Bloudan','KhalifaTower','Bukain','BlueBeach','blueTour','HelloWorld',
-            'DubaiMetro','PhobiaDubai','SwissotelSpa','NaturLifeSpa','DubaiMall','TimeLessSpa','GelloDubai',
+            'Atlantis Base','Attractions_seine_river','Chatelet','Eiffel','Luxembourg Gardens','Notre Dame','Opera House','Orsay Museum',
+            'Pantheon','Place De La Concorde','Place Des Vosges','Place Vendome','Sacre Coeur','Sainte Chapelle','Arc De Triomphe',
+            'La Conciergerie','Palais Royal','Musee Du Louvre','Island Berlin','DubaiAquarium Base','Burj Al Arab','Parc de la villette',
+            'Jumeirah mosque'
         ];
         $locations = [
             'main Street', 'behind tour','city center'
         ];
-        for($i = 0 ; $i<30 ; $i++){
 
+        for($i = 0 ; $i<23 ; $i++){
             Attraction::create([
                 'city_id'=>random_int(1,3),
                 'attraction_type_id'=>random_int(1,7),
@@ -120,25 +122,37 @@ class AttractionSeeder extends Seeder
         //adding photo for each attraction
 
         $attrs = Attraction::get();
-        $photos = ['1685138340.jpg','posx.jpg','1690407857.wallpaper.jpg','1690408944.jpg','1690409198.jpg'];
+        $photos = [
+            'Atlantis_base','france-paris-attractions-seine-river-cruise-at-sunset','france-paris-chatelet','france-paris-eiffel-tower',
+            'france-paris-luxembourg-gardens','france-paris-notre-dame','france-paris-opera-house','france-paris-orsay-museum',
+            'france-paris-pantheon','france-paris-place-de-la-concorde-١','france-paris-place-des-vosges','france-paris-place-vendome',
+            'france-paris-sacre-coeur','france-paris-sainte-chapelle-2','france-paris-top-attractions-arc-de-triomphe',
+            'france-paris-top-attractions-la-conciergerie','france-paris-top-attractions-palais-royal',
+            'france-paris-top-tourist-attractions-musee-du-louvre','germany-museum-island-berlin','Hg6ORRXH-dubaiaquarium_base_1',
+            'l2ZacHAf-Burj-Al-Arab-Jumeirah-Aerial-at-Sunset-400x300','parc_de_la_villette','vXztb4PG-2015_1_jumeirahmosque_base_1'
+        ];
 
         foreach($attrs as $attr){
             for($i=0 ; $i<5 ; $i++){
                 AttractionPhoto::create([
                     'attraction_id'=> $attr['id'],
-                    'path'=> 'http://127.0.0.1:8000/images/attraction/'.$photos[$i],
+                    'path'=> 'http://127.0.0.1:8000/images/attraction/'.$photos[random_int(0,22)],
                 ]);
             }
+            AttractionPhoto::create([
+                'attraction_id'=> $attr['id'],
+                'path'=> 'http://127.0.0.1:8000/images/attraction/'.$photos[$i],
+            ]);
         }
 
         // adding some reviews
         foreach($attrs as $attr){
-            for($i=0;$i<3;$i++){
+            for($i=0;$i<10;$i++){
                 AttractionReview::create([
-                    'user_id'=> ($i+1),
+                    'user_id'=> random_int(1,10),
                     'attraction_id'=> $attr['id'],
-                    'comment'=> ($i==0 ? 'Very good trip! I loved the most the fountains in the city.':'what a fucking trip!'),
-                    'stars'=> ($i==0 ? 5:1),
+                    'comment'=> ($i%2==0 ? 'Very good trip! I loved the most the fountains in the city.':'It was a bad trip!'),
+                    'stars'=> ($i%2==0 ? 5:1),
                 ]);
             }
         }
@@ -159,12 +173,41 @@ class AttractionSeeder extends Seeder
             ]);
         }
 
-        // adding some favourites:
+
+        // adding some reservations:
+        foreach($attrs as $attr){
+            for($i=0 ; $i<=10 ; $i++){
+                AttractionReservation::create([
+                    'user_id'=> $i+1,
+                    'first_name'=> 'mohamad',
+                    'last_name'=> 'qattan',
+                    'attraction_id'=> $attr['id'],
+                    'book_date'=> now()->adddays(random_int(1,10)),
+                    'adults'=> 1,
+                    'children'=> 1,
+                    'payment'=> random_int(100,1000),
+                    'points_added'=> random_int(10,20),
+                ]);
+            }
+        }
+
+        // adding some favourites for mohamad user:
         foreach($attrs as $attr){
             AttractionFavourite::create([
                 'user_id'=> $user['id'],
                 'attraction_id'=> $attr['id'],
             ]);
         }
+
+        // adding some favourites:
+        foreach($attrs as $attr){
+            for($i=0 ; $i<10 ; $i++){
+                AttractionFavourite::create([
+                    'user_id'=> $i+1,
+                    'attraction_id'=> $attr['id'],
+                ]);
+            }
+        }
+
     }
 }

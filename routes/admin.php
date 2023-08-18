@@ -20,6 +20,7 @@ Route::get('showcity',[AdminController::class, 'ShowCities']);
 
 // Admin Operations:
 Route::post('login',[AdminController::class,'login']);
+Route::post('getStatistics',[AdminController::class,'getStatistics']);
 Route::get('getUpdatesList',[AdminController::class,'getUpdatingList']);
 Route::group( ['prefix' => 'admin','middleware' => ['auth:admin-api'] ],function(){
 
