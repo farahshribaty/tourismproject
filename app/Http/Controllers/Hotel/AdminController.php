@@ -210,6 +210,7 @@ class AdminController extends Controller
 
         return $this->success(null, 'Facility deleted successfully.');
     }
+    
     /***
      * Creating rooms from the same type
      */

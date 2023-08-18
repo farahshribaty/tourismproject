@@ -21,8 +21,8 @@ return new class extends Migration
             $table->integer('rate')->nullable();
             $table->integer('num_of_ratings')->nullable();
             $table->string('path');
-            $table->foreignId('country_id')->constrained('countries');
-            $table->foreignId('admin_id')->constrained('airline_admins');
+            $table->foreignId('country_id')->constrained('countries')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('admin_id')->constrained('airline_admins')->cascadeOnUpdate()->cascadeOnDelete();
             $table->timestamps();
         });
     }

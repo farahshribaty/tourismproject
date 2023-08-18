@@ -4,6 +4,7 @@
 use App\Http\Controllers\Admin\AdminController;
 //use App\Http\Controllers\Hotel\AdminController;
 use App\Http\Controllers\Admin\AttractionController;
+use App\Http\Controllers\Admin\FlightController;
 use App\Http\Controllers\Admin\HotelController;
 use App\Http\Controllers\Admin\TripController;
 use App\Http\Controllers\Admin\UserController;
@@ -95,7 +96,10 @@ Route::post('addFacilities',[HotelController::class,'addFacilitiesForHotel']);
 Route::get('getAllFacilities',[HotelController::class,'getAllFacilitiesForHotel']);
 Route::post('deleteAdmin',[HotelController::class,'deleteAdmin']);
 Route::post('deleteHotel',[HotelController::class,'deleteHotel']);
-
+Route::post('AddFeature',[HotelController::class,'AddFeature']);
+Route::get('getAllFeatures',[HotelController::class,'getAllFeatures']);
+Route::post('DeleteFacility',[HotelController::class,'DeleteFacility']);
+Route::post('DeleteFeature',[HotelController::class,'DeleteFeature']);
 
 
 
@@ -105,4 +109,9 @@ Route::post('deleteHotel',[HotelController::class,'deleteHotel']);
 
 
 // Flights Operations:
+Route::get('getAllAdmins',[FlightController::class,'getAllAdmins']);
+Route::post('deleteAdmin',[FlightController::class,'deleteAdmin']);
+Route::get('AllAirlines',[FlightController::class, 'getAllAirlinesWithMainInfo']);
+Route::post('OneAirline',[FlightController::class, 'getAirlineWithAllInfo']);
+
 

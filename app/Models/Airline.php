@@ -26,7 +26,7 @@ class Airline extends Authenticatable
 
     public function flights()
     {
-        return $this->hasMany(Flights::class,'flights_id');
+        return $this->hasMany(Flights::class, 'airline_id');
     }
     public function country()
     {
@@ -34,6 +34,6 @@ class Airline extends Authenticatable
     }
     public function Admin()
     {
-       return $this->hasOne(AirlineAdmin::class,'airline_admins_id');
+       return $this->belongsTo(AirlineAdmin::class,'admin_id');
     }
 }

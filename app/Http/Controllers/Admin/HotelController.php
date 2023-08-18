@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Hotel\AdminController;
 use App\Models\Facilities;
+use App\Models\Features;
 use App\Models\Hotel;
 use App\Models\HotelAdmin;
 use App\Models\HotelUpdating;
@@ -51,7 +52,6 @@ class HotelController extends AdminController
         $hotel = Hotel::with('admin')->paginate(10);
         return $this->success($hotel, 'Retrieved successfully');
     }
-
     public function getHotelWithAllInfo2(Request $request)
     {
         $hotel = $this->getHotelWithAllInfo($request);
@@ -187,7 +187,7 @@ class HotelController extends AdminController
 
         return $this->success($update, 'Update retrieved successfully');
     }
-    public function addFacilitiesForHotel(Request $request)
+    public function addFacilitiesForHotel(Request $request) //add new facility
     {
         $request->validate([
             'name'=>'required'
@@ -198,14 +198,41 @@ class HotelController extends AdminController
 
         return $this->success($facility, 'Facility Added successfully');
     }
-    public function getAllFacilitiesForHotel()
+    public function getAllFacilitiesForHotel() //see all facilities
     {
         $facilities=Facilities::get();
-        return $this->success($facilities, 'Facility Added successfully');
+        return $this->success($facilities, 'Facility retrived successfully');
 
     }
-    
+    public function AddFeature(Request $request) //add new feature
+    {
+        $request->validate([
+            'name'=>'required'
+        ]);
+        $features = new Features();
+        $features->name = $request->name;
+        $features->save();
 
+        return $this->success($features, 'Feature Added successfully');
+    }
+    public function getAllFeatures() //see all features
+    {
+        $features=Features::get();
+        return $this->success($features, 'Feature retrived successfully');
+
+    }
+    public function DeleteFacility(Request $request)
+    {
+        Facilities::where('id','=',$request->id)->delete();
+
+        return $this->success(null,'Facility deleted successfully');
+    }
+    public function DeleteFeature(Request $request)
+    {
+        Features::where('id','=',$request->id)->delete();
+
+        return $this->success(null,'Feature deleted successfully');
+    }
 
 
 }
