@@ -89,9 +89,13 @@ Route::post('acceptUpdate',[HotelController::class,'acceptingHotel']);
 Route::get('AllHotels',[HotelController::class, 'getAllHotelsWithMainInfo']);
 Route::post('OneHotelByAdmin',[HotelController::class, 'getHotelWithAllInfo2']);
 Route::get('getAllHotelAdmins',[HotelController::class,'getAllHotelAdmins']);
-Route::get('getHotelUpdatingDetails',[HotelController::class,'getUpdatingDetails']);
+Route::post('getHotelUpdatingDetails',[HotelController::class,'getUpdatingDetails']);
 Route::post('addFacilities',[HotelController::class,'addFacilitiesForHotel']);
 Route::get('getAllFacilities',[HotelController::class,'getAllFacilitiesForHotel']);
+Route::post('deleteAdmin',[HotelController::class,'deleteAdmin']);
+Route::post('deleteHotel',[HotelController::class,'deleteHotel']);
+
+
 
 
 

@@ -34,5 +34,7 @@ class HotelReservation extends Model
     public function room(){
         return $this->hasMany(Room::class,'room_id');
     }
-
+    public function hotel(){
+        return $this->belongsTo(hotel::class,'hotel_id');
+    }
 }

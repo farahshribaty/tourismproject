@@ -127,6 +127,47 @@ class HotelController extends AdminController
         ])->paginate(10);
         return $this->success($admins,'Admins retrieved successfully');
     }
+    public function deleteAdmin(Request $request)
+    {
+        $validated_data = Validator::make($request->all(), [
+            'id' => 'required|exists:hotel_admins',
+        ]);
+        if($validated_data->fails()){
+            return response()->json(['error' => $validated_data->errors()->all()]);
+        }
+
+        HotelAdmin::where('id','=',$request->id)->delete();
+
+        return $this->success(null,'Admin deleted successfully with his company');
+    }
+    public function deleteHotel(Request $request)
+    {
+        $validated_data = Validator::make($request->all(), [
+            'id' => 'required|exists:hotels',
+        ]);
+        if($validated_data->fails()){
+            return response()->json(['error' => $validated_data->errors()->all()]);
+        }
+        
+        Hotel::where('id','=',$request->id)->delete();
+
+        return $this->success(null,'Hotel deleted successfully');
+    }
+    public function editHotelDetails(Request $request)
+    {
+        $validated_data = Validator::make($request->all(), [
+            'id' => 'required|exists:hotels',
+        ]);
+        if($validated_data->fails()){
+            return response()->json(['error' => $validated_data->errors()->all()]);
+        }
+
+        $hotel = Hotel::findOrFail($request->id);
+        $hotel->fill($request->all());
+        $hotel->save();
+
+        return $this->success(null, 'Company edited successfully');
+    }
     public function getUpdatingDetails(Request $request)
     {
         $validated_data = Validator::make($request->all(), [
@@ -163,6 +204,7 @@ class HotelController extends AdminController
         return $this->success($facilities, 'Facility Added successfully');
 
     }
+    
 
 
 

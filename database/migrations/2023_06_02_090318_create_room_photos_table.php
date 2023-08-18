@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('room_photos', function (Blueprint $table) {
             $table->id();
             $table->string('path');
-            $table->foreignId('room_id')->constrained('rooms');
+            $table->foreignId('room_id')->constrained('rooms')->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -96,7 +96,6 @@ class AdminController extends Controller
         HotelUpdating::create($data->all());
         return $this->success(null,'Form sent successfully, pending approval.');
     }
-   
     public function getHotelWithAllInfoByToken(Request $request)
     {
       $hotel = Hotel::where('admin_id',$request->user()->id)->first();
@@ -410,7 +409,28 @@ class AdminController extends Controller
         RoomPhotos::where('id','=',$request->id)->delete();
         return $this->success(null,'Photo deleted successfully');
     }
-    
+    public function getAllFeatures()
+    {
+      $features=Features::all();
+      return $this->success($features, 'All Features');
+    }
+    public function addingFeatureForRoom(Request $request)
+    {
+        $room = Room::find($request->roomId);
+
+        if (!$room) {
+            return response()->json([
+                'error' => 'Room not found.'
+            ], 404);
+        }
+        RoomFeatures::create([
+        'room_id'=>$request->roomId,
+        'features_id'=>$request->featureId
+        ]);
+
+        return $this->success(null, 'Feature Added successfully.');
+
+    }
     public function deleteFeatureFromRoom(Request $request)
     {
         $room = Room::find($request->roomId);
@@ -423,9 +443,8 @@ class AdminController extends Controller
 
         $room->features()->detach($request->featureId);
 
-        return $this->success(null, 'Facility deleted successfully.');
+        return $this->success(null, 'Feature deleted successfully.');
     }
-
     public function SeeAllReservations(Request $request)
     {
         $validated_data = Validator::make($request->all(), [
@@ -445,8 +464,24 @@ class AdminController extends Controller
             ->paginate(10);
         return $this->success($reservations,'Reservations returned successfully');
     }
+    public function editHotelDetails(Request $request)
+    {
+        $hotel = Hotel::where('admin_id', '=', $request->user()->id)->first();
 
+        $data = $request;
+        $data['admin_id'] = $request->user()->id;
+        $data['hotel_admins_id'] = $request->user()->id;
+        $data['hotel_id'] = $hotel['id'];
+        $data['add_or_update'] = 1;
+        $data['accepted'] = 0;
+        $data['rejected'] = 0;
+        $data['seen'] = 0;
 
+        HotelUpdating::create($data->all());
+
+        return $this->success(null, 'Updates sent successfully, pending approval.');
+    }
+    
     //unused functions:
     public function getHotelType(Request $request)
     {

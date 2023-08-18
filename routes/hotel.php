@@ -11,7 +11,9 @@ use App\Http\Controllers\Hotel\HotelController;
 //Hotel Admin Routes:
 Route::post('hotel/adminlogin',[AdminController::class, 'AdminLogin']);
 Route::post('admin/addMultiRooms',[AdminController::class, 'addMultiRoomsByType']);
-Route::post('admin/addingFeatures',[AdminController::class, 'addingFeatures']);
+Route::get('admin/getAllFeatures',[AdminController::class, 'getAllFeatures']);
+Route::post('admin/addingFeatures',[AdminController::class, 'addingFeatureForRoom']);
+Route::post('admin/deleteFeatures',[AdminController::class, 'deleteFeatureFromRoom']);
 Route::post('admin/addPhoto',[AdminController::class, 'addPhotos']);
 Route::post('admin/addRoomPhoto',[AdminController::class, 'addRoomPhotos']);
 Route::post('admin/SeeAllRooms',[AdminController::class, 'SeeAllRooms']);
@@ -54,6 +56,7 @@ Route::group( ['middleware' => ['auth:hotel_admin-api'] ],function()
     Route::post('admin/DeleteHotelPhoto',[AdminController::class, 'DeleteHotelPhoto']);
     Route::post('admin/DeleteRoomPhoto',[AdminController::class, 'DeleteRoomPhoto']);
     Route::post('admin/SeeAllReservations',[AdminController::class, 'SeeAllReservations']);
+    Route::post('admin/editHotelDetails',[AdminController::class, 'editHotelDetails']);
 
 });
 
