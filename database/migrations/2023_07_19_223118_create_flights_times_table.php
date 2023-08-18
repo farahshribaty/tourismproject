@@ -17,7 +17,7 @@ return new class extends Migration
             $table->time('From_hour');
             $table->time('To_hour');
             $table->time('duration');
-            $table->foreignId('flights_id')->constrained('flights');
+            $table->foreignId('flights_id')->constrained('flights')->cascadeOnUpdate()->cascadeOnDelete();
             $table->integer('adults_price');
             $table->integer('children_price');
             $table->timestamps();

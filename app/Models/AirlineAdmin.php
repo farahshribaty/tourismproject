@@ -31,6 +31,6 @@ class AirlineAdmin extends Authenticatable
 
     public function Airline()
     {
-        return $this->belongsTo(Airline::class,'airline_id');
+        return $this->hasOne(Airline::class,'airline_admin_id');
     }
 }

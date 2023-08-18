@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('flight_name');
             $table->string('flight_number');
-            $table->foreignId('airline_id')->constrained('airlines');
-            $table->foreignId('from')->constrained('countries');
-            $table->foreignId('distination')->constrained('countries');
+            $table->foreignId('airline_id')->constrained('airlines')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('from')->constrained('countries')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('distination')->constrained('countries')->cascadeOnUpdate()->cascadeOnDelete();
             $table->integer('available_weight');
             $table->integer('available_seats');
             $table->timestamps();
