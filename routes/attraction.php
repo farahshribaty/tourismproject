@@ -40,7 +40,7 @@ Route::middleware(['localization'])->group(function(){
         Route::post('sendReview',[UserAttractionController::class,'addReview']);
         Route::post('bookingTicket',[UserAttractionController::class,'bookingTicket']);
     });
-
+});
 // Attraction Admin Operation
 
 Route::group( ['middleware' => ['auth:attraction_admin-api'] ],function(){
