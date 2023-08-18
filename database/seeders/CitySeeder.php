@@ -17,17 +17,29 @@ class CitySeeder extends Seeder
         // adding cities
 
         $cities = [
-            'damascus', 'cairo', 'istanbul','Dubai','Jordan','Eraq','Moscuo','China','Saudi Arabia'
+            'Damascus','Aleppo','Latakia', 'Cairo','Alexandria','Ismailia', 'Istanbul','Ankara','Izmir','Dubai','Abu Dhabi','Fujairah',
+            'Amman','Irbid','Jerash','Moscow','Saint Petersburg','Sochi','Shanghai','Beijing','Hong Kong','Riyadh','Jeddah','Medina',
+            'Paris','Marseille','Nice'
         ];
-        $Countries = Country::get();
+        $countries = [
+            'Syria','Egypt','Turkey','Emirates','Jordan','Russia','China','Saudi Arabia','France'
+        ];
+//        $Countries = Country::get();
+//
+//        $idx=0;
+//        foreach($Countries as $country){
+//            City::create([
+//                'name'=>$cities[$idx],
+//                'country_id'=>$country['id'],
+//            ]);
+//            $idx++;
+//        }
 
-        $idx=0;
-        foreach($Countries as $country){
+        for($i=0 ; $i<27 ; $i++){
             City::create([
-                'name'=>$cities[$idx],
-                'country_id'=>$country['id'],
+                'name'=> $cities[$i],
+                'country_id'=> (int)($i/3)+1,
             ]);
-            $idx++;
         }
     }
 }
