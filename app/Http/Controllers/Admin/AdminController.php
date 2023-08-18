@@ -188,12 +188,19 @@ class AdminController extends Controller
     public function ShowCities(Request $request)
     {
         // Find a country by its ID
-        $country = Country::find($request->country_id);
+        $country = Country::where("id",$request->country_id);
 
         if (!$country) {
             // Handle the case where the country ID does not exist
             return response()->json(['error' => 'Country not found'], 404);
         }
+        $city = City::where('country_id',$request->country_id)->select('id','name')
+        ->get();
+
+        return response()->json([
+            'message' => "done",
+            'city' =>  $city,
+        ]);
     }
 
     public function ShowCitie(Request $request)// mo zapeeeeet

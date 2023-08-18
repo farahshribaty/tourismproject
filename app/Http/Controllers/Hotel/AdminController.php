@@ -230,7 +230,7 @@ class AdminController extends Controller
                 'room_type' => $request->room_type,
                 'hotel_id' => $request->hotel_id,
                 'details' => $request->details,
-                'price_for_night' => $request->price_for_night,
+                'Price_for_night' => $request->price_for_night,
                 'rate' => 0,
                 'num_of_ratings' => 0,
                 'Sleeps' => $request->Sleeps,
@@ -353,6 +353,7 @@ class AdminController extends Controller
             return response()->json([
                 'error' => 'Room not found.'
             ], 404);
+
         }
 
         $room->Reservations()->delete();
@@ -401,10 +402,10 @@ class AdminController extends Controller
 
         $photo = RoomPhotos::where('id', '=', $request->id)->first();
 
-        // checking if this photo belongs to the desired room
-        if ($room['id'] != $photo['room_id']) {
-            return $this->error('Unauthorized to delete this photo');
-        }
+        // // checking if this photo belongs to the desired room
+        // if ($room['id'] != $photo['room_id']) {
+        //     return $this->error('Unauthorized to delete this photo');
+        // }
 
         RoomPhotos::where('id','=',$request->id)->delete();
         return $this->success(null,'Photo deleted successfully');
@@ -445,6 +446,19 @@ class AdminController extends Controller
 
         return $this->success(null, 'Feature deleted successfully.');
     }
+
+    public function SeeAllReservationsByToken(Request $request)
+    {
+      $hotel = Hotel::where('admin_id',$request->user()->id)->first();
+      if (!isset($hotel)) {
+        return response()->json([
+            'data'=>null,
+            'message'=>"hotel not found",
+        ],200);
+     }
+     $request["id"]=$hotel->id;
+     return $this->SeeAllReservations($request);
+    }
     public function SeeAllReservations(Request $request)
     {
         $validated_data = Validator::make($request->all(), [
@@ -481,7 +495,7 @@ class AdminController extends Controller
 
         return $this->success(null, 'Updates sent successfully, pending approval.');
     }
-    
+
     //unused functions:
     public function getHotelType(Request $request)
     {
