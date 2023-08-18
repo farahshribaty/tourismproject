@@ -96,7 +96,7 @@ class AdminController extends Controller
         HotelUpdating::create($data->all());
         return $this->success(null,'Form sent successfully, pending approval.');
     }
-   
+
     public function getHotelWithAllInfoByToken(Request $request)
     {
       $hotel = Hotel::where('admin_id',$request->user()->id)->first();
@@ -403,15 +403,15 @@ class AdminController extends Controller
 
         $photo = RoomPhotos::where('id', '=', $request->id)->first();
 
-        // checking if this photo belongs to the desired room
-        if ($room['id'] != $photo['room_id']) {
-            return $this->error('Unauthorized to delete this photo');
-        }
+        // // checking if this photo belongs to the desired room
+        // if ($room['id'] != $photo['room_id']) {
+        //     return $this->error('Unauthorized to delete this photo');
+        // }
 
         RoomPhotos::where('id','=',$request->id)->delete();
         return $this->success(null,'Photo deleted successfully');
     }
-    
+
     public function deleteFeatureFromRoom(Request $request)
     {
         $room = Room::find($request->roomId);
@@ -427,6 +427,18 @@ class AdminController extends Controller
         return $this->success(null, 'Facility deleted successfully.');
     }
 
+    public function SeeAllReservationsByToken(Request $request)
+    {
+      $hotel = Hotel::where('admin_id',$request->user()->id)->first();
+      if (!isset($hotel)) {
+        return response()->json([
+            'data'=>null,
+            'message'=>"hotel not found",
+        ],200);
+     }
+     $request["id"]=$hotel->id;
+     return $this->SeeAllReservations($request);
+    }
     public function SeeAllReservations(Request $request)
     {
         $validated_data = Validator::make($request->all(), [
