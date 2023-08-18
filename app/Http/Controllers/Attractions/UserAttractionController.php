@@ -214,13 +214,13 @@ class UserAttractionController extends UserController
         if($request->check_or_book == 'check'){
             if($request->user()->points == 0){
                 unset($booking_info['payment_with_discount']);
-                return $this->success($booking_info,'When you press on book button, a ticket will be reserved with the following Info:');
+                return $this->success($booking_info,trans('msg.When you press on book button, a ticket will be reserved with the following Info:'));
             }
             else{
                 return response()->json([
-                    'message'=> 'When you press on book button, a ticket will be reserved with the following Info:',
+                    'message'=> trans('msg.When you press on book button, a ticket will be reserved with the following Info:'),
                     'data'=> $booking_info,
-                    'message1'=> 'Would you like to get benefit of your points?',
+                    'message1'=> trans('msg.Would you like to get benefit of your points?'),
                 ]);
             }
         }

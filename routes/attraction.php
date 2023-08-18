@@ -16,19 +16,30 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// User Operations
+//Route::post('adminRegister',[AttractionAdminController::class,'adminRegister']);  // not official
 
-Route::group( [],function(){
-    Route::get('index',[UserAttractionController::class,'index']);
-    Route::post('search',[UserAttractionController::class,'searchForAttractions']);
-    Route::post('viewAttractionDetails',[UserAttractionController::class,'viewAttractionDetails']);
-});
 
-Route::group( ['middleware' => ['auth:user-api'] ],function(){
-    Route::post('rateAttraction',[UserAttractionController::class,'addReview']);
-    Route::post('sendReview',[UserAttractionController::class,'addReview']);
-    Route::post('bookingTicket',[UserAttractionController::class,'bookingTicket']);
-});
+//Route::group( ['prefix' => 'attraction','middleware' => ['auth:attraction-api'] ],function(){
+//    Route::post('dashboard',[AttractionAdminController::class, 'dashboard'])->name('attraction.dashboard');
+//});
+//
+//Route::post('addingAttraction',[\App\Http\Controllers\Attractions\AdminAttractionController::class,'addAttraction']);
+
+
+Route::middleware(['localization'])->group(function(){
+    // User Operations
+
+    Route::group( [],function(){
+        Route::get('index',[UserAttractionController::class,'index']);
+        Route::post('search',[UserAttractionController::class,'searchForAttractions']);
+        Route::post('viewAttractionDetails',[UserAttractionController::class,'viewAttractionDetails']);
+    });
+
+    Route::group( ['middleware' => ['auth:user-api'] ],function(){
+        Route::post('rateAttraction',[UserAttractionController::class,'addReview']);
+        Route::post('sendReview',[UserAttractionController::class,'addReview']);
+        Route::post('bookingTicket',[UserAttractionController::class,'bookingTicket']);
+    });
 
 // Attraction Admin Operation
 
@@ -45,12 +56,5 @@ Route::group( ['middleware' => ['auth:attraction_admin-api'] ],function(){
         Route::get('getLatestReservations',[AttractionAdminController::class,'getLatestReservations']);
 
     });
+
 });
-Route::post('adminRegister',[AttractionAdminController::class,'adminRegister']);  // not official
-
-
-Route::group( ['prefix' => 'attraction','middleware' => ['auth:attraction-api'] ],function(){
-    Route::post('dashboard',[AttractionAdminController::class, 'dashboard'])->name('attraction.dashboard');
-});
-
-Route::post('addingAttraction',[\App\Http\Controllers\Attractions\AdminAttractionController::class,'addAttraction']);

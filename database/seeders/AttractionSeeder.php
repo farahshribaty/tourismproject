@@ -125,7 +125,7 @@ class AttractionSeeder extends Seeder
         $photos = [
             'Atlantis_base','france-paris-attractions-seine-river-cruise-at-sunset','france-paris-chatelet','france-paris-eiffel-tower',
             'france-paris-luxembourg-gardens','france-paris-notre-dame','france-paris-opera-house','france-paris-orsay-museum',
-            'france-paris-pantheon','france-paris-place-de-la-concorde-١','france-paris-place-des-vosges','france-paris-place-vendome',
+            'france-paris-pantheon','france-paris-place-de-la-concorde-1','france-paris-place-des-vosges','france-paris-place-vendome',
             'france-paris-sacre-coeur','france-paris-sainte-chapelle-2','france-paris-top-attractions-arc-de-triomphe',
             'france-paris-top-attractions-la-conciergerie','france-paris-top-attractions-palais-royal',
             'france-paris-top-tourist-attractions-musee-du-louvre','germany-museum-island-berlin','Hg6ORRXH-dubaiaquarium_base_1',
