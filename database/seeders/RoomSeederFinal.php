@@ -67,11 +67,11 @@ class RoomSeederFinal extends Seeder
         // adding photos for each room:
 
         $photos = ['pexels-burst-545034','pexels-curtis-adams-3935331','pexels-curtis-adams-4119831','pexels-curtis-adams-6035359',
-            'pexels-dmitry-zvolskiy-2062431','pexels-dmitry-zvolskiy-2062431-١','pexels-files-1648776','pexels-jean-van-der-meulen-1454806',
-            'pexels-jean-van-der-meulen-1454806-١','pexels-jean-van-der-meulen-1543439','pexels-lisa-fotios-1444424',
+            'pexels-dmitry-zvolskiy-2062431','pexels-dmitry-zvolskiy-2062431-1','pexels-files-1648776','pexels-jean-van-der-meulen-1454806',
+            'pexels-jean-van-der-meulen-1454806-1','pexels-jean-van-der-meulen-1543439','pexels-lisa-fotios-1444424',
             'pexels-max-rahubovskiy-8082562','pexels-max-rahubovskiy-8135105','pexels-pixabay-164595','pexels-pixabay-261102',
             'pexels-pixabay-261169','pexels-pixabay-271618','pexels-pixabay-271619','pexels-pixabay-271624','pexels-pixabay-271639',
-            'pexels-pixabay-271815','pexels-pixabay-276688','pexels-pixabay-276688-١','pexels-pixabay-279746','pexels-rajesh-kumar-verma-8236023',
+            'pexels-pixabay-271815','pexels-pixabay-276688','pexels-pixabay-276688-1','pexels-pixabay-279746','pexels-rajesh-kumar-verma-8236023',
             'pexels-suhel-vba-3659683','pexels-thorsten-technoman-338504','pexels-vecislavas-popa-1643383','pexels-vecislavas-popa-1743229',];
 
 
