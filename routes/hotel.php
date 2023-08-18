@@ -10,17 +10,15 @@ use App\Http\Controllers\Hotel\HotelController;
 
 //Hotel Admin Routes:
 Route::post('hotel/adminlogin',[AdminController::class, 'AdminLogin']);
-Route::post('admin/addMultiRooms',[AdminController::class, 'addMultiRoomsByType']);
-Route::get('admin/getAllFeatures',[AdminController::class, 'getAllFeatures']);
-Route::post('admin/addingFeatures',[AdminController::class, 'addingFeatureForRoom']);
-Route::post('admin/deleteFeatures',[AdminController::class, 'deleteFeatureFromRoom']);
-Route::post('admin/addPhoto',[AdminController::class, 'addPhotos']);
-Route::post('admin/addRoomPhoto',[AdminController::class, 'addRoomPhotos']);
-Route::post('admin/SeeAllRooms',[AdminController::class, 'SeeAllRooms']);
-Route::post('admin/SeeOneRoom',[AdminController::class, 'SeeOneRoom']);
-Route::get('admin/getHotelType',[AdminController::class, 'getHotelType']);
-Route::get('admin/getRoomType',[AdminController::class, 'getRoomType']);
-Route::get('admin/getRoomFeatures',[AdminController::class, 'getRoomFeatures']);
+Route::post('hotel/addMultiRooms',[AdminController::class, 'addMultiRoomsByType']);
+Route::post('hotel/addingFeatures',[AdminController::class, 'addingFeatures']);
+Route::post('hotel/addPhoto',[AdminController::class, 'addPhotos']);
+Route::post('hotel/addRoomPhoto',[AdminController::class, 'addRoomPhotos']);
+Route::post('hotel/SeeAllRooms',[AdminController::class, 'SeeAllRooms']);
+ Route::get('hotel/getHotelType',[AdminController::class, 'getHotelType']);
+ Route::post('hotel/SeeOneRoom',[AdminController::class, 'SeeOneRoom']);
+ Route::get('hotel/getRoomType',[AdminController::class, 'getRoomType']);
+ Route::get('hotel/getRoomFeatures',[AdminController::class, 'getRoomFeatures']);
 
 
 //Hotel user Routes:
@@ -43,20 +41,20 @@ Route::group( ['middleware' => ['auth:user-api'] ],function()
     Route::post('user/addReview',[UserController::class, 'addReview']);
 });
 
-Route::group( ['middleware' => ['auth:hotel_admin-api'] ],function()
+Route::group( ['prefix' => 'hotel','middleware' => ['auth:hotel_admin-api'] ],function()
 {
-    Route::post('admin/createhotel',[AdminController::class, 'CreateHotel']);
-    Route::post('admin/OneHotel',[AdminController::class, 'getHotelWithAllInfoByToken']);
-    Route::post('admin/addFacilitis',[AdminController::class, 'addFacilitisForHotel']);
-    Route::get('admin/getAllFacilities',[AdminController::class, 'getAllFacilitiesForThisHotel']);
-    Route::post('admin/addOneFacility',[AdminController::class, 'addOneFacility']);
-    Route::post('admin/deleteFacility',[AdminController::class, 'deleteFacility']);
-    Route::post('admin/deleteFeature',[AdminController::class, 'deleteFeatureFromRoom']);
-    Route::post('admin/deleteRoom',[AdminController::class, 'DeleteRoom']);
-    Route::post('admin/DeleteHotelPhoto',[AdminController::class, 'DeleteHotelPhoto']);
-    Route::post('admin/DeleteRoomPhoto',[AdminController::class, 'DeleteRoomPhoto']);
-    Route::post('admin/SeeAllReservations',[AdminController::class, 'SeeAllReservations']);
-    Route::post('admin/editHotelDetails',[AdminController::class, 'editHotelDetails']);
+    Route::post('createhotel',[AdminController::class, 'CreateHotel']);
+    Route::post('OneHotel',[AdminController::class, 'getHotelWithAllInfoByToken']);
+    Route::post('addFacilitis',[AdminController::class, 'addFacilitisForHotel']);
+    Route::get('getAllFacilities',[AdminController::class, 'getAllFacilitiesForThisHotel']);
+    Route::post('addOneFacility',[AdminController::class, 'addOneFacility']);
+    Route::post('deleteFacility',[AdminController::class, 'deleteFacility']);
+    Route::post('deleteFeature',[AdminController::class, 'deleteFeatureFromRoom']);
+    Route::post('deleteRoom',[AdminController::class, 'DeleteRoom']);
+    Route::post('DeleteHotelPhoto',[AdminController::class, 'DeleteHotelPhoto']);
+    Route::post('DeleteRoomPhoto',[AdminController::class, 'DeleteRoomPhoto']);
+    Route::post('SeeAllReservations',[AdminController::class, 'SeeAllReservationsByToken']);
+    Route::post('editHotelDetails',[AdminController::class, 'editHotelDetails']);
 
 });
 

@@ -518,7 +518,7 @@ class TripAdminController extends Controller
             ->join('trips','trips.id','=','trip_dates.trip_id')
             ->join('trip_companies','trip_companies.id','=','trips.trip_company_id')
             ->where('trip_companies.trip_admin_id','=',$admin_id)
-            ->where('seen',false)
+            // ->where('seen',false)
             ->orderBy('trips_reservations.id', 'desc')
             ->get();
 

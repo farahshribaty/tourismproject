@@ -21,6 +21,7 @@ Route::get('showcity',[AdminController::class, 'ShowCities']);
 
 // Admin Operations:
 Route::post('login',[AdminController::class,'login']);
+Route::post('getStatistics',[AdminController::class,'getStatistics']);
 Route::get('getUpdatesList',[AdminController::class,'getUpdatingList']);
 Route::group( ['prefix' => 'admin','middleware' => ['auth:admin-api'] ],function(){
 
@@ -60,7 +61,7 @@ Route::get('deleteSomeTrip',[TripController::class,'deleteSomeTrip']);
 Route::get('deleteSomeOffer',[TripController::class,'deleteSomeOffer']);
 Route::get('deleteSomeDate',[TripController::class,'deleteSomeDate']);
 Route::get('deleteOneTripPhoto',[TripController::class,'deleteOnePhoto']);
-
+Route::get('deleteTripAdmin',[TripController::class,'deleteAdmin']);
 
 
 // Attraction Operations:
@@ -85,8 +86,8 @@ Route::get('getLatestReservations',[AttractionController::class,'getLatestReserv
 
 
 // Hotel Operations:
-Route::post('makeNewAdmin',[HotelController::class,'makeNewAdmin']);
-Route::post('acceptUpdate',[HotelController::class,'acceptingHotel']);
+Route::post('makeNewAdminHotel',[HotelController::class,'makeNewAdmin']);
+Route::post('acceptUpdateHotel',[HotelController::class,'acceptingHotel']);
 Route::get('AllHotels',[HotelController::class, 'getAllHotelsWithMainInfo']);
 Route::post('OneHotelByAdmin',[HotelController::class, 'getHotelWithAllInfo2']);
 Route::get('getAllHotelAdmins',[HotelController::class,'getAllHotelAdmins']);
