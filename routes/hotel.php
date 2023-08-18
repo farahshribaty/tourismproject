@@ -16,6 +16,7 @@ Route::post('hotel/addPhoto',[AdminController::class, 'addPhotos']);
 Route::post('hotel/addRoomPhoto',[AdminController::class, 'addRoomPhotos']);
 Route::post('hotel/SeeAllRooms',[AdminController::class, 'SeeAllRooms']);
  Route::get('hotel/getHotelType',[AdminController::class, 'getHotelType']);
+ Route::post('hotel/SeeOneRoom',[AdminController::class, 'SeeOneRoom']);
  Route::get('hotel/getRoomType',[AdminController::class, 'getRoomType']);
  Route::get('hotel/getRoomFeatures',[AdminController::class, 'getRoomFeatures']);
 
@@ -50,6 +51,9 @@ Route::group( ['prefix' => 'hotel','middleware' => ['auth:hotel_admin-api'] ],fu
     Route::post('deleteFacility',[AdminController::class, 'deleteFacility']);
     Route::post('deleteFeature',[AdminController::class, 'deleteFeatureFromRoom']);
     Route::post('deleteRoom',[AdminController::class, 'DeleteRoom']);
+    Route::post('admin/DeleteHotelPhoto',[AdminController::class, 'DeleteHotelPhoto']);
+    Route::post('admin/DeleteRoomPhoto',[AdminController::class, 'DeleteRoomPhoto']);
+    Route::post('admin/SeeAllReservations',[AdminController::class, 'SeeAllReservations']);
 
 });
 

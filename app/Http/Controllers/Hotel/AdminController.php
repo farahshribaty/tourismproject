@@ -10,6 +10,7 @@ use App\Models\Features;
 use App\Models\RoomType;
 use App\Models\HotelAdmin;
 use App\Models\HotelPhoto;
+use App\Models\HotelReservation;
 use App\Models\RoomPhotos;
 use Illuminate\Http\Request;
 use App\Models\RoomFeatures;
@@ -95,72 +96,7 @@ class AdminController extends Controller
         HotelUpdating::create($data->all());
         return $this->success(null,'Form sent successfully, pending approval.');
     }
-    // public function CreateHotel(Request $request)
-    // {
-    //     $add_request = HotelUpdating::where('hotel_admins_id', $request->user()->id)
-    //         ->where('rejected', 0)->first();
-
-    //     if ($add_request) {
-    //         return $this->error('You no longer have the ability to add your company');
-    //     }
-
-    //     $selectedFacilities = $request->selectedFacilities;
-
-    //     if (!is_array($selectedFacilities)) {
-    //         return response()->json([
-    //             'error' => 'Selected features must be provided as an array.'
-    //         ], 400);
-    //     }
-
-    //     $validated_data = Validator::make($request->all(), [
-    //         'name' => 'required',
-    //         'email' => 'required|email',
-    //         'location' => 'required',
-    //         'phone_number' => 'required',
-    //         'details' => 'required',
-    //         'stars' => 'required|integer',
-    //         'price_start_from' => 'required|numeric',
-    //         'website_url' => 'required|url',
-    //         'city_id' => 'required|integer',
-    //         'type_id' => 'required|integer',
-    //     ]);
-
-    //     if ($validated_data->fails()) {
-    //         return response()->json(['error' => $validated_data->errors()->all()]);
-    //     }
-
-    //     $data = $validated_data->validated();
-    //     $data['hotel_admins_id'] = $request->user()->id;
-    //     $data['admin_id'] = $request->user()->id;
-    //     $data['add_or_update'] = 0;
-    //     $data['accepted'] = 0;
-    //     $data['rejected'] = 0;
-    //     $data['seen'] = 0;
-    //     $data['num_of_rooms'] = 0;
-    //     $data['num_of_ratings'] = 0;
-    //     $data['rate'] = 0;
-
-    //     $newHotel = HotelUpdating::create($data);
-
-    //     $facilityRecords = [];
-    //     $now = Carbon::now();
-
-    //     foreach ($selectedFacilities as $facilityId) {
-    //         $facilityRecords[] = [
-    //             'hotel_id' => $newHotel->id,
-    //             'facilities_id' => $facilityId,
-    //             'created_at' => $now,
-    //             'updated_at' => $now
-    //         ];
-    //     }
-
-    //     HotelsFacilities::insert($facilityRecords);
-
-    //     return $this->success(null, 'Form sent successfully, pending approval.');
-    // }
-    /**
-     * Getting one hotel with all info
-     */
+   
     public function getHotelWithAllInfoByToken(Request $request)
     {
       $hotel = Hotel::where('admin_id',$request->user()->id)->first();
@@ -394,6 +330,21 @@ class AdminController extends Controller
         'Room'=>$rooms
         ]);
     }
+    public function SeeOneRoom(Request $request)
+    {
+        $room =Room::select('rooms.*')
+        ->where('hotel_id', $request->hotel_id)
+        ->where('id', $request->room_id)
+        ->with(['features','photo','Type','Hotel' => function($qu) {
+        $qu->select('id','name','email','location');
+        }])
+        ->get();
+
+
+        return response([
+            'Room_info'=>$room,
+        ]);
+    }
     public function DeleteRoom(Request $request)
     {
         $room_id = $request->room_id;
@@ -417,6 +368,50 @@ class AdminController extends Controller
 
         return $this->success(null, 'Room deleted successfully.');
     }
+    public function DeleteHotelPhoto(Request $request)
+    {
+        $hotel = Hotel::where('admin_id', '=', $request->user()->id)->first();
+
+        $validated_data = Validator::make($request->all(), [
+            'id' => 'required|exists:hotel_photos',
+        ]);
+        if ($validated_data->fails()) {
+            return response()->json(['error' => $validated_data->errors()->all()]);
+        }
+
+        $photo = HotelPhoto::where('id', '=', $request->id)->first();
+
+        // checking if this photo belongs to the desired hotel
+        if ($hotel['id'] != $photo['hotel_id']) {
+            return $this->error('Unauthorized to delete this photo');
+        }
+
+        HotelPhoto::where('id','=',$request->id)->delete();
+        return $this->success(null,'Photo deleted successfully');
+    }
+    public function DeleteRoomPhoto(Request $request)
+    {
+        $room = Room::join('hotels', 'rooms.hotel_id', '=', 'hotels.id')
+        ->where('hotels.admin_id', '=', $request->user()->id)->first();
+
+        $validated_data = Validator::make($request->all(), [
+            'id' => 'required|exists:room_photos',
+        ]);
+        if ($validated_data->fails()) {
+            return response()->json(['error' => $validated_data->errors()->all()]);
+        }
+
+        $photo = RoomPhotos::where('id', '=', $request->id)->first();
+
+        // checking if this photo belongs to the desired room
+        if ($room['id'] != $photo['room_id']) {
+            return $this->error('Unauthorized to delete this photo');
+        }
+
+        RoomPhotos::where('id','=',$request->id)->delete();
+        return $this->success(null,'Photo deleted successfully');
+    }
+    
     public function deleteFeatureFromRoom(Request $request)
     {
         $room = Room::find($request->roomId);
@@ -430,6 +425,26 @@ class AdminController extends Controller
         $room->features()->detach($request->featureId);
 
         return $this->success(null, 'Facility deleted successfully.');
+    }
+
+    public function SeeAllReservations(Request $request)
+    {
+        $validated_data = Validator::make($request->all(), [
+            'id' => 'required|exists:hotels',
+        ]);
+        if($validated_data->fails()){
+            return response()->json(['error' => $validated_data->errors()->all()]);
+        }
+
+        $reservations = HotelReservation::where('hotel_id','=',$request->id)
+            ->with([
+                'user'=>function($q){
+                    $q->select('id','first_name','last_name','email','phone_number');
+                }
+            ])
+            ->orderBy('id','desc')
+            ->paginate(10);
+        return $this->success($reservations,'Reservations returned successfully');
     }
 
 

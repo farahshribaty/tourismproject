@@ -13,11 +13,6 @@ return new class extends Migration
     {
         Schema::create('features', function (Blueprint $table) {
             $table->id();
-//            $table->boolean('Housekeeping');
-//            $table->boolean('Telephone');
-//            $table->boolean('Wake-up service');
-//            $table->boolean('Private bathrooms');
-//            $table->boolean('Hair dryer');
             $table->string('name');
             $table->timestamps();
         });
