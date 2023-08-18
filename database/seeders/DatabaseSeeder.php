@@ -36,7 +36,7 @@ class DatabaseSeeder extends Seeder
         $this->call(HotelSeederFinal::class);
         $this->call(HotelFacilitiesSeeder::class);
         $this->call(RoomsTypeSeeder::class);
-        $this->call(RoomSeeder::class);
+        $this->call(RoomSeederFinal::class);
 
         // attractions
         $this->call(AttractionSeeder::class);
@@ -49,7 +49,7 @@ class DatabaseSeeder extends Seeder
         $this->call(AirLineSeeder::class);
 
         //flights
-        $this->call(FlightsSeeder::class);
+        $this->call(FlightsSeederFinal::class);
 
 
     }
