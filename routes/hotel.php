@@ -54,6 +54,7 @@ Route::group( ['prefix' => 'hotel','middleware' => ['auth:hotel_admin-api'] ],fu
     Route::post('DeleteHotelPhoto',[AdminController::class, 'DeleteHotelPhoto']);
     Route::post('DeleteRoomPhoto',[AdminController::class, 'DeleteRoomPhoto']);
     Route::post('SeeAllReservations',[AdminController::class, 'SeeAllReservationsByToken']);
+    Route::post('editHotelDetails',[AdminController::class, 'editHotelDetails']);
 
 });
 

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('hotel_reviews', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->foreignId('hotel_id')->constrained('hotels');
+            $table->foreignId('hotel_id')->constrained('hotels')->cascadeOnUpdate()->cascadeOnDelete();
             $table->integer('rate')->nullable();
             $table->text('comment')->nullable();
             $table->timestamps();

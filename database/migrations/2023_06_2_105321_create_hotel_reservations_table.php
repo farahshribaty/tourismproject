@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('first_name');
             $table->string('last_name');
-            $table->foreignId('hotel_id')->constrained('hotels');
-            $table->foreignId('room_id')->constrained('rooms');
+            $table->foreignId('hotel_id')->constrained('hotels')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('room_id')->constrained('rooms')->cascadeOnUpdate()->cascadeOnDelete();
             $table->date('check_in');
             $table->date('check_out');
             $table->integer('num_of_adults');
