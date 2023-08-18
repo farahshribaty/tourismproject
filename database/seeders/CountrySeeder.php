@@ -32,7 +32,7 @@ class CountrySeeder extends Seeder
         for($i=0 ; $i<9 ; $i++){
             Country::create([
                 'name'=> $countries[$i],
-                'path'=> $photos[$i],
+                'path'=> 'http://127.0.0.1:8000/images/countries/'.$photos[$i].'.jpg',
             ]);
         }
 

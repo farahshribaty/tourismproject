@@ -132,16 +132,17 @@ class AttractionSeeder extends Seeder
             'l2ZacHAf-Burj-Al-Arab-Jumeirah-Aerial-at-Sunset-400x300','parc_de_la_villette','vXztb4PG-2015_1_jumeirahmosque_base_1'
         ];
 
+        $idx = 0;
         foreach($attrs as $attr){
             for($i=0 ; $i<5 ; $i++){
                 AttractionPhoto::create([
                     'attraction_id'=> $attr['id'],
-                    'path'=> 'http://127.0.0.1:8000/images/attraction/'.$photos[random_int(0,22)],
+                    'path'=> 'http://127.0.0.1:8000/images/attraction/'.$photos[random_int(0,22)].'.jpg',
                 ]);
             }
             AttractionPhoto::create([
                 'attraction_id'=> $attr['id'],
-                'path'=> 'http://127.0.0.1:8000/images/attraction/'.$photos[$i],
+                'path'=> 'http://127.0.0.1:8000/images/attraction/'.$photos[$idx++].'.jpg',
             ]);
         }
 
