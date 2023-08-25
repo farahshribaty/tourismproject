@@ -55,4 +55,5 @@ return [
     'Date deleted successfully'=>'تم حذف الموعد',
     'Day deleted successfully'=>'تم حذف اليوم',
 
+
 ];

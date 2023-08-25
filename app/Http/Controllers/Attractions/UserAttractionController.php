@@ -219,6 +219,7 @@ class UserAttractionController extends UserController
             else{
                 return response()->json([
                     'status'=> true,
+
                     'message'=> trans('msg.When you press on book button, a ticket will be reserved with the following Info:'),
                     'data'=> $booking_info,
                     'message1'=> trans('msg.Would you like to get benefit of your points?'),
