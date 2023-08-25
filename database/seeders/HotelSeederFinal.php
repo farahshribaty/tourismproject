@@ -67,18 +67,18 @@ class HotelSeederFinal extends Seeder
         // adding photos
 
         $hotels = Hotel::get();
-        $photos = ['governor-s-mansion-montgomery-alabama-grand-staircase-161758','pexels-donald-tong-189296','pexels-photo-137090',
-            'pexels-photo-189296','pexels-photo-261102','pexels-photo-594077','pexels-photo-933337','pexels-photo-1001965',
-            'pexels-photo-1058759','pexels-photo-1707310','pexels-photo-2034335','pexels-photo-5007455','pexels-photo-5088101',
-            'pexels-photo-10436369','pexels-photo-10642591','pexels-photo-11056539','pexels-photo-12690518','pexels-photo-14357627',
-            'pexels-pixabay-261102',];
+        $photos = ['governor-s-mansion-montgomery-alabama-grand-staircase-161758.jpeg','pexels-donald-tong-189296.jpg','pexels-photo-137090.jpeg',
+            'pexels-photo-189296.jpeg','pexels-photo-261102.jpeg','pexels-photo-594077.jpeg','pexels-photo-933337.jpeg','pexels-photo-1001965.jpeg',
+            'pexels-photo-1058759.jpeg','pexels-photo-1707310.jpeg','pexels-photo-2034335.jpeg','pexels-photo-5007455.jpeg','pexels-photo-5088101.jpeg',
+            'pexels-photo-10436369.jpeg','pexels-photo-10642591.jpeg','pexels-photo-11056539.jpeg','pexels-photo-12690518.jpeg','pexels-photo-14357627.jpeg',
+            'pexels-pixabay-261102.jpg',];
 
         $idx = 0;
         foreach($hotels as $hotel){
             for($i=0 ; $i<5 ; $i++){
                 HotelPhoto::create([
                     'hotel_id'=> $hotel['id'],
-                    'path'=> 'http://127.0.0.1:8000/images/hotel/'.$photos[random_int(0,18)].'.jpg',
+                    'path'=> 'http://127.0.0.1:8000/images/hotel/'.$photos[random_int(0,18)],
                 ]);
             }
             HotelPhoto::create([

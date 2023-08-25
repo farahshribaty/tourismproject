@@ -105,7 +105,7 @@ class TripSeeder extends Seeder
         // adding photo for each trip
 
         $trips = Trip::get();
-        $photos = ['0lNgvdaf-2017_Atlantis_base-400x240','5J3EUEHs-2017_Dubai_Frame_base-400x240','29814-1-رحلات-السفاري-بالغردقة ',
+        $photos = ['0lNgvdaf-2017_Atlantis_base-400x240','5J3EUEHs-2017_Dubai_Frame_base-400x240','ghardaka',
             '230012_0','247195','france-paris-attractions-parc-de-la-villette-geode-theater','france-paris-eiffel-tower',
             'france-paris-notre-dame','france-paris-place-vendome','france-paris-top-attractions-palais-royal','germany-brandenburg-gate',
             'germany-museum-island-berlin','germany-top-attractions-munichs-marienplatz','Hg6ORRXH-dubaiaquarium_base_1',

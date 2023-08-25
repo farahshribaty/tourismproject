@@ -176,20 +176,20 @@ class UserAttractionController extends UserController
 
         // ### 1 ### check if the ID is valid
         if(!$attraction){
-            return $this->error('Attraction not found',400);
+            return $this->error(trans('msg.Attraction not found',400));
         }
         // ### 2 ### check if there are tickets remains
         if(!$this->checkTicketAvailability($info)){
-            return $this->error('We have run out of tickets for this day, please select another one.');
+            return $this->error(trans('msg.We have run out of tickets for this day, please select another one.'));
         }
         // ### 3 ### check if the time & date are valid
         if(!$this->checkTimeAvailability($info)){
-            return $this->error('This attraction is closed on selected day/time.');
+            return $this->error(trans('msg.This attraction is closed on selected day/time.'));
         }
         // ### 4 ### check if user has money
         $hasMoney = $this->checkMoneyAvailability($info,$request->user()->id);
         if($hasMoney==-1){
-            return $this->error('You do not have enough money.');
+            return $this->error(trans('msg.You do not have enough money.'));
         }
         // end of checks.
 
@@ -214,13 +214,14 @@ class UserAttractionController extends UserController
         if($request->check_or_book == 'check'){
             if($request->user()->points == 0){
                 unset($booking_info['payment_with_discount']);
-                return $this->success($booking_info,'When you press on book button, a ticket will be reserved with the following Info:');
+                return $this->success($booking_info,trans('msg.When you press on book button, a ticket will be reserved with the following Info:'));
             }
             else{
                 return response()->json([
-                    'message'=> 'When you press on book button, a ticket will be reserved with the following Info:',
+                    'status'=> true,
+                    'message'=> trans('msg.When you press on book button, a ticket will be reserved with the following Info:'),
                     'data'=> $booking_info,
-                    'message1'=> 'Would you like to get benefit of your points?',
+                    'message1'=> trans('msg.Would you like to get benefit of your points?'),
                 ]);
             }
         }
@@ -243,7 +244,7 @@ class UserAttractionController extends UserController
                     'points'=> $request->user()->points - ($discount/$one_point_equals) + $booking_info['points_added'],
                 ]);
 
-            return $this->success($booking_info,'Ticket reserved successfully with the following info:',200);
+            return $this->success($booking_info,trans('msg.Ticket reserved successfully with the following info:'),200);
         }
     }
 
@@ -268,7 +269,7 @@ class UserAttractionController extends UserController
         if($lastRate){
             return response()->json([
                 'success'=>false,
-                'message'=>'you can not rate this attraction more than one time',
+                'message'=>trans('msg.you can not rate this attraction more than one time'),
             ]);
         }
 
@@ -307,7 +308,7 @@ class UserAttractionController extends UserController
 
         return response()->json([
             'status'=>true,
-            'message'=>'review has been sent successfully',
+            'message'=>trans('msg.review has been sent successfully'),
         ]);
     }
 

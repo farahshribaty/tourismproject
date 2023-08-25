@@ -26,7 +26,7 @@ use Illuminate\Support\Facades\Route;
 //Route::post('addingAttraction',[\App\Http\Controllers\Attractions\AdminAttractionController::class,'addAttraction']);
 
 
-//Route::middleware(['localization'])->group(function(){
+Route::middleware(['localization'])->group(function(){
     // User Operations
 
     Route::group( [],function(){
@@ -57,4 +57,4 @@ use Illuminate\Support\Facades\Route;
         });
     });
 
-//});
+});

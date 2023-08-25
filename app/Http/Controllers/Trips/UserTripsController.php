@@ -309,28 +309,28 @@ class UserTripsController extends UserController
 
         // ### 1 ### check if there is at least one adult
         if($request->adults == 0){
-            return $this->error('There should be at least one adult traveler');
+            return $this->error(trans('msg.There should be at least one adult traveler'));
         }
 
         // ### 2 ### check if the trip exist
         if(!isset($trip)){
-            return $this->error('Date not found');
+            return $this->error(trans('msg.Date not found'));
         }
 
         // ### 3 ### check if the trip has enough seats
         if(!$this->checkSeatAvailability($request,$trip,$date)){
-            return $this->error('There are no enough seats');
+            return $this->error(trans('msg.There are no enough seats'));
         }
 
         // ### 4 ### check if the user has enough money
         $money_needed = $this->checkMoneyAvailability($request,$trip,$date);
         if($money_needed == -1){
-            return $this->error('You do not have enough money');
+            return $this->error(trans('msg.You do not have enough money'));
         }
 
         // ### 5 ### check if the date hasn't passed yet
         if(!$this->checkTimeAvailability($date)){
-            return $this->error('This date has already been passed');
+            return $this->error(trans('msg.This date has already been passed'));
         }
 
         // congratulations! finally, the booking process will proceed to the next step.
@@ -355,13 +355,14 @@ class UserTripsController extends UserController
             //return $this->success($booking_info,'When you press on book button, a ticket will be reserved with the following Info:');
             if($request->user()->points == 0){
                 unset($booking_info['payment_with_discount']);
-                return $this->success($booking_info,'When you press on book button, a ticket will be reserved with the following Info:');
+                return $this->success($booking_info,trans('msg.When you press on book button, a ticket will be reserved with the following Info:'));
             }
             else{
                 return response()->json([
-                    'message'=> 'When you press on book button, a ticket will be reserved with the following Info:',
+                    'status'=> true,
+                    'message'=> trans('msg.When you press on book button, a ticket will be reserved with the following Info:'),
                     'data'=> $booking_info,
-                    'message1'=> 'Would you like to get benefit of your points?',
+                    'message1'=> trans('msg.Would you like to get benefit of your points?'),
                 ]);
             }
         }
@@ -403,12 +404,12 @@ class UserTripsController extends UserController
                     'reservation_id'=>$trip_reservation['id'],
                     'first_name'=>$request->input('first_name'.$i),
                     'last_name'=>$request->input('last_name'.$i),
-                    'birth'=>$request->input('birth'.$i),
+                    'birth'=>$request->input('birth'.$i).' 11:11:11',
                     'gender'=>$request->input('gender'.$i),
                 ]);
             }
 
-            return $this->success($booking_info,'Trip has been reserved with the last information');
+            return $this->success($booking_info,trans('msg.Trip has been reserved with the last information'));
         }
     }
 
@@ -432,7 +433,7 @@ class UserTripsController extends UserController
 
         // ### 2 ### if reservation has already been cancelled
         if($reservation['active'] == 0){
-            return $this->error('Reservation has already been cancelled');
+            return $this->error(trans('msg.Reservation has already been cancelled'));
         }
 
         // ### 3 ### if reservation doesn't belong to this user
@@ -446,7 +447,7 @@ class UserTripsController extends UserController
 
         // ### 4 ### A user can not cancel a reservation if it's been more than 4 days since he made it.
         if($now > $res_time_plus_4){
-            return $this->error('You can not cancel the reservation, it has been more than 4 days since you made this one!');
+            return $this->error(trans('msg.You can not cancel the reservation, it has been more than 4 days since you made this one!'));
         }
 
         $date = TripDate::where('id',$reservation['date_id'])->first();
@@ -455,7 +456,7 @@ class UserTripsController extends UserController
 
         // ### 5 ### A user can not cancel a reservation if it remains less than two days to departure
         if($now > $departure_date){
-            return $this->error('You can not cancel the reservation, it remains less than two days to departure!');
+            return $this->error(trans('msg.You can not cancel the reservation, it remains less than two days to departure!'));
         }
 
 
@@ -482,7 +483,7 @@ class UserTripsController extends UserController
                 'wallet'=>$user['wallet']+$reservation['money_spent']*(9/10),
             ]);
 
-        return $this->success('Reservation cancelled successfully!');
+        return $this->success(trans('msg.Reservation cancelled successfully!'));
 
     }
 
@@ -504,7 +505,7 @@ class UserTripsController extends UserController
         ])->first();
 
         if($lastRate){
-            return $this->error('you can not rate this trip more than one time');
+            return $this->error(trans('msg.you can not rate this trip more than one time'));
         }
 
         $comment = null;
@@ -539,7 +540,7 @@ class UserTripsController extends UserController
 
         return response()->json([
             'status'=>true,
-            'message'=>'review has been sent successfully',
+            'message'=>trans('msg.review has been sent successfully'),
         ]);
     }
 
