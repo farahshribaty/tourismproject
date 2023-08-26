@@ -31,7 +31,7 @@ class AttractionAdminController extends Controller
             ->where('rejected', 0)->first();
 
         if (isset($add_request)) {
-            return $this->error('You no longer have the ability to add your company');
+            return $this->error(trans('msg.You no longer have the ability to add your company'));
         }
 
         $validated_data = Validator::make($request->all(), [
@@ -80,7 +80,7 @@ class AttractionAdminController extends Controller
         }
 
         AttractionUpdating::create($data->all());
-        return $this->success(null, 'Form sent successfully, pending approval.');
+        return $this->success(null, trans('msg.Form sent successfully, pending approval.'));
     }
 
     /**
@@ -111,7 +111,7 @@ class AttractionAdminController extends Controller
 
         AttractionUpdating::create($data->all());
 
-        return $this->success(null, 'Updates sent successfully, pending approval.');
+        return $this->success(null, trans('msg.Updates sent successfully, pending approval.'));
         //return $this->editDetails($request,$id);
     }
 
@@ -274,7 +274,7 @@ class AttractionAdminController extends Controller
         $user->fill($request->all());
         $user->save();
 
-        return $this->success(null,'Attraction updated successfully');
+        return $this->success(null,trans('msg.Attraction updated successfully'));
     }
     protected function addMultiplePhotos($request,$id)
     {
@@ -296,7 +296,7 @@ class AttractionAdminController extends Controller
             ]);
         }
 
-        return $this->success(null,'Photos added successfully');
+        return $this->success(null,trans('msg.Photos added successfully'));
     }
     protected function addPhoto($request,$id)
     {
@@ -310,10 +310,10 @@ class AttractionAdminController extends Controller
                 'attraction_id'=>$id,
             ]);
         }
-        return $this->success(null,'Photo added successfully');
+        return $this->success(null,trans('msg.Photo added successfully'));
     }
     protected function deletePhoto($id){
         AttractionPhoto::where('id','=',$id)->delete();
-        return $this->success(null,'Photo deleted successfully');
+        return $this->success(null,trans('msg.Photo deleted successfully'));
     }
 }

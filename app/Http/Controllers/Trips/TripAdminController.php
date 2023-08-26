@@ -34,7 +34,7 @@ class TripAdminController extends Controller
             ->where('rejected', 0)->first();
 
         if (isset($add_request)) {
-            return $this->error('You no longer have the ability to add your company');
+            return $this->error(trans('msg.You no longer have the ability to add your company'));
         }
 
         $validated_data = Validator::make($request->all(), [
@@ -56,7 +56,7 @@ class TripAdminController extends Controller
 
 
         TripUpdating::create($data->all());
-        return $this->success(null, 'Form sent successfully, pending approval.');
+        return $this->success(null, trans('msg.Form sent successfully, pending approval.'));
     }
 
     /**
@@ -77,7 +77,7 @@ class TripAdminController extends Controller
                 $q->where('seen', '=', 0);
             })
             ->get();
-        return $this->success($updates, 'Updates retrieved successfully');
+        return $this->success($updates, trans('msg.Updates retrieved successfully'));
     }
 
     /**
@@ -117,7 +117,7 @@ class TripAdminController extends Controller
         }
 
         if (!$this->hasTrip($request->trip_id, $request->user()->id)) {
-            return $this->error('Unauthorized to view this trip!', 403);
+            return $this->error(trans('msg.Unauthorized to view this trip!'), 403);
         }
 
         return $this->tripDetails($request->trip_id);
@@ -138,7 +138,7 @@ class TripAdminController extends Controller
         }
 
         if (!$this->hasTrip($request->trip_id, $request->user()->id)) {
-            return $this->error('Unauthorized to view this trip!', 403);
+            return $this->error(trans('msg.Unauthorized to view this trip!'), 403);
         }
 
         return $this->tripDates($request->trip_id);
@@ -180,7 +180,7 @@ class TripAdminController extends Controller
 
         TripUpdating::create($data->all());
 
-        return $this->success(null, 'Updates sent successfully, pending approval.');
+        return $this->success(null, trans('msg.Updates sent successfully, pending approval.'));
     }
 
     /**
@@ -198,7 +198,7 @@ class TripAdminController extends Controller
         }
 
         if (!$this->hasTrip($request->id, $request->user()->id)) {
-            return $this->error('Unauthorized to reach this trip!', 403);
+            return $this->error(trans('msg.Unauthorized to reach this trip!'), 403);
         }
 
         return $this->editTrip($request, $request->id);
@@ -219,7 +219,7 @@ class TripAdminController extends Controller
         }
 
         if (!$this->hasOffer($request->id, $request->user()->id)) {
-            return $this->error('Unauthorized to reach this offer!', 403);
+            return $this->error(trans('msg.Unauthorized to reach this offer!'), 403);
         }
 
         return $this->editOffer($request, $request->id);
@@ -259,7 +259,7 @@ class TripAdminController extends Controller
             $this->addDay($data, $idx, $trip['id']);
         }
 
-        return $this->success(null, 'Trip added successfully');
+        return $this->success(null, trans('msg.Trip added successfully'));
     }
 
     /**
@@ -289,7 +289,7 @@ class TripAdminController extends Controller
             'offer_end' => $request->offer_end,
         ]);
 
-        return $this->success(null, 'Offer added successfully');
+        return $this->success(null, trans('msg.Offer added successfully'));
     }
 
     /**
@@ -330,7 +330,7 @@ class TripAdminController extends Controller
         }
 
         if (!$this->hasTrip($request->trip_id, $request->user()->id)) {
-            return $this->error('Unauthorized to add to this trip!', 403);
+            return $this->error(trans('msg.Unauthorized to add to this trip!'), 403);
         }
 
         return $this->addOnePhoto($request, $request->trip_id);
@@ -351,7 +351,7 @@ class TripAdminController extends Controller
         }
 
         if (!$this->hasTrip($request->trip_id, $request->user()->id)) {
-            return $this->error('Unauthorized to add to this trip!', 403);
+            return $this->error(trans('msg.Unauthorized to add to this trip!'), 403);
         }
 
         $names = array();
@@ -406,7 +406,7 @@ class TripAdminController extends Controller
         }
 
         if (!$this->hasTrip($request->trip_id, $request->user()->id)) {
-            return $this->error('Unauthorized to reach this trip!', 403);
+            return $this->error(trans('msg.Unauthorized to reach this trip!'), 403);
         }
 
         return $this->deleteTrip($request->trip_id);
@@ -427,7 +427,7 @@ class TripAdminController extends Controller
         }
 
         if (!$this->hasOffer($request->offer_id, $request->user()->id)) {
-            return $this->error('Unauthorized to reach this trip!', 403);
+            return $this->error(trans('msg.Unauthorized to reach this trip!'), 403);
         }
 
         return $this->deleteOffer($request->offer_id);
@@ -448,7 +448,7 @@ class TripAdminController extends Controller
         }
 
         if (!$this->hasDate($request->date_id, $request->user()->id)) {
-            return $this->error('Unauthorized to reach this trip!', 403);
+            return $this->error(trans('msg.Unauthorized to reach this trip!'), 403);
         }
 
         return $this->deleteDate($request->date_id);
@@ -476,7 +476,7 @@ class TripAdminController extends Controller
 
         $company['num_of_unseen_reservations'] = $reservations;
 
-        return $this->success($company, 'Company retrieved successfully');
+        return $this->success($company, trans('msg.Company retrieved successfully'));
     }
 
     protected function tripsForCompany($id)
@@ -490,7 +490,7 @@ class TripAdminController extends Controller
             ->where('trip_company_id', $id)
             ->paginate(6);
 
-        return $this->success($trips, 'Trips retrieved successfully');
+        return $this->success($trips, trans('msg.Trips retrieved successfully'));
     }
 
     protected function tripDetails($id)
@@ -502,13 +502,13 @@ class TripAdminController extends Controller
             ])
             ->first();
 
-        return $this->success($trip, 'Trip retrieved successfully');
+        return $this->success($trip, trans('msg.Trip retrieved successfully'));
     }
 
     protected function tripDates($id)
     {
         $dates = TripDate::where('trip_id', '=', $id)->get();
-        return $this->success($dates, 'Dates retrieved successfully');
+        return $this->success($dates, trans('msg.Dates retrieved successfully'));
     }
 
     protected function latestReservations($admin_id)
@@ -543,7 +543,7 @@ class TripAdminController extends Controller
         $trip_company->fill($request->all());
         $trip_company->save();
 
-        return $this->success(null, 'Company edited successfully');
+        return $this->success(null, trans('msg.Company edited successfully'));
     }
 
     protected function editTrip($request, $id)
@@ -559,7 +559,7 @@ class TripAdminController extends Controller
         $trip->fill($data->all());
         $trip->save();
 
-        return $this->success(null, 'Trip edited successfully');
+        return $this->success(null, trans('msg.Trip edited successfully'));
     }
 
     protected function editDay($request, $id)
@@ -568,7 +568,7 @@ class TripAdminController extends Controller
         $day->fill($request->all());
         $day->save();
 
-        return $this->success(null, 'Day edited successfully');
+        return $this->success(null, trans('msg.Day edited successfully'));
     }
 
     protected function editOffer($request, $id)
@@ -577,7 +577,7 @@ class TripAdminController extends Controller
         $offer->fill($request->all());
         $offer->save();
 
-        return $this->success(null, 'Offer edited successfully');
+        return $this->success(null, trans('msg.Offer edited successfully'));
     }
 
     protected function addTrip($request, $id)
@@ -603,7 +603,7 @@ class TripAdminController extends Controller
     {
         $request['current_reserved_people'] = 0;
         TripDate::create($request->all());
-        return $this->success(null, 'Date added successfully');
+        return $this->success(null, trans('msg.Date added successfully'));
     }
 
     protected function addMultiplePhotos($request, $id)
@@ -626,7 +626,7 @@ class TripAdminController extends Controller
             ]);
         }
 
-        return $this->success(null, 'Photos added successfully');
+        return $this->success(null, trans('msg.Photos added successfully'));
     }
 
     protected function addOnePhoto($request, $id)
@@ -641,43 +641,43 @@ class TripAdminController extends Controller
                 'trip_id' => $request->trip_id,
             ]);
         }
-        return $this->success(null, 'Photo added successfully');
+        return $this->success(null, trans('msg.Photo added successfully'));
     }
 
     protected function deleteCompany($id)
     {
         TripCompany::where('id', '=', $id)->delete();
-        return $this->success(null, 'Company deleted successfully');
+        return $this->success(null, trans('msg.Company deleted successfully'));
     }
 
     protected function deleteTrip($id)
     {
         Trip::where('id', '=', $id)->delete();
-        return $this->success(null, 'Trip deleted successfully');
+        return $this->success(null, trans('msg.Trip deleted successfully'));
     }
 
     protected function deleteOffer($id)
     {
         TripOffer::where('id', '=', $id)->delete();
-        return $this->success(null, 'Offer deleted successfully');
+        return $this->success(null, trans('msg.Offer deleted successfully'));
     }
 
     protected function deleteDate($id)
     {
         TripDate::where('id', '=', $id)->delete();
-        return $this->success(null, 'Date deleted successfully');
+        return $this->success(null, trans('msg.Date deleted successfully'));
     }
 
     protected function deletePhoto($id)
     {
         TripPhoto::where('id', $id)->delete();
-        return $this->success(null, 'Photo deleted successfully');
+        return $this->success(null, trans('msg.Photo deleted successfully'));
     }
 
     protected function deleteDay($id)
     {
         TripDate::where('id', $id)->delete();
-        return $this->success(null, 'Day deleted successfully');
+        return $this->success(null, trans('msg.Day deleted successfully'));
     }
 
     // Authorization functions
