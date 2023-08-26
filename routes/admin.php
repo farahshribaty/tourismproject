@@ -109,7 +109,7 @@ Route::post('DeleteFeature',[HotelController::class,'DeleteFeature']);
 
 
 // Flights Operations:
-Route::get('getAllAdmins',[FlightController::class,'getAllAdmins']);
+Route::get('getAllAdminsFlight',[FlightController::class,'getAllAdmins']);
 Route::post('deleteAdmin',[FlightController::class,'deleteAdmin']);
 Route::get('AllAirlines',[FlightController::class, 'getAllAirlinesWithMainInfo']);
 Route::post('OneAirline',[FlightController::class, 'getAirlineWithAllInfo']);

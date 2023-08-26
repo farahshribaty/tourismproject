@@ -20,6 +20,8 @@ class FlightController extends Controller
         ])->paginate(10);
         return $this->success($admins,'Admins retrieved successfully');
     }
+
+
     public function deleteAdmin(Request $request)
     {
         $validated_data = Validator::make($request->all(), [
@@ -40,7 +42,7 @@ class FlightController extends Controller
     }
     public function getAirlineWithAllInfo(Request $request)
     {
-        $airline = Airline::where('airlines.id','=',$request->airline_id)
+        $airline = Airline::where('airlines.id','=',$request->id)
         ->with('Admin','country','flights')->get();
         return $this->success($airline, 'Retrieved successfully');
     }
